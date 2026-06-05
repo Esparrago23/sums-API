@@ -1,0 +1,427 @@
+Enum sexo_persona {
+  masculino
+  femenino
+}
+
+Enum ubicacion_cocina {
+  fuera_del_dormitorio
+  dentro_del_dormitorio
+}
+
+Enum estado_cedula {
+  borrador
+  sincronizada
+  validada
+  cerrada
+}
+
+Table cat_entidad {
+  id_entidad SERIAL [pk]
+  nombre VARCHAR(100) [not null, unique]
+}
+
+Table cat_municipio {
+  id_municipio SERIAL [pk]
+  nombre VARCHAR(100) [not null]
+  entidad_id INT [not null, ref: > cat_entidad.id_entidad]
+}
+
+Table cat_zona {
+  id_zona SERIAL [pk]
+  zona VARCHAR(100) [not null]
+}
+
+Table cat_tipo_asentamiento {
+  id_tipo_asentamiento SERIAL [pk]
+  tipo_asentamiento VARCHAR(100) [not null]
+}
+
+Table cat_asentamiento {
+  id_asentamiento SERIAL [pk]
+  nombre VARCHAR(150) [not null]
+  municipio_id INT [not null, ref: > cat_municipio.id_municipio]
+  tipo_asentamiento_id INT [ref: > cat_tipo_asentamiento.id_tipo_asentamiento]
+}
+
+Table direccion {
+  id_direccion SERIAL [pk]
+  calle VARCHAR(150)
+  numero_exterior VARCHAR(50)
+  numero_interior VARCHAR(50)
+  colonia VARCHAR(150)
+  codigo_postal VARCHAR(10)
+  localidad VARCHAR(150)
+  manzana VARCHAR(50)
+  vivienda_referencia VARCHAR(50)
+  asentamiento_id INT [ref: > cat_asentamiento.id_asentamiento]
+}
+
+Table unidad_salud {
+  id_unidad_salud SERIAL [pk]
+  clues VARCHAR(11) [unique, not null]
+  nombre VARCHAR(255) [not null]
+  distrito VARCHAR(100)
+  municipio_id INT [ref: > cat_municipio.id_municipio]
+  numero_nucleos INT
+}
+
+Table cat_turno {
+  id_turno SERIAL [pk]
+  nombre VARCHAR(50) [not null, unique]
+}
+
+Table datos_laborales {
+  id_datos_laborales SERIAL [pk]
+  turno_id INT [ref: > cat_turno.id_turno]
+  horario_inicio TIME
+  horario_fin TIME
+  cargo VARCHAR(100)
+  especialidad VARCHAR(100)
+}
+
+Table entrevistador {
+  id_entrevistador SERIAL [pk]
+  nombre VARCHAR(255) [not null]
+  unidad_salud_id INT [not null, ref: > unidad_salud.id_unidad_salud]
+  datos_laborales_id INT [ref: > datos_laborales.id_datos_laborales]
+  fecha_registro DATE
+}
+
+Table levantamiento {
+  id_levantamiento SERIAL [pk]
+  unidad_salud_id INT [not null, ref: > unidad_salud.id_unidad_salud]
+  fecha DATE [not null]
+  zona_id INT [ref: > cat_zona.id_zona]
+  comentarios VARCHAR(250)
+}
+
+Table levantamiento_personal {
+  id_levantamiento_personal SERIAL [pk]
+  levantamiento_id INT [not null, ref: > levantamiento.id_levantamiento]
+  entrevistador_id INT [not null, ref: > entrevistador.id_entrevistador]
+}
+
+Table cat_estado_civil {
+  id_estado_civil SERIAL [pk]
+  nombre VARCHAR(50) [not null, unique]
+}
+
+Table cat_parentesco {
+  id_parentesco SERIAL [pk]
+  nombre VARCHAR(50) [not null, unique]
+}
+
+Table cat_lengua {
+  id_lengua SERIAL [pk]
+  nombre VARCHAR(100) [not null, unique]
+}
+
+Table cat_escolaridad {
+  id_escolaridad SERIAL [pk]
+  nombre VARCHAR(100) [not null, unique]
+}
+
+Table cat_ocupacion {
+  id_ocupacion SERIAL [pk]
+  nombre VARCHAR(100) [not null, unique]
+}
+
+Table cat_ingreso_salarial {
+  id_ingreso_salarial SERIAL [pk]
+  rango VARCHAR(100) [not null, unique]
+  descripcion VARCHAR(150)
+}
+
+Table cat_discapacidad {
+  id_discapacidad SERIAL [pk]
+  nombre VARCHAR(100) [not null, unique]
+}
+
+Table persona {
+  id_persona SERIAL [pk]
+  primer_nombre VARCHAR(100) [not null]
+  segundo_nombre VARCHAR(100)
+  apellido_paterno VARCHAR(100) [not null]
+  apellido_materno VARCHAR(100)
+  fecha_nacimiento DATE [not null]
+  sexo sexo_persona [not null]
+  estado_civil_id INT [ref: > cat_estado_civil.id_estado_civil]
+  alfabetizacion BOOLEAN
+  fecha_registro TIMESTAMP
+}
+
+Table persona_lengua {
+  id_persona_lengua SERIAL [pk]
+  persona_id INT [not null, ref: > persona.id_persona]
+  lengua_id INT [not null, ref: > cat_lengua.id_lengua]
+  lengua_indigena_especificar VARCHAR(100)
+  es_principal BOOLEAN
+}
+
+Table persona_escolaridad {
+  id_persona_escolaridad SERIAL [pk]
+  persona_id INT [not null, ref: > persona.id_persona]
+  escolaridad_id INT [not null, ref: > cat_escolaridad.id_escolaridad]
+  fecha_registro DATE
+}
+
+Table persona_ocupacion {
+  id_persona_ocupacion SERIAL [pk]
+  persona_id INT [not null, ref: > persona.id_persona]
+  ocupacion_id INT [not null, ref: > cat_ocupacion.id_ocupacion]
+  fecha_registro DATE
+}
+
+Table persona_ingreso {
+  id_persona_ingreso SERIAL [pk]
+  persona_id INT [not null, ref: > persona.id_persona]
+  ingreso_salarial_id INT [not null, ref: > cat_ingreso_salarial.id_ingreso_salarial]
+  fecha_registro DATE
+}
+
+Table persona_seguridad_social {
+  id_persona_seguridad_social SERIAL [pk]
+  persona_id INT [not null, ref: > persona.id_persona]
+  cuenta_seguridad_social BOOLEAN [not null]
+  numero_seguridad_social VARCHAR(30)
+  fecha_registro DATE
+}
+
+Table persona_discapacidad {
+  id_persona_discapacidad SERIAL [pk]
+  persona_id INT [not null, ref: > persona.id_persona]
+  presenta_discapacidad BOOLEAN [not null]
+  discapacidad_id INT [ref: > cat_discapacidad.id_discapacidad]
+  especificacion VARCHAR(150)
+}
+
+Table nucleo_familiar {
+  id_nucleo_familiar SERIAL [pk]
+  jefe_persona_id INT [ref: > persona.id_persona]
+  fecha_registro TIMESTAMP
+  fecha_cierre TIMESTAMP
+  comentarios VARCHAR(250)
+}
+
+Table nucleo_persona {
+  id_nucleo_persona SERIAL [pk]
+  nucleo_familiar_id INT [not null, ref: > nucleo_familiar.id_nucleo_familiar]
+  persona_id INT [not null, ref: > persona.id_persona]
+  parentesco_id INT [ref: > cat_parentesco.id_parentesco]
+  fecha_registro TIMESTAMP
+  fecha_salida TIMESTAMP
+  comentarios VARCHAR(250)
+
+  indexes {
+    (nucleo_familiar_id, persona_id) [unique]
+  }
+}
+
+Table nucleo_direccion {
+  id_nucleo_direccion SERIAL [pk]
+  nucleo_familiar_id INT [not null, ref: > nucleo_familiar.id_nucleo_familiar]
+  direccion_id INT [not null, ref: > direccion.id_direccion]
+  fecha_asociacion DATE
+  fecha_fin DATE
+}
+
+Table cedula {
+  id_cedula SERIAL [pk]
+  unidad_salud_id INT [not null, ref: > unidad_salud.id_unidad_salud]
+  entrevistador_id INT [not null, ref: > entrevistador.id_entrevistador]
+  levantamiento_id INT [ref: > levantamiento.id_levantamiento]
+  nucleo_familiar_id INT [not null, ref: > nucleo_familiar.id_nucleo_familiar]
+  fecha_registro DATE [not null]
+  estado estado_cedula [not null]
+  observaciones VARCHAR(300)
+}
+
+Table levantamiento_nucleo {
+  id_levantamiento_nucleo SERIAL [pk]
+  levantamiento_id INT [not null, ref: > levantamiento.id_levantamiento]
+  entrevistador_id INT [not null, ref: > entrevistador.id_entrevistador]
+  nucleo_familiar_id INT [not null, ref: > nucleo_familiar.id_nucleo_familiar]
+  cedula_id INT [ref: > cedula.id_cedula]
+  fecha TIMESTAMP
+  comentarios VARCHAR(250)
+}
+
+Table cat_material {
+  id_material SERIAL [pk]
+  nombre VARCHAR(100) [not null, unique]
+}
+
+Table cat_tipo_material_vivienda {
+  id_tipo_material_vivienda SERIAL [pk]
+  nombre VARCHAR(50) [not null, unique]
+}
+
+Table cat_servicio_vivienda {
+  id_servicio_vivienda SERIAL [pk]
+  nombre VARCHAR(100) [not null, unique]
+}
+
+Table cat_manejo_excretas {
+  id_manejo_excretas SERIAL [pk]
+  nombre VARCHAR(100) [not null, unique]
+}
+
+Table vivienda {
+  id_vivienda SERIAL [pk]
+  nucleo_familiar_id INT [not null, ref: > nucleo_familiar.id_nucleo_familiar]
+  direccion_id INT [ref: > direccion.id_direccion]
+  numero_cuartos INT
+  numero_habitantes INT
+  cocina_ubicacion ubicacion_cocina
+  cocina_con_lena BOOLEAN
+  manejo_excretas_id INT [ref: > cat_manejo_excretas.id_manejo_excretas]
+  red_alcantarillado BOOLEAN
+  fosa_septica BOOLEAN
+  comentarios VARCHAR(300)
+}
+
+Table vivienda_material {
+  id_vivienda_material SERIAL [pk]
+  vivienda_id INT [not null, ref: > vivienda.id_vivienda]
+  tipo_material_vivienda_id INT [not null, ref: > cat_tipo_material_vivienda.id_tipo_material_vivienda]
+  material_id INT [ref: > cat_material.id_material]
+  otro_especificar VARCHAR(150)
+
+  indexes {
+    (vivienda_id, tipo_material_vivienda_id) [unique]
+  }
+}
+
+Table vivienda_servicio {
+  id_vivienda_servicio SERIAL [pk]
+  vivienda_id INT [not null, ref: > vivienda.id_vivienda]
+  servicio_vivienda_id INT [not null, ref: > cat_servicio_vivienda.id_servicio_vivienda]
+  disponible BOOLEAN [not null]
+
+  indexes {
+    (vivienda_id, servicio_vivienda_id) [unique]
+  }
+}
+
+Table cat_animal {
+  id_animal SERIAL [pk]
+  nombre VARCHAR(100) [not null, unique]
+}
+
+Table familia_animal {
+  id_familia_animal SERIAL [pk]
+  nucleo_familiar_id INT [not null, ref: > nucleo_familiar.id_nucleo_familiar]
+  animal_id INT [not null, ref: > cat_animal.id_animal]
+  cantidad INT
+  vive_dentro_vivienda BOOLEAN
+  esquema_vacunas_corriente BOOLEAN
+  esterilizado BOOLEAN
+  comentarios VARCHAR(255)
+}
+
+Table cat_alimentacion {
+  id_alimentacion SERIAL [pk]
+  tipo VARCHAR(100) [not null, unique]
+}
+
+Table persona_alimentacion {
+  id_persona_alimentacion SERIAL [pk]
+  persona_id INT [not null, ref: > persona.id_persona]
+  alimentacion_id INT [not null, ref: > cat_alimentacion.id_alimentacion]
+  frecuencia_dias INT [not null]
+  fecha_registro DATE
+
+  indexes {
+    (persona_id, alimentacion_id, fecha_registro) [unique]
+  }
+}
+
+Table persona_higiene {
+  id_persona_higiene SERIAL [pk]
+  persona_id INT [not null, ref: > persona.id_persona]
+  higiene_bano_bucodental_diaria BOOLEAN [not null]
+  fecha_registro DATE
+}
+
+Table cat_toxicomania {
+  id_toxicomania SERIAL [pk]
+  nombre VARCHAR(100) [not null, unique]
+}
+
+Table persona_toxicomania {
+  id_persona_toxicomania SERIAL [pk]
+  persona_id INT [not null, ref: > persona.id_persona]
+  toxicomania_id INT [not null, ref: > cat_toxicomania.id_toxicomania]
+  otra_sustancia VARCHAR(150)
+  fecha_inicio DATE
+  fecha_fin DATE
+}
+
+Table cat_enfermedad_cronica {
+  id_enfermedad_cronica SERIAL [pk]
+  nombre VARCHAR(150) [not null, unique]
+}
+
+Table persona_enfermedad_cronica {
+  id_persona_enfermedad_cronica SERIAL [pk]
+  persona_id INT [not null, ref: > persona.id_persona]
+  enfermedad_cronica_id INT [not null, ref: > cat_enfermedad_cronica.id_enfermedad_cronica]
+  fecha_diagnostico DATE
+  observaciones VARCHAR(250)
+}
+
+Table cat_atencion_embarazo {
+  id_atencion_embarazo SERIAL [pk]
+  nombre VARCHAR(100) [not null, unique]
+}
+
+Table persona_salud_preventiva {
+  id_persona_salud_preventiva SERIAL [pk]
+  persona_id INT [not null, ref: > persona.id_persona]
+  atencion_embarazo_id INT [ref: > cat_atencion_embarazo.id_atencion_embarazo]
+  tamizaje_cervico_uterino BOOLEAN
+  fecha_tamizaje_cervico_uterino DATE
+  tamizaje_cancer_mama BOOLEAN
+  fecha_tamizaje_cancer_mama DATE
+  fecha_registro DATE
+}
+
+Table cat_frecuencia_servicio_salud {
+  id_frecuencia_servicio_salud SERIAL [pk]
+  nombre VARCHAR(50) [not null, unique]
+}
+
+Table persona_servicio_salud {
+  id_persona_servicio_salud SERIAL [pk]
+  persona_id INT [not null, ref: > persona.id_persona]
+  frecuencia_servicio_salud_id INT [ref: > cat_frecuencia_servicio_salud.id_frecuencia_servicio_salud]
+  motivo_uso VARCHAR(250)
+  fecha_registro DATE
+}
+
+Table vacuna {
+  id_vacuna SERIAL [pk]
+  nombre VARCHAR(255) [not null, unique]
+  descripcion TEXT
+}
+
+Table cat_dosis {
+  id_dosis SERIAL [pk]
+  nombre VARCHAR(50) [not null, unique]
+}
+
+Table esquema_vacunacion {
+  id_esquema_vacunacion SERIAL [pk]
+  persona_id INT [not null, ref: > persona.id_persona]
+  unidad_salud_id INT [ref: > unidad_salud.id_unidad_salud]
+  fecha_registro DATE
+}
+
+Table inmunizacion {
+  id_inmunizacion SERIAL [pk]
+  esquema_vacunacion_id INT [not null, ref: > esquema_vacunacion.id_esquema_vacunacion]
+  cedula_id INT [ref: > cedula.id_cedula]
+  vacuna_id INT [not null, ref: > vacuna.id_vacuna]
+  dosis_id INT [ref: > cat_dosis.id_dosis]
+  fecha_aplicacion DATE
+}

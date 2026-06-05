@@ -1,22 +1,29 @@
 import { Vivienda } from '../../domain/entities/vivienda';
 import { IViviendaRepository } from '../../domain/repositories/IViviendaRepository';
 import { db } from '../../../core/db_postgresql';
-import { formatDateForDB, parseDBDate } from '../../../core/date_utils';
 
 export class InMemoryViviendaRepository implements IViviendaRepository {
   async create(vivienda: Vivienda): Promise<Vivienda> {
     const query = `
-      INSERT INTO vivienda (familia_id, direccion_id, servicios_basicos_id, cocina_con_leña, numero_cuartos, numero_habitantes)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING *;
+      INSERT INTO vivienda (
+        nucleo_familiar_id, direccion_id, numero_cuartos, numero_habitantes,
+        cocina_ubicacion, cocina_con_lena, manejo_excretas_id, red_alcantarillado,
+        fosa_septica, comentarios
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      RETURNING *, id_vivienda AS id;
     `;
     const values = [
-      vivienda.familia_id,
-      vivienda.direccion_id,
-      vivienda.servicios_basicos_id,
-      vivienda.cocina_con_leña,
-      vivienda.numero_cuartos,
-      vivienda.numero_habitantes
+      vivienda.nucleo_familiar_id,
+      vivienda.direccion_id ?? null,
+      vivienda.numero_cuartos ?? null,
+      vivienda.numero_habitantes ?? null,
+      vivienda.cocina_ubicacion ?? null,
+      vivienda.cocina_con_lena ?? null,
+      vivienda.manejo_excretas_id ?? null,
+      vivienda.red_alcantarillado ?? null,
+      vivienda.fosa_septica ?? null,
+      vivienda.comentarios ?? null
     ];
     const result = await db.executePreparedQuery(query, values);
     return result.rows[0];
@@ -25,18 +32,30 @@ export class InMemoryViviendaRepository implements IViviendaRepository {
   async update(vivienda: Vivienda): Promise<Vivienda> {
     const query = `
       UPDATE vivienda
-      SET familia_id = $1, direccion_id = $2, servicios_basicos_id = $3, 
-          cocina_con_leña = $4, numero_cuartos = $5, numero_habitantes = $6
-      WHERE id = $7
-      RETURNING *;
+      SET nucleo_familiar_id = $1,
+          direccion_id = $2,
+          numero_cuartos = $3,
+          numero_habitantes = $4,
+          cocina_ubicacion = $5,
+          cocina_con_lena = $6,
+          manejo_excretas_id = $7,
+          red_alcantarillado = $8,
+          fosa_septica = $9,
+          comentarios = $10
+      WHERE id_vivienda = $11
+      RETURNING *, id_vivienda AS id;
     `;
     const values = [
-      vivienda.familia_id,
-      vivienda.direccion_id,
-      vivienda.servicios_basicos_id,
-      vivienda.cocina_con_leña,
-      vivienda.numero_cuartos,
-      vivienda.numero_habitantes,
+      vivienda.nucleo_familiar_id,
+      vivienda.direccion_id ?? null,
+      vivienda.numero_cuartos ?? null,
+      vivienda.numero_habitantes ?? null,
+      vivienda.cocina_ubicacion ?? null,
+      vivienda.cocina_con_lena ?? null,
+      vivienda.manejo_excretas_id ?? null,
+      vivienda.red_alcantarillado ?? null,
+      vivienda.fosa_septica ?? null,
+      vivienda.comentarios ?? null,
       vivienda.id
     ];
     const result = await db.executePreparedQuery(query, values);
@@ -48,11 +67,11 @@ export class InMemoryViviendaRepository implements IViviendaRepository {
 
   async readById(id: number): Promise<Vivienda> {
     const query = `
-      SELECT * FROM vivienda
-      WHERE id = $1;
+      SELECT *, id_vivienda AS id
+      FROM vivienda
+      WHERE id_vivienda = $1;
     `;
-    const values = [id];
-    const result = await db.executePreparedQuery(query, values);
+    const result = await db.executePreparedQuery(query, [id]);
     if (result.rowCount === 0) {
       throw new Error('Vivienda not found');
     }
@@ -60,21 +79,16 @@ export class InMemoryViviendaRepository implements IViviendaRepository {
   }
 
   async delete(id: number): Promise<void> {
-    const query = `
-      DELETE FROM vivienda
-      WHERE id = $1;
-    `;
-    const values = [id];
-    await db.executePreparedQuery(query, values);
+    await db.executePreparedQuery('DELETE FROM vivienda WHERE id_vivienda = $1', [id]);
   }
 
   async readAll(): Promise<Vivienda[]> {
     const query = `
-      SELECT * FROM vivienda;
+      SELECT *, id_vivienda AS id
+      FROM vivienda
+      ORDER BY id_vivienda;
     `;
     const result = await db.executePreparedQuery(query, []);
-    return result.rows.map((row: any) => {
-      return row;
-    });
+    return result.rows;
   }
 }

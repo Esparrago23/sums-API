@@ -1,24 +1,35 @@
-export class Rol {
-    constructor(
-        public id: number,
-        public nombre_rol: string
-    ) {}
+export class Entrevistador {
+  constructor(
+    public id: number,
+    public nombre: string,
+    public unidad_salud_id: number,
+    public datos_laborales_id: number | null,
+    public fecha_registro: Date | null
+  ) {}
 }
+
 /**
  * @swagger
  * components:
  *   schemas:
- *     Rol:
+ *     Entrevistador:
  *       type: object
  *       required:
- *         - id
- *         - nombre_rol
+ *         - nombre
+ *         - unidad_salud_id
  *       properties:
  *         id:
  *           type: integer
- *           description: Identificador único del rol
- *         nombre_rol:
+ *           readOnly: true
+ *         nombre:
  *           type: string
- *           description: Nombre del rol o tipo de entrevistador
+ *         unidad_salud_id:
+ *           type: integer
+ *         datos_laborales_id:
+ *           type: integer
+ *           nullable: true
+ *         fecha_registro:
+ *           type: string
+ *           format: date
+ *           nullable: true
  */
-

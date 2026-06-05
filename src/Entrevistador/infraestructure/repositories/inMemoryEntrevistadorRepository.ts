@@ -1,69 +1,78 @@
-// src/rol/infraestructure/repositories/inMemoryrolRepository.ts
-import { Rol } from '../../domain/entities/entrevistador';
-import { IRolRepository } from '../../domain/repositories/IEntrevistadorRepository';
+import { Entrevistador } from '../../domain/entities/entrevistador';
+import { IEntrevistadorRepository } from '../../domain/repositories/IEntrevistadorRepository';
 import { db } from '../../../core/db_postgresql';
 import { formatDateForDB, parseDBDate } from '../../../core/date_utils';
 
-export class InMemoryrolRepository implements IRolRepository {
-  async create(rol: Rol): Promise<Rol> {
+export class InMemoryEntrevistadorRepository implements IEntrevistadorRepository {
+  async create(entrevistador: Entrevistador): Promise<Entrevistador> {
     const query = `
-      INSERT INTO rol (id, nombre_rol)
-      VALUES ($1, $2)
-      RETURNING *;
+      INSERT INTO entrevistador (nombre, unidad_salud_id, datos_laborales_id, fecha_registro)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *, id_entrevistador AS id;
     `;
     const values = [
-      rol.id,
-      rol.nombre_rol
+      entrevistador.nombre,
+      entrevistador.unidad_salud_id,
+      entrevistador.datos_laborales_id ?? null,
+      formatDateForDB(entrevistador.fecha_registro)
     ];
     const result = await db.executePreparedQuery(query, values);
-    return result.rows[0];
+    return this.mapEntrevistador(result.rows[0]);
   }
 
-  async update(rol: Rol): Promise<Rol> {
+  async update(entrevistador: Entrevistador): Promise<Entrevistador> {
     const query = `
-      UPDATE rol
-      SET nombre_rol = $1
-      WHERE id = $2
-      RETURNING *;
+      UPDATE entrevistador
+      SET nombre = $1,
+          unidad_salud_id = $2,
+          datos_laborales_id = $3,
+          fecha_registro = $4
+      WHERE id_entrevistador = $5
+      RETURNING *, id_entrevistador AS id;
     `;
     const values = [
-      rol.nombre_rol,
-      rol.id
+      entrevistador.nombre,
+      entrevistador.unidad_salud_id,
+      entrevistador.datos_laborales_id ?? null,
+      formatDateForDB(entrevistador.fecha_registro),
+      entrevistador.id
     ];
     const result = await db.executePreparedQuery(query, values);
     if (result.rowCount === 0) {
-      throw new Error('rol not found');
+      throw new Error('Entrevistador not found');
     }
-    return result.rows[0];
+    return this.mapEntrevistador(result.rows[0]);
   }
 
-  async readById(id: number): Promise<Rol | null> {
+  async readById(id: number): Promise<Entrevistador | null> {
     const query = `
-      SELECT * FROM rol
-      WHERE id = $1;
+      SELECT *, id_entrevistador AS id
+      FROM entrevistador
+      WHERE id_entrevistador = $1;
     `;
-    const values = [id];
-    const result = await db.executePreparedQuery(query, values);
+    const result = await db.executePreparedQuery(query, [id]);
     if (result.rowCount === 0) {
       return null;
     }
-    return result.rows[0];
+    return this.mapEntrevistador(result.rows[0]);
   }
 
   async delete(id: number): Promise<void> {
-    const query = `
-      DELETE FROM rol
-      WHERE id = $1;
-    `;
-    const values = [id];
-    await db.executePreparedQuery(query, values);
+    await db.executePreparedQuery('DELETE FROM entrevistador WHERE id_entrevistador = $1', [id]);
   }
 
-  async readAll(): Promise<Rol[]> {
+  async readAll(): Promise<Entrevistador[]> {
     const query = `
-      SELECT * FROM rol;
+      SELECT *, id_entrevistador AS id
+      FROM entrevistador
+      ORDER BY id_entrevistador;
     `;
     const result = await db.executePreparedQuery(query, []);
-    return result.rows;
+    return result.rows.map((row: any) => this.mapEntrevistador(row));
+  }
+
+  private mapEntrevistador(row: any): Entrevistador {
+    row.fecha_registro = parseDBDate(row.fecha_registro);
+    return row;
   }
 }

@@ -1,31 +1,20 @@
 export class Familia {
-    constructor(
-        public id: number,
-        public unidad_id: number,
-        public entrevistador_id: number,
-        public fecha_encuesta: Date
-    ) {}
+  constructor(
+    public id: number,
+    public jefe_persona_id: number | null,
+    public fecha_registro: Date | null,
+    public fecha_cierre: Date | null,
+    public comentarios: string | null
+  ) {}
 }
+
 /**
  * @swagger
  * components:
  *   schemas:
  *     Familia:
- *       type: object
- *       required:
- *         - id
- *       properties:
- *         id:
- *           type: integer
- *           description: Identificador único de la familia
- *         unidad_id:
- *           type: integer
- *           description: Referencia a la unidad de salud asociada
- *         entrevistador_id:
- *           type: integer
- *           description: Referencia al entrevistador que registró a la familia
- *         fecha_encuesta:
- *           type: string
- *           format: date
- *           description: Fecha en que se realizó la encuesta
+ *       deprecated: true
+ *       allOf:
+ *         - $ref: '#/components/schemas/NucleoFamiliar'
+ *       description: Alias historico de NucleoFamiliar. Use /nucleos-familiares.
  */

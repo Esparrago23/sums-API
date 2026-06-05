@@ -1,14 +1,53 @@
+export type UbicacionCocina = 'fuera_del_dormitorio' | 'dentro_del_dormitorio';
+
 export class Vivienda {
-    constructor(
-        public id: number,
-        public familia_id: number,
-        public direccion_id: number,
-        public servicios_basicos_id: number,
-        public cocina_con_leña: boolean,
-        public numero_cuartos: number,
-        public numero_habitantes: number
-    ) {}
+  constructor(
+    public id: number,
+    public nucleo_familiar_id: number,
+    public direccion_id: number | null,
+    public numero_cuartos: number | null,
+    public numero_habitantes: number | null,
+    public cocina_ubicacion: UbicacionCocina | null,
+    public cocina_con_lena: boolean | null,
+    public manejo_excretas_id: number | null,
+    public red_alcantarillado: boolean | null,
+    public fosa_septica: boolean | null,
+    public comentarios: string | null
+  ) {}
 }
+
+export class ViviendaMaterial {
+  constructor(
+    public id: number,
+    public vivienda_id: number,
+    public tipo_material_vivienda_id: number,
+    public material_id: number | null,
+    public otro_especificar: string | null
+  ) {}
+}
+
+export class ViviendaServicio {
+  constructor(
+    public id: number,
+    public vivienda_id: number,
+    public servicio_vivienda_id: number,
+    public disponible: boolean
+  ) {}
+}
+
+export class FamiliaAnimal {
+  constructor(
+    public id: number,
+    public nucleo_familiar_id: number,
+    public animal_id: number,
+    public cantidad: number | null,
+    public vive_dentro_vivienda: boolean | null,
+    public esquema_vacunas_corriente: boolean | null,
+    public esterilizado: boolean | null,
+    public comentarios: string | null
+  ) {}
+}
+
 /**
  * @swagger
  * components:
@@ -16,28 +55,106 @@ export class Vivienda {
  *     Vivienda:
  *       type: object
  *       required:
- *         - id
- *         - familia_id
+ *         - nucleo_familiar_id
  *       properties:
  *         id:
  *           type: integer
- *           description: Identificador único de la vivienda
- *         familia_id:
+ *           readOnly: true
+ *         nucleo_familiar_id:
  *           type: integer
- *           description: Referencia a la familia que habita la vivienda
  *         direccion_id:
  *           type: integer
- *           description: Referencia a la dirección de la vivienda
- *         servicios_basicos_id:
- *           type: integer
- *           description: Referencia a los servicios básicos de la vivienda
- *         cocina_con_leña:
- *           type: boolean
- *           description: Indica si se cocina con leña en la vivienda
+ *           nullable: true
  *         numero_cuartos:
  *           type: integer
- *           description: Número de cuartos que tiene la vivienda
+ *           nullable: true
+ *           minimum: 0
  *         numero_habitantes:
  *           type: integer
- *           description: Número de personas que habitan la vivienda
+ *           nullable: true
+ *           minimum: 0
+ *         cocina_ubicacion:
+ *           type: string
+ *           enum: [fuera_del_dormitorio, dentro_del_dormitorio]
+ *           nullable: true
+ *         cocina_con_lena:
+ *           type: boolean
+ *           nullable: true
+ *         manejo_excretas_id:
+ *           type: integer
+ *           nullable: true
+ *         red_alcantarillado:
+ *           type: boolean
+ *           nullable: true
+ *         fosa_septica:
+ *           type: boolean
+ *           nullable: true
+ *         comentarios:
+ *           type: string
+ *           nullable: true
+ *     ViviendaMaterial:
+ *       type: object
+ *       required:
+ *         - vivienda_id
+ *         - tipo_material_vivienda_id
+ *       properties:
+ *         id:
+ *           type: integer
+ *           readOnly: true
+ *         vivienda_id:
+ *           type: integer
+ *         tipo_material_vivienda_id:
+ *           type: integer
+ *           description: Catalogo techo, paredes o piso.
+ *         material_id:
+ *           type: integer
+ *           nullable: true
+ *         otro_especificar:
+ *           type: string
+ *           nullable: true
+ *     ViviendaServicio:
+ *       type: object
+ *       required:
+ *         - vivienda_id
+ *         - servicio_vivienda_id
+ *         - disponible
+ *       properties:
+ *         id:
+ *           type: integer
+ *           readOnly: true
+ *         vivienda_id:
+ *           type: integer
+ *         servicio_vivienda_id:
+ *           type: integer
+ *         disponible:
+ *           type: boolean
+ *     FamiliaAnimal:
+ *       type: object
+ *       required:
+ *         - nucleo_familiar_id
+ *         - animal_id
+ *       properties:
+ *         id:
+ *           type: integer
+ *           readOnly: true
+ *         nucleo_familiar_id:
+ *           type: integer
+ *         animal_id:
+ *           type: integer
+ *         cantidad:
+ *           type: integer
+ *           nullable: true
+ *           minimum: 0
+ *         vive_dentro_vivienda:
+ *           type: boolean
+ *           nullable: true
+ *         esquema_vacunas_corriente:
+ *           type: boolean
+ *           nullable: true
+ *         esterilizado:
+ *           type: boolean
+ *           nullable: true
+ *         comentarios:
+ *           type: string
+ *           nullable: true
  */
