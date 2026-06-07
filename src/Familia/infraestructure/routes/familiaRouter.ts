@@ -2,7 +2,8 @@
  * @swagger
  * /familias:
  *   post:
- *     summary: Create a new family record
+ *     summary: Deprecated alias for creating a family nucleus
+ *     deprecated: true
  *     tags: [Familias]
  *     requestBody:
  *       required: true
@@ -21,7 +22,8 @@
  *         description: Invalid input data
  * 
  *   get:
- *     summary: Get all family records
+ *     summary: Deprecated alias for listing family nuclei
+ *     deprecated: true
  *     tags: [Familias]
  *     responses:
  *       200:
@@ -35,7 +37,8 @@
  * 
  * /familias/{id}:
  *   get:
- *     summary: Get a family record by ID
+ *     summary: Deprecated alias for reading a family nucleus
+ *     deprecated: true
  *     tags: [Familias]
  *     parameters:
  *       - in: path
@@ -55,7 +58,8 @@
  *         description: Family record not found
  * 
  *   put:
- *     summary: Update a family record
+ *     summary: Deprecated alias for updating a family nucleus
+ *     deprecated: true
  *     tags: [Familias]
  *     parameters:
  *       - in: path
@@ -81,7 +85,8 @@
  *         description: Family record not found
  * 
  *   delete:
- *     summary: Delete a family record
+ *     summary: Deprecated alias for deleting a family nucleus
+ *     deprecated: true
  *     tags: [Familias]
  *     parameters:
  *       - in: path

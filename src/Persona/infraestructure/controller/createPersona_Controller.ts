@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { CreatePersonaUseCase } from "../../application/createPersona_UseCase";
+import { normalizeDateField } from "../../../shared/validation";
 
 export class CreatePersona_Controller {
   constructor(private createPersona: CreatePersonaUseCase) {}
@@ -7,11 +8,7 @@ export class CreatePersona_Controller {
   async run(req: Request, res: Response) {
     try {
       const personaData = req.body;
-
-      // Convertir la fecha si viene como string
-      if (typeof personaData.fecha_nacimiento === 'string') {
-        personaData.fecha_nacimiento = new Date(personaData.fecha_nacimiento);
-      }
+      normalizeDateField(personaData, 'fecha_nacimiento');
 
       const newPersona = await this.createPersona.execute(personaData);
       res.status(201).json(newPersona);

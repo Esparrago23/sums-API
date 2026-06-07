@@ -1,9 +1,11 @@
 export class Vacunas {
-    constructor(
-        public id: number,
-        public nombre: string
-    ) {}
+  constructor(
+    public id: number,
+    public nombre: string,
+    public descripcion: string | null
+  ) {}
 }
+
 /**
  * @swagger
  * components:
@@ -11,13 +13,14 @@ export class Vacunas {
  *     Vacunas:
  *       type: object
  *       required:
- *         - id
  *         - nombre
  *       properties:
  *         id:
  *           type: integer
- *           description: Identificador único de la vacuna
+ *           readOnly: true
  *         nombre:
  *           type: string
- *           description: Nombre de la vacuna
+ *         descripcion:
+ *           type: string
+ *           nullable: true
  */

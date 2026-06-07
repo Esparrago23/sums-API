@@ -31,6 +31,7 @@ class Conn_PostgreSQL {
   private config: DBConfig;
   private currentYear: number;
   private initialized: boolean = false;
+  private initializationError: Error | null = null;
 
   constructor() {
     this.config = loadDBConfig();
@@ -60,7 +61,8 @@ class Conn_PostgreSQL {
       })
       .catch(err => {
         console.error('❌ Error durante la inicialización:', err);
-        process.exit(1);
+        this.initializationError = err instanceof Error ? err : new Error(String(err));
+        this.initialized = true;
       });
   }
   
@@ -313,6 +315,9 @@ class Conn_PostgreSQL {
     if (!this.initialized) {
       await this.waitForInitialization();
     }
+    if (this.initializationError) {
+      throw new Error(`Base de datos no disponible: ${this.initializationError.message}`);
+    }
     
     const client = await this.pool.connect();
     try {
@@ -329,6 +334,9 @@ class Conn_PostgreSQL {
   async fetchRows(query: string, values: any[] = []): Promise<any> {
     if (!this.initialized) {
       await this.waitForInitialization();
+    }
+    if (this.initializationError) {
+      throw new Error(`Base de datos no disponible: ${this.initializationError.message}`);
     }
     
     const client = await this.pool.connect();

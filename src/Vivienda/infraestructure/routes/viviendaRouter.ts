@@ -103,6 +103,7 @@ import { readAllViviendaController } from '../vivienda_dependencies';
 import { deleteViviendaController } from '../vivienda_dependencies';
 import { readViviendaByIdController } from '../vivienda_dependencies';
 import { updateViviendaController } from '../vivienda_dependencies';
+import { viviendaRelacionesController } from '../vivienda_dependencies';
 
 export const router = express.Router();
 router.post('/viviendas', createViviendaController.run.bind(createViviendaController));
@@ -110,5 +111,23 @@ router.get('/viviendas', readAllViviendaController.run.bind(readAllViviendaContr
 router.delete('/viviendas/:id', deleteViviendaController.run.bind(deleteViviendaController));
 router.get('/viviendas/:id', readViviendaByIdController.run.bind(readViviendaByIdController));
 router.put('/viviendas/:id', updateViviendaController.run.bind(updateViviendaController));
+
+router.post('/viviendas-materiales', viviendaRelacionesController.create('materiales'));
+router.get('/viviendas-materiales', viviendaRelacionesController.readAll('materiales'));
+router.get('/viviendas-materiales/:id', viviendaRelacionesController.readById('materiales'));
+router.put('/viviendas-materiales/:id', viviendaRelacionesController.update('materiales'));
+router.delete('/viviendas-materiales/:id', viviendaRelacionesController.delete('materiales'));
+
+router.post('/viviendas-servicios', viviendaRelacionesController.create('servicios'));
+router.get('/viviendas-servicios', viviendaRelacionesController.readAll('servicios'));
+router.get('/viviendas-servicios/:id', viviendaRelacionesController.readById('servicios'));
+router.put('/viviendas-servicios/:id', viviendaRelacionesController.update('servicios'));
+router.delete('/viviendas-servicios/:id', viviendaRelacionesController.delete('servicios'));
+
+router.post('/familias-animales', viviendaRelacionesController.create('animales'));
+router.get('/familias-animales', viviendaRelacionesController.readAll('animales'));
+router.get('/familias-animales/:id', viviendaRelacionesController.readById('animales'));
+router.put('/familias-animales/:id', viviendaRelacionesController.update('animales'));
+router.delete('/familias-animales/:id', viviendaRelacionesController.delete('animales'));
 
 export default router;

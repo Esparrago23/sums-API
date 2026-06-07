@@ -11,6 +11,9 @@ import { ReadAllVivienda_Controller } from './controllers/readAllVivienda_Contro
 import { DeleteVivienda_Controller } from './controllers/deleteVivienda_Controller';
 import { ReadViviendaById_Controller } from './controllers/readViviendaById_Controller';
 import { UpdateVivienda_Controller } from './controllers/updateVivienda_Controller';
+import { ViviendaRelacionesUseCase } from '../application/viviendaRelaciones_UseCase';
+import { InMemoryViviendaRelacionesRepository } from './repositories/inMemoryViviendaRelacionesRepository';
+import { ViviendaRelacionesController } from './controllers/viviendaRelaciones_Controller';
 
 export const viviendaRepository = new InMemoryViviendaRepository();
 
@@ -25,3 +28,7 @@ export const readAllViviendaController = new ReadAllVivienda_Controller(readAllV
 export const deleteViviendaController = new DeleteVivienda_Controller(deleteViviendaUseCase);
 export const readViviendaByIdController = new ReadViviendaById_Controller(readViviendaByIdUseCase);
 export const updateViviendaController = new UpdateVivienda_Controller(updateViviendaUseCase);
+
+export const viviendaRelacionesRepository = new InMemoryViviendaRelacionesRepository();
+export const viviendaRelacionesUseCase = new ViviendaRelacionesUseCase(viviendaRelacionesRepository);
+export const viviendaRelacionesController = new ViviendaRelacionesController(viviendaRelacionesUseCase);

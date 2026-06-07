@@ -6,119 +6,172 @@ import { formatDateForDB, parseDBDate } from '../../../core/date_utils';
 export class InMemoryPersonaRepository implements IPersonaRepository {
   async create(persona: Persona): Promise<Persona> {
     const query = `
-      INSERT INTO persona (familia_id, fecha_nacimiento, edad, sexo, 
-        escolaridad, lengua, alfabetizacion, parentesco, ocupacion, 
-        ingreso, seguridad_social, discapacidad, tipo_discapacidad,
-        primer_nombre, segundo_nombre, apellido_paterno, apellido_materno)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+      INSERT INTO persona (
+        primer_nombre, segundo_nombre, apellido_paterno, apellido_materno,
+        fecha_nacimiento, sexo, estado_civil_id, alfabetizacion, fecha_registro
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9, NOW()))
       RETURNING *;
     `;
     const values = [
-      persona.familia_id,
-      formatDateForDB(persona.fecha_nacimiento),
-      persona.edad,
-      persona.sexo,
-      persona.escolaridad,
-      persona.lengua,
-      persona.alfabetizacion,
-      persona.parentesco,
-      persona.ocupacion,
-      persona.ingreso,
-      persona.seguridad_social,
-      persona.discapacidad,
-      persona.tipo_discapacidad,
       persona.primer_nombre,
       persona.segundo_nombre,
       persona.apellido_paterno,
-      persona.apellido_materno
+      persona.apellido_materno,
+      formatDateForDB(persona.fecha_nacimiento),
+      persona.sexo,
+      persona.estado_civil_id,
+      persona.alfabetizacion,
+      persona.fecha_registro ?? null
     ];
-    const result = await db.executePreparedQuery(query, values);
 
-    // Parsear la fecha en el resultado
-    const savedPersona = result.rows[0];
-    savedPersona.fecha_nacimiento = parseDBDate(savedPersona.fecha_nacimiento);
-    return savedPersona;
+    const result = await db.executePreparedQuery(query, values);
+    const personaId = result.rows[0].id_persona;
+    await this.replaceCatalogLinks(personaId, persona);
+    return this.readById(personaId);
   }
 
   async update(persona: Persona): Promise<Persona> {
     const query = `
       UPDATE persona
-      SET familia_id = $1, fecha_nacimiento = $2, edad = $3, 
-          sexo = $4, escolaridad = $5, lengua = $6, 
-          alfabetizacion = $7, parentesco = $8, ocupacion = $9, ingreso = $10, 
-          seguridad_social = $11, discapacidad = $12, tipo_discapacidad = $13,
-          primer_nombre = $14, segundo_nombre = $15, apellido_paterno = $16,
-          apellido_materno = $17
-      WHERE id = $18
+      SET primer_nombre = $1,
+          segundo_nombre = $2,
+          apellido_paterno = $3,
+          apellido_materno = $4,
+          fecha_nacimiento = $5,
+          sexo = $6,
+          estado_civil_id = $7,
+          alfabetizacion = $8
+      WHERE id_persona = $9
       RETURNING *;
     `;
     const values = [
-      persona.familia_id,
-      formatDateForDB(persona.fecha_nacimiento),
-      persona.edad,
-      persona.sexo,
-      persona.escolaridad,
-      persona.lengua,
-      persona.alfabetizacion,
-      persona.parentesco,
-      persona.ocupacion,
-      persona.ingreso,
-      persona.seguridad_social,
-      persona.discapacidad,
-      persona.tipo_discapacidad,
       persona.primer_nombre,
       persona.segundo_nombre,
       persona.apellido_paterno,
       persona.apellido_materno,
+      formatDateForDB(persona.fecha_nacimiento),
+      persona.sexo,
+      persona.estado_civil_id,
+      persona.alfabetizacion,
       persona.id
     ];
+
     const result = await db.executePreparedQuery(query, values);
     if (result.rowCount === 0) {
       throw new Error('Persona not found');
     }
 
-    // Parsear la fecha en el resultado
-    const updatedPersona = result.rows[0];
-    updatedPersona.fecha_nacimiento = parseDBDate(updatedPersona.fecha_nacimiento);
-    return updatedPersona;
+    await this.replaceCatalogLinks(persona.id, persona);
+    return this.readById(persona.id);
   }
 
   async readById(id: number): Promise<Persona> {
     const query = `
-      SELECT * FROM persona
-      WHERE id = $1;
+      ${this.baseSelect()}
+      WHERE p.id_persona = $1;
     `;
-    const values = [id];
-    const result = await db.executePreparedQuery(query, values);
+    const result = await db.executePreparedQuery(query, [id]);
     if (result.rowCount === 0) {
       throw new Error('Persona not found');
     }
 
-    // Parsear la fecha en el resultado
-    const persona = result.rows[0];
-    persona.fecha_nacimiento = parseDBDate(persona.fecha_nacimiento);
-    return persona;
+    return this.mapPersona(result.rows[0]);
   }
 
   async delete(id: number): Promise<void> {
     const query = `
       DELETE FROM persona
-      WHERE id = $1;
+      WHERE id_persona = $1;
     `;
-    const values = [id];
-    await db.executePreparedQuery(query, values);
+    await db.executePreparedQuery(query, [id]);
   }
 
   async readAll(): Promise<Persona[]> {
     const query = `
-      SELECT * FROM persona;
+      ${this.baseSelect()}
+      ORDER BY p.id_persona;
     `;
     const result = await db.executePreparedQuery(query, []);
+    return result.rows.map((row: any) => this.mapPersona(row));
+  }
 
-    // Parsear las fechas en los resultados
-    return result.rows.map((row: any) => {
-      row.fecha_nacimiento = parseDBDate(row.fecha_nacimiento);
-      return row;
+  private baseSelect(): string {
+    return `
+      SELECT
+        p.id_persona AS id,
+        p.primer_nombre,
+        p.segundo_nombre,
+        p.apellido_paterno,
+        p.apellido_materno,
+        p.fecha_nacimiento,
+        DATE_PART('year', AGE(p.fecha_nacimiento))::int AS edad,
+        p.sexo,
+        p.alfabetizacion,
+        p.estado_civil_id,
+        (
+          SELECT pl.lengua_id
+          FROM persona_lengua pl
+          WHERE pl.persona_id = p.id_persona
+          ORDER BY COALESCE(pl.es_principal, false) DESC, pl.id_persona_lengua DESC
+          LIMIT 1
+        ) AS lengua_id,
+        (
+          SELECT pe.escolaridad_id
+          FROM persona_escolaridad pe
+          WHERE pe.persona_id = p.id_persona
+          ORDER BY pe.fecha_registro DESC NULLS LAST, pe.id_persona_escolaridad DESC
+          LIMIT 1
+        ) AS escolaridad_id,
+        (
+          SELECT po.ocupacion_id
+          FROM persona_ocupacion po
+          WHERE po.persona_id = p.id_persona
+          ORDER BY po.fecha_registro DESC NULLS LAST, po.id_persona_ocupacion DESC
+          LIMIT 1
+        ) AS ocupacion_id,
+        (
+          SELECT pi.ingreso_salarial_id
+          FROM persona_ingreso pi
+          WHERE pi.persona_id = p.id_persona
+          ORDER BY pi.fecha_registro DESC NULLS LAST, pi.id_persona_ingreso DESC
+          LIMIT 1
+        ) AS ingreso_salarial_id,
+        p.fecha_registro
+      FROM persona p
+    `;
+  }
+
+  private mapPersona(row: any): Persona {
+    row.fecha_nacimiento = parseDBDate(row.fecha_nacimiento);
+    row.fecha_registro = parseDBDate(row.fecha_registro);
+    return row;
+  }
+
+  private async replaceCatalogLinks(personaId: number, persona: Persona): Promise<void> {
+    await this.replaceSingleLink('persona_lengua', 'lengua_id', personaId, persona.lengua_id, {
+      es_principal: true
     });
+    await this.replaceSingleLink('persona_escolaridad', 'escolaridad_id', personaId, persona.escolaridad_id);
+    await this.replaceSingleLink('persona_ocupacion', 'ocupacion_id', personaId, persona.ocupacion_id);
+    await this.replaceSingleLink('persona_ingreso', 'ingreso_salarial_id', personaId, persona.ingreso_salarial_id);
+  }
+
+  private async replaceSingleLink(
+    tableName: string,
+    catalogColumn: string,
+    personaId: number,
+    catalogId: number | null | undefined,
+    extraColumns: Record<string, unknown> = {}
+  ): Promise<void> {
+    await db.executePreparedQuery(`DELETE FROM ${tableName} WHERE persona_id = $1`, [personaId]);
+    if (catalogId === undefined || catalogId === null) return;
+
+    const columns = ['persona_id', catalogColumn, ...Object.keys(extraColumns)];
+    const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
+    await db.executePreparedQuery(
+      `INSERT INTO ${tableName} (${columns.join(', ')}) VALUES (${placeholders})`,
+      [personaId, catalogId, ...Object.values(extraColumns)]
+    );
   }
 }

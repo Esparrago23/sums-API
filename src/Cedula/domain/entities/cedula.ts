@@ -1,3 +1,18 @@
+export type EstadoCedula = 'borrador' | 'sincronizada' | 'validada' | 'cerrada';
+
+export class Cedula {
+  constructor(
+    public id: number,
+    public unidad_salud_id: number,
+    public entrevistador_id: number,
+    public levantamiento_id: number | null,
+    public nucleo_familiar_id: number,
+    public fecha_registro: Date,
+    public estado: EstadoCedula,
+    public observaciones: string | null
+  ) {}
+}
+
 /**
  * @swagger
  * components:
@@ -5,39 +20,31 @@
  *     Cedula:
  *       type: object
  *       required:
- *         - id
  *         - unidad_salud_id
  *         - entrevistador_id
- *         - familia_id
- *         - esquema_vacunacion_id
- *         - composicion_familiar_id
+ *         - nucleo_familiar_id
+ *         - fecha_registro
+ *         - estado
  *       properties:
  *         id:
  *           type: integer
- *           description: Identificador único de la cédula
+ *           readOnly: true
  *         unidad_salud_id:
  *           type: integer
- *           description: Referencia a la unidad de salud asociada
  *         entrevistador_id:
  *           type: integer
- *           description: Referencia al entrevistador que realizó la cedula
- *         familia_id:
+ *         levantamiento_id:
  *           type: integer
- *           description: Referencia a la familia evaluada
- *         esquema_vacunacion_id:
+ *           nullable: true
+ *         nucleo_familiar_id:
  *           type: integer
- *           description: Referencia al esquema de vacunación aplicado
- *         composicion_familiar_id:
- *           type: integer
- *           description: Referencia a la composición familiar registrada
+ *         fecha_registro:
+ *           type: string
+ *           format: date
+ *         estado:
+ *           type: string
+ *           enum: [borrador, sincronizada, validada, cerrada]
+ *         observaciones:
+ *           type: string
+ *           nullable: true
  */
-export class Cedula {
-    constructor(
-        public id: number,
-        public unidad_salud_id: number,
-        public entrevistador_id: number,
-        public familia_id: number,
-        public esquema_vacunacion_id: number,
-        public composicion_familiar_id: number
-    ) {}
-}

@@ -1,88 +1,82 @@
 import { Familia } from '../../domain/entities/familia';
 import { IFamiliaRepository } from '../../domain/repositories/IFamiliaRepository';
 import { db } from '../../../core/db_postgresql';
-import { formatDateForDB, parseDBDate } from '../../../core/date_utils';
+import { parseDBDate } from '../../../core/date_utils';
 
 export class InMemoryFamiliaRepository implements IFamiliaRepository {
   async create(familia: Familia): Promise<Familia> {
     const query = `
-      INSERT INTO familia (unidad_id, entrevistador_id, fecha_encuesta)
-      VALUES ($1, $2, $3)
-      RETURNING *;
+      INSERT INTO nucleo_familiar (jefe_persona_id, fecha_registro, fecha_cierre, comentarios)
+      VALUES ($1, COALESCE($2, NOW()), $3, $4)
+      RETURNING *, id_nucleo_familiar AS id;
     `;
     const values = [
-      familia.unidad_id,
-      familia.entrevistador_id,
-      formatDateForDB(familia.fecha_encuesta)
+      familia.jefe_persona_id ?? null,
+      familia.fecha_registro ?? null,
+      familia.fecha_cierre ?? null,
+      familia.comentarios ?? null
     ];
     const result = await db.executePreparedQuery(query, values);
-
-    // Parsear la fecha en el resultado
-    const savedFamilia = result.rows[0];
-    savedFamilia.fecha_encuesta = parseDBDate(savedFamilia.fecha_encuesta);
-    return savedFamilia;
+    return this.mapFamilia(result.rows[0]);
   }
 
   async update(familia: Familia): Promise<Familia> {
     const query = `
-      UPDATE familia
-      SET unidad_id = $1, entrevistador_id = $2, fecha_encuesta = $3
-      WHERE id = $4
-      RETURNING *;
+      UPDATE nucleo_familiar
+      SET jefe_persona_id = $1,
+          fecha_registro = $2,
+          fecha_cierre = $3,
+          comentarios = $4
+      WHERE id_nucleo_familiar = $5
+      RETURNING *, id_nucleo_familiar AS id;
     `;
     const values = [
-      familia.unidad_id,
-      familia.entrevistador_id,
-      formatDateForDB(familia.fecha_encuesta),
+      familia.jefe_persona_id ?? null,
+      familia.fecha_registro ?? null,
+      familia.fecha_cierre ?? null,
+      familia.comentarios ?? null,
       familia.id
     ];
     const result = await db.executePreparedQuery(query, values);
     if (result.rowCount === 0) {
-      throw new Error('Familia not found');
+      throw new Error('Nucleo familiar not found');
     }
-
-    // Parsear la fecha en el resultado
-    const updatedFamilia = result.rows[0];
-    updatedFamilia.fecha_encuesta = parseDBDate(updatedFamilia.fecha_encuesta);
-    return updatedFamilia;
+    return this.mapFamilia(result.rows[0]);
   }
 
   async readById(id: number): Promise<Familia> {
     const query = `
-      SELECT * FROM familia
-      WHERE id = $1;
+      SELECT *, id_nucleo_familiar AS id
+      FROM nucleo_familiar
+      WHERE id_nucleo_familiar = $1;
     `;
-    const values = [id];
-    const result = await db.executePreparedQuery(query, values);
+    const result = await db.executePreparedQuery(query, [id]);
     if (result.rowCount === 0) {
-      throw new Error('Familia not found');
+      throw new Error('Nucleo familiar not found');
     }
-
-    // Parsear la fecha en el resultado
-    const familia = result.rows[0];
-    familia.fecha_encuesta = parseDBDate(familia.fecha_encuesta);
-    return familia;
+    return this.mapFamilia(result.rows[0]);
   }
 
   async delete(id: number): Promise<void> {
-    const query = `
-      DELETE FROM familia
-      WHERE id = $1;
-    `;
-    const values = [id];
-    await db.executePreparedQuery(query, values);
+    await db.executePreparedQuery(
+      'DELETE FROM nucleo_familiar WHERE id_nucleo_familiar = $1',
+      [id]
+    );
   }
 
   async readAll(): Promise<Familia[]> {
     const query = `
-      SELECT * FROM familia;
+      SELECT *, id_nucleo_familiar AS id
+      FROM nucleo_familiar
+      ORDER BY id_nucleo_familiar;
     `;
     const result = await db.executePreparedQuery(query, []);
+    return result.rows.map((row: any) => this.mapFamilia(row));
+  }
 
-    // Parsear las fechas en los resultados
-    return result.rows.map((row: any) => {
-      row.fecha_encuesta = parseDBDate(row.fecha_encuesta);
-      return row;
-    });
+  private mapFamilia(row: any): Familia {
+    row.fecha_registro = parseDBDate(row.fecha_registro);
+    row.fecha_cierre = parseDBDate(row.fecha_cierre);
+    return row;
   }
 }
