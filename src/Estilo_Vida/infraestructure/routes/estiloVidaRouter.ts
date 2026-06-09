@@ -3,6 +3,7 @@
  * /estilos-vida:
  *   post:
  *     summary: Create a new lifestyle record
+ *     deprecated: true
  *     tags: [EstiloVida]
  *     requestBody:
  *       required: true
@@ -22,6 +23,7 @@
  * 
  *   get:
  *     summary: Get all lifestyle records
+ *     deprecated: true
  *     tags: [EstiloVida]
  *     responses:
  *       200:
@@ -36,6 +38,7 @@
  * /estilos-vida/{id}:
  *   get:
  *     summary: Get a lifestyle record by ID
+ *     deprecated: true
  *     tags: [EstiloVida]
  *     parameters:
  *       - in: path
@@ -56,6 +59,7 @@
  * 
  *   put:
  *     summary: Update a lifestyle record
+ *     deprecated: true
  *     tags: [EstiloVida]
  *     parameters:
  *       - in: path
@@ -82,6 +86,7 @@
  * 
  *   delete:
  *     summary: Delete a lifestyle record
+ *     deprecated: true
  *     tags: [EstiloVida]
  *     parameters:
  *       - in: path

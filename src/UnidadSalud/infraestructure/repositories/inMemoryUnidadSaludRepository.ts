@@ -5,11 +5,17 @@ import { db } from "../../../core/db_postgresql";
 export class InMemoryUnidadSaludRepository implements IUnidadSaludRepository {
   async create(unidadSalud: UnidadSalud): Promise<UnidadSalud> {
     const query = `
-      INSERT INTO unidad_salud (clues, nombre, distrito, municipio, especialidad)
+      INSERT INTO unidad_salud (clues, nombre, distrito, municipio_id, numero_nucleos)
       VALUES ($1, $2, $3, $4, $5)
-      RETURNING *;
+      RETURNING *, id_unidad_salud AS id;
     `;
-    const values = [unidadSalud.clues, unidadSalud.nombre, unidadSalud.distrito, unidadSalud.municipio, unidadSalud.especialidad];
+    const values = [
+      unidadSalud.clues,
+      unidadSalud.nombre,
+      unidadSalud.distrito ?? null,
+      unidadSalud.municipio_id ?? null,
+      unidadSalud.numero_nucleos ?? null
+    ];
     const result = await db.executePreparedQuery(query, values);
     return result.rows[0];
   }
@@ -17,11 +23,22 @@ export class InMemoryUnidadSaludRepository implements IUnidadSaludRepository {
   async update(unidadSalud: UnidadSalud): Promise<UnidadSalud> {
     const query = `
       UPDATE unidad_salud
-      SET clues = $1, nombre = $2, distrito = $3, municipio = $4, especialidad = $5
-      WHERE id = $6
-      RETURNING *;
+      SET clues = $1,
+          nombre = $2,
+          distrito = $3,
+          municipio_id = $4,
+          numero_nucleos = $5
+      WHERE id_unidad_salud = $6
+      RETURNING *, id_unidad_salud AS id;
     `;
-    const values = [unidadSalud.clues, unidadSalud.nombre, unidadSalud.distrito, unidadSalud.municipio, unidadSalud.especialidad, unidadSalud.id];
+    const values = [
+      unidadSalud.clues,
+      unidadSalud.nombre,
+      unidadSalud.distrito ?? null,
+      unidadSalud.municipio_id ?? null,
+      unidadSalud.numero_nucleos ?? null,
+      unidadSalud.id
+    ];
     const result = await db.executePreparedQuery(query, values);
     if (result.rowCount === 0) {
       throw new Error('UnidadSalud not found');
@@ -31,11 +48,11 @@ export class InMemoryUnidadSaludRepository implements IUnidadSaludRepository {
 
   async readById(id: number): Promise<UnidadSalud> {
     const query = `
-      SELECT * FROM unidad_salud
-      WHERE id = $1;
+      SELECT *, id_unidad_salud AS id
+      FROM unidad_salud
+      WHERE id_unidad_salud = $1;
     `;
-    const values = [id];
-    const result = await db.executePreparedQuery(query, values);
+    const result = await db.executePreparedQuery(query, [id]);
     if (result.rowCount === 0) {
       throw new Error('UnidadSalud not found');
     }
@@ -43,20 +60,16 @@ export class InMemoryUnidadSaludRepository implements IUnidadSaludRepository {
   }
 
   async delete(id: number): Promise<void> {
-    const query = `
-      DELETE FROM unidad_salud
-      WHERE id = $1;
-    `;
-    const values = [id];
-    await db.executePreparedQuery(query, values);
+    await db.executePreparedQuery('DELETE FROM unidad_salud WHERE id_unidad_salud = $1', [id]);
   }
 
   async readAll(): Promise<UnidadSalud[]> {
     const query = `
-      SELECT * FROM unidad_salud;
+      SELECT *, id_unidad_salud AS id
+      FROM unidad_salud
+      ORDER BY id_unidad_salud;
     `;
     const result = await db.executePreparedQuery(query, []);
-    console.log(result.rows);
     return result.rows;
   }
 }

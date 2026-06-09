@@ -25,6 +25,9 @@ import MaterialesViviendaRouter from './src/MaterialesVivienda/infraestructure/r
 import ServiciosSaludRouter from './src/ServiciosSalud/infraestructure/routes/serviciosSaludRouter';
 import VacunasRouter from './src/Vacunas/infraestructure/routes/vacunasRouter';
 import DosisRouter from './src/Dosis/infraestructure/routes/dosisRouter';
+import CatalogosRouter from './src/Catalogos/infraestructure/routes/catalogosRouter';
+import NucleoFamiliarRouter from './src/NucleoFamiliar/infraestructure/routes/nucleoFamiliarRouter';
+import PersonaSaludRouter from './src/PersonaSalud/infraestructure/routes/personaSaludRouter';
 dotenv.config();
 
 const app = express();
@@ -44,6 +47,7 @@ app.use('/sums/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/sums',  
     CedulaRouter,
+    CatalogosRouter,
     ConvivenciaAnimalesRouter,
     DatosLaboralesRouter,
     DireccionRouter,
@@ -54,7 +58,9 @@ app.use('/sums',
     FamiliaRouter,
     MaterialesViviendaRouter,
     MiembroFamiliaRouter,
+    NucleoFamiliarRouter,
     PersonaRouter, 
+    PersonaSaludRouter,
     SaludFamiliarRouter,
     ServiciosBasicosRouter,
     ServiciosSaludRouter,

@@ -1,26 +1,25 @@
+export type SexoPersona = 'masculino' | 'femenino';
+
 export class Persona {
-    constructor(
-        public id: number,
-        public familia_id: number,
-        public fecha_nacimiento: Date,
-        public edad: number,
-        public sexo: string,
-        public estado_civil: string,
-        public escolaridad: string,
-        public lengua: string,
-        public alfabetizacion: boolean,
-        public parentesco: string,
-        public ocupacion: string,
-        public ingreso: number,
-        public seguridad_social: boolean,
-        public discapacidad: boolean,
-        public tipo_discapacidad: string,
-        public primer_nombre: string,
-        public segundo_nombre: string,
-        public apellido_paterno: string,
-        public apellido_materno: string,
-    ) {}
+  constructor(
+    public id: number,
+    public primer_nombre: string,
+    public segundo_nombre: string | null,
+    public apellido_paterno: string,
+    public apellido_materno: string | null,
+    public fecha_nacimiento: Date,
+    public sexo: SexoPersona,
+    public alfabetizacion: boolean | null,
+    public estado_civil_id: number | null,
+    public lengua_id: number | null,
+    public escolaridad_id: number | null,
+    public ocupacion_id: number | null,
+    public ingreso_salarial_id: number | null,
+    public fecha_registro: Date | null,
+    public edad?: number
+  ) {}
 }
+
 /**
  * @swagger
  * components:
@@ -28,71 +27,58 @@ export class Persona {
  *     Persona:
  *       type: object
  *       required:
- *         - id
- *         - familia_id
  *         - fecha_nacimiento
  *         - sexo
  *         - primer_nombre
  *         - apellido_paterno
- *         - apellido_materno
  *       properties:
  *         id:
  *           type: integer
- *           description: Identificador único de la persona
- *         familia_id:
- *           type: integer
- *           description: Referencia a la familia a la que pertenece
+ *           readOnly: true
+ *         primer_nombre:
+ *           type: string
+ *         segundo_nombre:
+ *           type: string
+ *           nullable: true
+ *         apellido_paterno:
+ *           type: string
+ *         apellido_materno:
+ *           type: string
+ *           nullable: true
  *         fecha_nacimiento:
  *           type: string
  *           format: date
- *           description: Fecha de nacimiento
  *         edad:
  *           type: integer
- *           description: Edad de la persona
+ *           readOnly: true
+ *           description: Edad calculada desde fecha_nacimiento; no se persiste.
  *         sexo:
  *           type: string
- *           description: Sexo biológico de la persona
- *         estado_civil:
- *           type: string
- *           description: Estado civil actual
- *         escolaridad:
- *           type: string
- *           description: Nivel de escolaridad alcanzado
- *         lengua:
- *           type: string
- *           description: Lengua o idioma principal que habla
+ *           enum: [masculino, femenino]
  *         alfabetizacion:
  *           type: boolean
- *           description: Indica si la persona sabe leer y escribir
- *         parentesco:
+ *           nullable: true
+ *         estado_civil_id:
+ *           type: integer
+ *           nullable: true
+ *         lengua_id:
+ *           type: integer
+ *           nullable: true
+ *           description: Se guarda en persona_lengua.
+ *         escolaridad_id:
+ *           type: integer
+ *           nullable: true
+ *           description: Se guarda en persona_escolaridad.
+ *         ocupacion_id:
+ *           type: integer
+ *           nullable: true
+ *           description: Se guarda en persona_ocupacion.
+ *         ingreso_salarial_id:
+ *           type: integer
+ *           nullable: true
+ *           description: Se guarda en persona_ingreso; reemplaza ingreso libre.
+ *         fecha_registro:
  *           type: string
- *           description: Parentesco con el jefe de familia
- *         ocupacion:
- *           type: string
- *           description: Ocupación o profesión actual
- *         ingreso:
- *           type: number
- *           format: float
- *           description: Ingreso económico mensual aproximado
- *         seguridad_social:
- *           type: boolean
- *           description: Indica si cuenta con seguridad social
- *         discapacidad:
- *           type: boolean
- *           description: Indica si la persona tiene alguna discapacidad
- *         tipo_discapacidad:
- *           type: string
- *           description: Descripción del tipo de discapacidad si aplica
- *         primer_nombre:
- *           type: string
- *           description: Primer nombre de la persona
- *         segundo_nombre:
- *           type: string
- *           description: Segundo nombre de la persona (opcional)
- *         apellido_paterno:
- *           type: string
- *           description: Apellido paterno de la persona
- *         apellido_materno:
- *           type: string
- *           description: Apellido materno de la persona
+ *           format: date-time
+ *           nullable: true
  */

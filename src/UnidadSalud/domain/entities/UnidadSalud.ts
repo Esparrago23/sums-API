@@ -1,13 +1,14 @@
 export class UnidadSalud {
-    constructor(
-        public id: number,
-        public clues: string,
-        public nombre: string,
-        public distrito: string,
-        public municipio: string,
-        public especialidad: string,
-    ){}
+  constructor(
+    public id: number,
+    public clues: string,
+    public nombre: string,
+    public distrito: string | null,
+    public municipio_id: number | null,
+    public numero_nucleos: number | null
+  ) {}
 }
+
 /**
  * @swagger
  * components:
@@ -15,27 +16,25 @@ export class UnidadSalud {
  *     UnidadSalud:
  *       type: object
  *       required:
- *         - id
  *         - clues
  *         - nombre
  *       properties:
  *         id:
  *           type: integer
- *           description: Identificador único de la unidad de salud
+ *           readOnly: true
  *         clues:
  *           type: string
- *           maxLength: 15
- *           description: Clave Única de Establecimientos de Salud
+ *           minLength: 11
+ *           maxLength: 11
  *         nombre:
  *           type: string
- *           description: Nombre completo de la unidad de salud
  *         distrito:
  *           type: string
- *           description: Distrito sanitario al que pertenece
- *         municipio:
- *           type: string
- *           description: Municipio donde se ubica la unidad
- *         especialidad:
- *           type: string
- *           description: Especialidad principal de la unidad de salud
+ *           nullable: true
+ *         municipio_id:
+ *           type: integer
+ *           nullable: true
+ *         numero_nucleos:
+ *           type: integer
+ *           nullable: true
  */
