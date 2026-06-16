@@ -11,8 +11,10 @@ import {
 const dateFieldsByTipo: Record<PersonaSaludTipo, string[]> = {
   alimentacion: ['fecha_registro'],
   higiene: ['fecha_registro'],
-  toxicomanias: ['fecha_inicio', 'fecha_fin'],
-  'enfermedades-cronicas': ['fecha_diagnostico'],
+  'seguridad-social': ['fecha_registro'],
+  discapacidades: [],
+  toxicomanias: [],
+  'enfermedades-cronicas': [],
   'salud-preventiva': [
     'fecha_tamizaje_cervico_uterino',
     'fecha_tamizaje_cancer_mama',
@@ -83,7 +85,9 @@ export class PersonaSaludController {
     dateFieldsByTipo[tipo].forEach((field) => normalizeDateField(data, field));
 
     if (tipo === 'alimentacion') {
-      assertIntegerInRange(data.frecuencia_dias, 'frecuencia_dias', 0, 7);
+      assertIntegerInRange(data.dias_proteina, 'dias_proteina', 0, 7);
+      assertIntegerInRange(data.dias_frutas_verduras, 'dias_frutas_verduras', 0, 7);
+      assertIntegerInRange(data.dias_cereales, 'dias_cereales', 0, 7);
     }
 
     if (tipo === 'salud-preventiva') {

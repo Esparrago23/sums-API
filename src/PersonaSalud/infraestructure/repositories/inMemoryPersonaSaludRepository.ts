@@ -5,22 +5,32 @@ const repositories = {
   alimentacion: new SqlCrudRepository<Record<string, unknown>>({
     tableName: 'persona_alimentacion',
     idColumn: 'id_persona_alimentacion',
-    writableColumns: ['persona_id', 'alimentacion_id', 'frecuencia_dias', 'fecha_registro']
+    writableColumns: ['persona_id', 'dias_proteina', 'dias_frutas_verduras', 'dias_cereales', 'fecha_registro']
   }),
   higiene: new SqlCrudRepository<Record<string, unknown>>({
     tableName: 'persona_higiene',
     idColumn: 'id_persona_higiene',
     writableColumns: ['persona_id', 'higiene_bano_bucodental_diaria', 'fecha_registro']
   }),
+  'seguridad-social': new SqlCrudRepository<Record<string, unknown>>({
+    tableName: 'persona_seguridad_social',
+    idColumn: 'id_persona_seguridad_social',
+    writableColumns: ['persona_id', 'cuenta_seguridad_social', 'fecha_registro']
+  }),
+  discapacidades: new SqlCrudRepository<Record<string, unknown>>({
+    tableName: 'persona_discapacidad',
+    idColumn: 'id_persona_discapacidad',
+    writableColumns: ['persona_id', 'presenta_discapacidad', 'tipo_discapacidad']
+  }),
   toxicomanias: new SqlCrudRepository<Record<string, unknown>>({
     tableName: 'persona_toxicomania',
     idColumn: 'id_persona_toxicomania',
-    writableColumns: ['persona_id', 'toxicomania_id', 'otra_sustancia', 'fecha_inicio', 'fecha_fin']
+    writableColumns: ['persona_id', 'toxicomania_id', 'otra_sustancia']
   }),
   'enfermedades-cronicas': new SqlCrudRepository<Record<string, unknown>>({
     tableName: 'persona_enfermedad_cronica',
     idColumn: 'id_persona_enfermedad_cronica',
-    writableColumns: ['persona_id', 'enfermedad_cronica_id', 'fecha_diagnostico', 'observaciones']
+    writableColumns: ['persona_id', 'enfermedad_cronica_id']
   }),
   'salud-preventiva': new SqlCrudRepository<Record<string, unknown>>({
     tableName: 'persona_salud_preventiva',

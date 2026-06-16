@@ -7,6 +7,8 @@ export const router = express.Router();
 const routeMap: Array<{ path: string; tipo: PersonaSaludTipo }> = [
   { path: '/personas-alimentacion', tipo: 'alimentacion' },
   { path: '/personas-higiene', tipo: 'higiene' },
+  { path: '/personas-seguridad-social', tipo: 'seguridad-social' },
+  { path: '/personas-discapacidades', tipo: 'discapacidades' },
   { path: '/personas-toxicomanias', tipo: 'toxicomanias' },
   { path: '/personas-enfermedades-cronicas', tipo: 'enfermedades-cronicas' },
   { path: '/personas-salud-preventiva', tipo: 'salud-preventiva' },

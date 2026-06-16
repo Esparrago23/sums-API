@@ -1,6 +1,8 @@
 export type PersonaSaludTipo =
   | 'alimentacion'
   | 'higiene'
+  | 'seguridad-social'
+  | 'discapacidades'
   | 'toxicomanias'
   | 'enfermedades-cronicas'
   | 'salud-preventiva'

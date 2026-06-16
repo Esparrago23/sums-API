@@ -1,4 +1,4 @@
-export type ViviendaRelacionTipo = 'materiales' | 'servicios' | 'animales';
+export type ViviendaRelacionTipo = 'animales';
 
 export interface IViviendaRelacionesRepository {
   create(tipo: ViviendaRelacionTipo, data: Record<string, unknown>): Promise<Record<string, unknown>>;

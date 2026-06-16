@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { ViviendaRelacionesUseCase } from '../../application/viviendaRelaciones_UseCase';
 import { ViviendaRelacionTipo } from '../../domain/repositories/IViviendaRelacionesRepository';
-import { assertNonNegativeNumber, parsePositiveId } from '../../../shared/validation';
+import { parsePositiveId } from '../../../shared/validation';
 
 export class ViviendaRelacionesController {
   constructor(private useCase: ViviendaRelacionesUseCase) {}
@@ -62,11 +62,7 @@ export class ViviendaRelacionesController {
   }
 
   private validate(tipo: ViviendaRelacionTipo, data: Record<string, unknown>): void {
-    if (tipo === 'animales') {
-      assertNonNegativeNumber(data.cantidad, 'cantidad');
-    }
-    if (tipo === 'servicios' && data.disponible !== undefined && typeof data.disponible !== 'boolean') {
-      throw new Error('disponible debe ser boolean');
-    }
+    void tipo;
+    void data;
   }
 }

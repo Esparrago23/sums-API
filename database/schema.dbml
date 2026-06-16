@@ -15,6 +15,10 @@ Enum estado_cedula {
   cerrada
 }
 
+/* =========================
+   CATÁLOGOS GEOGRÁFICOS
+========================= */
+
 Table cat_entidad {
   id_entidad SERIAL [pk]
   nombre VARCHAR(100) [not null, unique]
@@ -55,6 +59,10 @@ Table direccion {
   vivienda_referencia VARCHAR(50)
   asentamiento_id INT [ref: > cat_asentamiento.id_asentamiento]
 }
+
+/* =========================
+   UNIDAD, PERSONAL Y LEVANTAMIENTO
+========================= */
 
 Table unidad_salud {
   id_unidad_salud SERIAL [pk]
@@ -101,6 +109,10 @@ Table levantamiento_personal {
   entrevistador_id INT [not null, ref: > entrevistador.id_entrevistador]
 }
 
+/* =========================
+   PERSONA Y FAMILIA
+========================= */
+
 Table cat_estado_civil {
   id_estado_civil SERIAL [pk]
   nombre VARCHAR(50) [not null, unique]
@@ -130,11 +142,6 @@ Table cat_ingreso_salarial {
   id_ingreso_salarial SERIAL [pk]
   rango VARCHAR(100) [not null, unique]
   descripcion VARCHAR(150)
-}
-
-Table cat_discapacidad {
-  id_discapacidad SERIAL [pk]
-  nombre VARCHAR(100) [not null, unique]
 }
 
 Table persona {
@@ -168,7 +175,8 @@ Table persona_escolaridad {
 Table persona_ocupacion {
   id_persona_ocupacion SERIAL [pk]
   persona_id INT [not null, ref: > persona.id_persona]
-  ocupacion_id INT [not null, ref: > cat_ocupacion.id_ocupacion]
+  ocupacion_id INT [ref: > cat_ocupacion.id_ocupacion]
+  ocupacion_texto VARCHAR(100)
   fecha_registro DATE
 }
 
@@ -183,7 +191,6 @@ Table persona_seguridad_social {
   id_persona_seguridad_social SERIAL [pk]
   persona_id INT [not null, ref: > persona.id_persona]
   cuenta_seguridad_social BOOLEAN [not null]
-  numero_seguridad_social VARCHAR(30)
   fecha_registro DATE
 }
 
@@ -191,8 +198,7 @@ Table persona_discapacidad {
   id_persona_discapacidad SERIAL [pk]
   persona_id INT [not null, ref: > persona.id_persona]
   presenta_discapacidad BOOLEAN [not null]
-  discapacidad_id INT [ref: > cat_discapacidad.id_discapacidad]
-  especificacion VARCHAR(150)
+  tipo_discapacidad VARCHAR(150)
 }
 
 Table nucleo_familiar {
@@ -225,6 +231,10 @@ Table nucleo_direccion {
   fecha_fin DATE
 }
 
+/* =========================
+   CÉDULA
+========================= */
+
 Table cedula {
   id_cedula SERIAL [pk]
   unidad_salud_id INT [not null, ref: > unidad_salud.id_unidad_salud]
@@ -246,18 +256,12 @@ Table levantamiento_nucleo {
   comentarios VARCHAR(250)
 }
 
+/* =========================
+   VIVIENDA
+========================= */
+
 Table cat_material {
   id_material SERIAL [pk]
-  nombre VARCHAR(100) [not null, unique]
-}
-
-Table cat_tipo_material_vivienda {
-  id_tipo_material_vivienda SERIAL [pk]
-  nombre VARCHAR(50) [not null, unique]
-}
-
-Table cat_servicio_vivienda {
-  id_servicio_vivienda SERIAL [pk]
   nombre VARCHAR(100) [not null, unique]
 }
 
@@ -272,35 +276,21 @@ Table vivienda {
   direccion_id INT [ref: > direccion.id_direccion]
   numero_cuartos INT
   numero_habitantes INT
+  agua_entubada BOOLEAN
+  energia_electrica BOOLEAN
   cocina_ubicacion ubicacion_cocina
   cocina_con_lena BOOLEAN
   manejo_excretas_id INT [ref: > cat_manejo_excretas.id_manejo_excretas]
   red_alcantarillado BOOLEAN
   fosa_septica BOOLEAN
+  material_techo_id INT [ref: > cat_material.id_material]
+  material_paredes_id INT [ref: > cat_material.id_material]
+  material_piso_id INT [ref: > cat_material.id_material]
+  material_otro_especificar VARCHAR(150)
+  perros_gatos_dentro BOOLEAN
+  mascotas_vacunas_corrientes BOOLEAN
+  mascotas_esterilizadas BOOLEAN
   comentarios VARCHAR(300)
-}
-
-Table vivienda_material {
-  id_vivienda_material SERIAL [pk]
-  vivienda_id INT [not null, ref: > vivienda.id_vivienda]
-  tipo_material_vivienda_id INT [not null, ref: > cat_tipo_material_vivienda.id_tipo_material_vivienda]
-  material_id INT [ref: > cat_material.id_material]
-  otro_especificar VARCHAR(150)
-
-  indexes {
-    (vivienda_id, tipo_material_vivienda_id) [unique]
-  }
-}
-
-Table vivienda_servicio {
-  id_vivienda_servicio SERIAL [pk]
-  vivienda_id INT [not null, ref: > vivienda.id_vivienda]
-  servicio_vivienda_id INT [not null, ref: > cat_servicio_vivienda.id_servicio_vivienda]
-  disponible BOOLEAN [not null]
-
-  indexes {
-    (vivienda_id, servicio_vivienda_id) [unique]
-  }
 }
 
 Table cat_animal {
@@ -312,28 +302,21 @@ Table familia_animal {
   id_familia_animal SERIAL [pk]
   nucleo_familiar_id INT [not null, ref: > nucleo_familiar.id_nucleo_familiar]
   animal_id INT [not null, ref: > cat_animal.id_animal]
-  cantidad INT
-  vive_dentro_vivienda BOOLEAN
-  esquema_vacunas_corriente BOOLEAN
-  esterilizado BOOLEAN
+  otro_especificar VARCHAR(150)
   comentarios VARCHAR(255)
 }
 
-Table cat_alimentacion {
-  id_alimentacion SERIAL [pk]
-  tipo VARCHAR(100) [not null, unique]
-}
+/* =========================
+   ESTILO DE VIDA Y SALUD
+========================= */
 
 Table persona_alimentacion {
   id_persona_alimentacion SERIAL [pk]
   persona_id INT [not null, ref: > persona.id_persona]
-  alimentacion_id INT [not null, ref: > cat_alimentacion.id_alimentacion]
-  frecuencia_dias INT [not null]
+  dias_proteina INT [not null]
+  dias_frutas_verduras INT [not null]
+  dias_cereales INT [not null]
   fecha_registro DATE
-
-  indexes {
-    (persona_id, alimentacion_id, fecha_registro) [unique]
-  }
 }
 
 Table persona_higiene {
@@ -353,8 +336,6 @@ Table persona_toxicomania {
   persona_id INT [not null, ref: > persona.id_persona]
   toxicomania_id INT [not null, ref: > cat_toxicomania.id_toxicomania]
   otra_sustancia VARCHAR(150)
-  fecha_inicio DATE
-  fecha_fin DATE
 }
 
 Table cat_enfermedad_cronica {
@@ -366,8 +347,6 @@ Table persona_enfermedad_cronica {
   id_persona_enfermedad_cronica SERIAL [pk]
   persona_id INT [not null, ref: > persona.id_persona]
   enfermedad_cronica_id INT [not null, ref: > cat_enfermedad_cronica.id_enfermedad_cronica]
-  fecha_diagnostico DATE
-  observaciones VARCHAR(250)
 }
 
 Table cat_atencion_embarazo {
@@ -399,6 +378,10 @@ Table persona_servicio_salud {
   fecha_registro DATE
 }
 
+/* =========================
+   VACUNACIÓN
+========================= */
+
 Table vacuna {
   id_vacuna SERIAL [pk]
   nombre VARCHAR(255) [not null, unique]
@@ -423,5 +406,6 @@ Table inmunizacion {
   cedula_id INT [ref: > cedula.id_cedula]
   vacuna_id INT [not null, ref: > vacuna.id_vacuna]
   dosis_id INT [ref: > cat_dosis.id_dosis]
+  otra_vacuna_especificar VARCHAR(150)
   fecha_aplicacion DATE
 }

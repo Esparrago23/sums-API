@@ -112,18 +112,6 @@ router.delete('/viviendas/:id', deleteViviendaController.run.bind(deleteVivienda
 router.get('/viviendas/:id', readViviendaByIdController.run.bind(readViviendaByIdController));
 router.put('/viviendas/:id', updateViviendaController.run.bind(updateViviendaController));
 
-router.post('/viviendas-materiales', viviendaRelacionesController.create('materiales'));
-router.get('/viviendas-materiales', viviendaRelacionesController.readAll('materiales'));
-router.get('/viviendas-materiales/:id', viviendaRelacionesController.readById('materiales'));
-router.put('/viviendas-materiales/:id', viviendaRelacionesController.update('materiales'));
-router.delete('/viviendas-materiales/:id', viviendaRelacionesController.delete('materiales'));
-
-router.post('/viviendas-servicios', viviendaRelacionesController.create('servicios'));
-router.get('/viviendas-servicios', viviendaRelacionesController.readAll('servicios'));
-router.get('/viviendas-servicios/:id', viviendaRelacionesController.readById('servicios'));
-router.put('/viviendas-servicios/:id', viviendaRelacionesController.update('servicios'));
-router.delete('/viviendas-servicios/:id', viviendaRelacionesController.delete('servicios'));
-
 router.post('/familias-animales', viviendaRelacionesController.create('animales'));
 router.get('/familias-animales', viviendaRelacionesController.readAll('animales'));
 router.get('/familias-animales/:id', viviendaRelacionesController.readById('animales'));
