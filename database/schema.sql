@@ -90,6 +90,24 @@ CREATE TABLE "entrevistador" (
   "fecha_registro" DATE
 );
 
+CREATE TABLE "cat_rol" (
+  "id_rol" SERIAL PRIMARY KEY,
+  "nombre" VARCHAR(50) UNIQUE NOT NULL,
+  "descripcion" VARCHAR(150)
+);
+
+CREATE TABLE "usuario" (
+  "id_usuario" SERIAL PRIMARY KEY,
+  "nombre_usuario" VARCHAR(100) UNIQUE NOT NULL,
+  "contrasena" TEXT NOT NULL,
+  "rol_id" INT NOT NULL,
+  "fecha_registro" TIMESTAMP,
+  "activo" BOOLEAN,
+  "unidad_salud_id" INT,
+  "datos_laborales_id" INT,
+  "entrevistador_id" INT
+);
+
 CREATE TABLE "levantamiento" (
   "id_levantamiento" SERIAL PRIMARY KEY,
   "unidad_salud_id" INT NOT NULL,
@@ -391,6 +409,10 @@ ALTER TABLE "unidad_salud" ADD FOREIGN KEY ("municipio_id") REFERENCES "cat_muni
 ALTER TABLE "datos_laborales" ADD FOREIGN KEY ("turno_id") REFERENCES "cat_turno" ("id_turno") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "entrevistador" ADD FOREIGN KEY ("unidad_salud_id") REFERENCES "unidad_salud" ("id_unidad_salud") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "entrevistador" ADD FOREIGN KEY ("datos_laborales_id") REFERENCES "datos_laborales" ("id_datos_laborales") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "usuario" ADD FOREIGN KEY ("rol_id") REFERENCES "cat_rol" ("id_rol") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "usuario" ADD FOREIGN KEY ("unidad_salud_id") REFERENCES "unidad_salud" ("id_unidad_salud") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "usuario" ADD FOREIGN KEY ("datos_laborales_id") REFERENCES "datos_laborales" ("id_datos_laborales") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "usuario" ADD FOREIGN KEY ("entrevistador_id") REFERENCES "entrevistador" ("id_entrevistador") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "levantamiento" ADD FOREIGN KEY ("unidad_salud_id") REFERENCES "unidad_salud" ("id_unidad_salud") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "levantamiento" ADD FOREIGN KEY ("zona_id") REFERENCES "cat_zona" ("id_zona") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "levantamiento_personal" ADD FOREIGN KEY ("levantamiento_id") REFERENCES "levantamiento" ("id_levantamiento") DEFERRABLE INITIALLY IMMEDIATE;

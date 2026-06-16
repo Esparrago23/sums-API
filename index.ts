@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './src/docs/swagger';
 import { db } from './src/core/db_postgresql';
 
+import UserRouter from './src/User/infraestructure/routes/userRouter';
 import EntrevistadorRouter from './src/Entrevistador/infraestructure/routes/entrevistadorRouter';
 import DatosLaboralesRouter from './src/DatosLaborales/infraestructure/routes/datosLaboralesRouter';
 import CedulaRouter from './src/Cedula/infraestructure/routes/cedulaRouter';
@@ -36,7 +37,8 @@ app.use(express.json());
 
 app.use('/sums/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use('/sums',  
+app.use('/sums',
+    UserRouter,
     CedulaRouter,
     CatalogosRouter,
     DatosLaboralesRouter,

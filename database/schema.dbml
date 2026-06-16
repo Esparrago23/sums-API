@@ -95,6 +95,24 @@ Table entrevistador {
   fecha_registro DATE
 }
 
+Table cat_rol {
+  id_rol SERIAL [pk]
+  nombre VARCHAR(50) [not null, unique]
+  descripcion VARCHAR(150)
+}
+
+Table usuario {
+  id_usuario SERIAL [pk]
+  nombre_usuario VARCHAR(100) [not null, unique]
+  contrasena TEXT [not null]
+  rol_id INT [not null, ref: > cat_rol.id_rol]
+  fecha_registro TIMESTAMP
+  activo BOOLEAN
+  unidad_salud_id INT [ref: > unidad_salud.id_unidad_salud]
+  datos_laborales_id INT [ref: > datos_laborales.id_datos_laborales]
+  entrevistador_id INT [ref: > entrevistador.id_entrevistador]
+}
+
 Table levantamiento {
   id_levantamiento SERIAL [pk]
   unidad_salud_id INT [not null, ref: > unidad_salud.id_unidad_salud]
