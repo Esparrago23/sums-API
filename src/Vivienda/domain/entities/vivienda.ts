@@ -7,31 +7,21 @@ export class Vivienda {
     public direccion_id: number | null,
     public numero_cuartos: number | null,
     public numero_habitantes: number | null,
+    public agua_entubada: boolean | null,
+    public energia_electrica: boolean | null,
     public cocina_ubicacion: UbicacionCocina | null,
     public cocina_con_lena: boolean | null,
     public manejo_excretas_id: number | null,
     public red_alcantarillado: boolean | null,
     public fosa_septica: boolean | null,
+    public material_techo_id: number | null,
+    public material_paredes_id: number | null,
+    public material_piso_id: number | null,
+    public material_otro_especificar: string | null,
+    public perros_gatos_dentro: boolean | null,
+    public mascotas_vacunas_corrientes: boolean | null,
+    public mascotas_esterilizadas: boolean | null,
     public comentarios: string | null
-  ) {}
-}
-
-export class ViviendaMaterial {
-  constructor(
-    public id: number,
-    public vivienda_id: number,
-    public tipo_material_vivienda_id: number,
-    public material_id: number | null,
-    public otro_especificar: string | null
-  ) {}
-}
-
-export class ViviendaServicio {
-  constructor(
-    public id: number,
-    public vivienda_id: number,
-    public servicio_vivienda_id: number,
-    public disponible: boolean
   ) {}
 }
 
@@ -40,10 +30,7 @@ export class FamiliaAnimal {
     public id: number,
     public nucleo_familiar_id: number,
     public animal_id: number,
-    public cantidad: number | null,
-    public vive_dentro_vivienda: boolean | null,
-    public esquema_vacunas_corriente: boolean | null,
-    public esterilizado: boolean | null,
+    public otro_especificar: string | null,
     public comentarios: string | null
   ) {}
 }
@@ -73,6 +60,12 @@ export class FamiliaAnimal {
  *           type: integer
  *           nullable: true
  *           minimum: 0
+ *         agua_entubada:
+ *           type: boolean
+ *           nullable: true
+ *         energia_electrica:
+ *           type: boolean
+ *           nullable: true
  *         cocina_ubicacion:
  *           type: string
  *           enum: [fuera_del_dormitorio, dentro_del_dormitorio]
@@ -89,45 +82,30 @@ export class FamiliaAnimal {
  *         fosa_septica:
  *           type: boolean
  *           nullable: true
+ *         material_techo_id:
+ *           type: integer
+ *           nullable: true
+ *         material_paredes_id:
+ *           type: integer
+ *           nullable: true
+ *         material_piso_id:
+ *           type: integer
+ *           nullable: true
+ *         material_otro_especificar:
+ *           type: string
+ *           nullable: true
+ *         perros_gatos_dentro:
+ *           type: boolean
+ *           nullable: true
+ *         mascotas_vacunas_corrientes:
+ *           type: boolean
+ *           nullable: true
+ *         mascotas_esterilizadas:
+ *           type: boolean
+ *           nullable: true
  *         comentarios:
  *           type: string
  *           nullable: true
- *     ViviendaMaterial:
- *       type: object
- *       required:
- *         - vivienda_id
- *         - tipo_material_vivienda_id
- *       properties:
- *         id:
- *           type: integer
- *           readOnly: true
- *         vivienda_id:
- *           type: integer
- *         tipo_material_vivienda_id:
- *           type: integer
- *           description: Catalogo techo, paredes o piso.
- *         material_id:
- *           type: integer
- *           nullable: true
- *         otro_especificar:
- *           type: string
- *           nullable: true
- *     ViviendaServicio:
- *       type: object
- *       required:
- *         - vivienda_id
- *         - servicio_vivienda_id
- *         - disponible
- *       properties:
- *         id:
- *           type: integer
- *           readOnly: true
- *         vivienda_id:
- *           type: integer
- *         servicio_vivienda_id:
- *           type: integer
- *         disponible:
- *           type: boolean
  *     FamiliaAnimal:
  *       type: object
  *       required:
@@ -141,18 +119,8 @@ export class FamiliaAnimal {
  *           type: integer
  *         animal_id:
  *           type: integer
- *         cantidad:
- *           type: integer
- *           nullable: true
- *           minimum: 0
- *         vive_dentro_vivienda:
- *           type: boolean
- *           nullable: true
- *         esquema_vacunas_corriente:
- *           type: boolean
- *           nullable: true
- *         esterilizado:
- *           type: boolean
+ *         otro_especificar:
+ *           type: string
  *           nullable: true
  *         comentarios:
  *           type: string

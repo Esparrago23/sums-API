@@ -117,6 +117,13 @@ export class InMemoryPersonaRepository implements IPersonaRepository {
           LIMIT 1
         ) AS lengua_id,
         (
+          SELECT pl.lengua_indigena_especificar
+          FROM persona_lengua pl
+          WHERE pl.persona_id = p.id_persona
+          ORDER BY COALESCE(pl.es_principal, false) DESC, pl.id_persona_lengua DESC
+          LIMIT 1
+        ) AS lengua_indigena_especificar,
+        (
           SELECT pe.escolaridad_id
           FROM persona_escolaridad pe
           WHERE pe.persona_id = p.id_persona
@@ -131,12 +138,40 @@ export class InMemoryPersonaRepository implements IPersonaRepository {
           LIMIT 1
         ) AS ocupacion_id,
         (
+          SELECT po.ocupacion_texto
+          FROM persona_ocupacion po
+          WHERE po.persona_id = p.id_persona
+          ORDER BY po.fecha_registro DESC NULLS LAST, po.id_persona_ocupacion DESC
+          LIMIT 1
+        ) AS ocupacion_texto,
+        (
           SELECT pi.ingreso_salarial_id
           FROM persona_ingreso pi
           WHERE pi.persona_id = p.id_persona
           ORDER BY pi.fecha_registro DESC NULLS LAST, pi.id_persona_ingreso DESC
           LIMIT 1
         ) AS ingreso_salarial_id,
+        (
+          SELECT pss.cuenta_seguridad_social
+          FROM persona_seguridad_social pss
+          WHERE pss.persona_id = p.id_persona
+          ORDER BY pss.fecha_registro DESC NULLS LAST, pss.id_persona_seguridad_social DESC
+          LIMIT 1
+        ) AS cuenta_seguridad_social,
+        (
+          SELECT pd.presenta_discapacidad
+          FROM persona_discapacidad pd
+          WHERE pd.persona_id = p.id_persona
+          ORDER BY pd.id_persona_discapacidad DESC
+          LIMIT 1
+        ) AS presenta_discapacidad,
+        (
+          SELECT pd.tipo_discapacidad
+          FROM persona_discapacidad pd
+          WHERE pd.persona_id = p.id_persona
+          ORDER BY pd.id_persona_discapacidad DESC
+          LIMIT 1
+        ) AS tipo_discapacidad,
         p.fecha_registro
       FROM persona p
     `;
@@ -150,11 +185,14 @@ export class InMemoryPersonaRepository implements IPersonaRepository {
 
   private async replaceCatalogLinks(personaId: number, persona: Persona): Promise<void> {
     await this.replaceSingleLink('persona_lengua', 'lengua_id', personaId, persona.lengua_id, {
+      lengua_indigena_especificar: persona.lengua_indigena_especificar ?? null,
       es_principal: true
     });
     await this.replaceSingleLink('persona_escolaridad', 'escolaridad_id', personaId, persona.escolaridad_id);
-    await this.replaceSingleLink('persona_ocupacion', 'ocupacion_id', personaId, persona.ocupacion_id);
+    await this.replaceOcupacion(personaId, persona);
     await this.replaceSingleLink('persona_ingreso', 'ingreso_salarial_id', personaId, persona.ingreso_salarial_id);
+    await this.replaceSeguridadSocial(personaId, persona);
+    await this.replaceDiscapacidad(personaId, persona);
   }
 
   private async replaceSingleLink(
@@ -172,6 +210,45 @@ export class InMemoryPersonaRepository implements IPersonaRepository {
     await db.executePreparedQuery(
       `INSERT INTO ${tableName} (${columns.join(', ')}) VALUES (${placeholders})`,
       [personaId, catalogId, ...Object.values(extraColumns)]
+    );
+  }
+
+  private async replaceOcupacion(personaId: number, persona: Persona): Promise<void> {
+    await db.executePreparedQuery('DELETE FROM persona_ocupacion WHERE persona_id = $1', [personaId]);
+    if (persona.ocupacion_id === undefined && persona.ocupacion_texto === undefined) return;
+    if (persona.ocupacion_id === null && !persona.ocupacion_texto) return;
+
+    await db.executePreparedQuery(
+      `INSERT INTO persona_ocupacion (persona_id, ocupacion_id, ocupacion_texto)
+       VALUES ($1, $2, $3)`,
+      [personaId, persona.ocupacion_id ?? null, persona.ocupacion_texto ?? null]
+    );
+  }
+
+  private async replaceSeguridadSocial(personaId: number, persona: Persona): Promise<void> {
+    await db.executePreparedQuery('DELETE FROM persona_seguridad_social WHERE persona_id = $1', [personaId]);
+    if (persona.cuenta_seguridad_social === undefined || persona.cuenta_seguridad_social === null) return;
+
+    await db.executePreparedQuery(
+      `INSERT INTO persona_seguridad_social (persona_id, cuenta_seguridad_social)
+       VALUES ($1, $2)`,
+      [personaId, persona.cuenta_seguridad_social]
+    );
+  }
+
+  private async replaceDiscapacidad(personaId: number, persona: Persona): Promise<void> {
+    await db.executePreparedQuery('DELETE FROM persona_discapacidad WHERE persona_id = $1', [personaId]);
+    if (persona.presenta_discapacidad === undefined && persona.tipo_discapacidad === undefined) return;
+    if (persona.presenta_discapacidad === null && !persona.tipo_discapacidad) return;
+
+    await db.executePreparedQuery(
+      `INSERT INTO persona_discapacidad (persona_id, presenta_discapacidad, tipo_discapacidad)
+       VALUES ($1, $2, $3)`,
+      [
+        personaId,
+        persona.presenta_discapacidad ?? Boolean(persona.tipo_discapacidad),
+        persona.tipo_discapacidad ?? null
+      ]
     );
   }
 }

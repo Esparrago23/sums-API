@@ -5,11 +5,17 @@ import { db } from '../../../core/db_postgresql';
 export class InMemoryDatosLaboralesRepository implements IDatosLaboralesRepository {
   async create(datosLaborales: DatosLaborales): Promise<DatosLaborales> {
     const query = `
-      INSERT INTO datos_laborales (turnos, horario, rango_horario, cargo)
-      VALUES ($1, $2, $3, $4)
-      RETURNING *;
+      INSERT INTO datos_laborales (turno_id, horario_inicio, horario_fin, cargo, especialidad)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *, id_datos_laborales AS id;
     `;
-    const values = [datosLaborales.turnos, datosLaborales.horario, datosLaborales.rango_horario, datosLaborales.cargo];
+    const values = [
+      datosLaborales.turno_id ?? null,
+      datosLaborales.horario_inicio ?? null,
+      datosLaborales.horario_fin ?? null,
+      datosLaborales.cargo ?? null,
+      datosLaborales.especialidad ?? null
+    ];
     const result = await db.executePreparedQuery(query, values);
     return result.rows[0];
   }
@@ -17,11 +23,22 @@ export class InMemoryDatosLaboralesRepository implements IDatosLaboralesReposito
   async update(datosLaborales: DatosLaborales): Promise<DatosLaborales> {
     const query = `
       UPDATE datos_laborales
-      SET turnos = $1, horario = $2, rango_horario = $3, cargo = $4
-      WHERE id = $5
-      RETURNING *;
+      SET turno_id = $1,
+          horario_inicio = $2,
+          horario_fin = $3,
+          cargo = $4,
+          especialidad = $5
+      WHERE id_datos_laborales = $6
+      RETURNING *, id_datos_laborales AS id;
     `;
-    const values = [datosLaborales.turnos, datosLaborales.horario, datosLaborales.rango_horario, datosLaborales.cargo, datosLaborales.id];
+    const values = [
+      datosLaborales.turno_id ?? null,
+      datosLaborales.horario_inicio ?? null,
+      datosLaborales.horario_fin ?? null,
+      datosLaborales.cargo ?? null,
+      datosLaborales.especialidad ?? null,
+      datosLaborales.id
+    ];
     const result = await db.executePreparedQuery(query, values);
     if (result.rowCount === 0) {
       throw new Error('DatosLaborales not found');
@@ -31,11 +48,11 @@ export class InMemoryDatosLaboralesRepository implements IDatosLaboralesReposito
 
   async readById(id: number): Promise<DatosLaborales> {
     const query = `
-      SELECT * FROM datos_laborales
-      WHERE id = $1;
+      SELECT *, id_datos_laborales AS id
+      FROM datos_laborales
+      WHERE id_datos_laborales = $1;
     `;
-    const values = [id];
-    const result = await db.executePreparedQuery(query, values);
+    const result = await db.executePreparedQuery(query, [id]);
     if (result.rowCount === 0) {
       throw new Error('DatosLaborales not found');
     }
@@ -43,17 +60,14 @@ export class InMemoryDatosLaboralesRepository implements IDatosLaboralesReposito
   }
 
   async delete(id: number): Promise<void> {
-    const query = `
-      DELETE FROM datos_laborales
-      WHERE id = $1;
-    `;
-    const values = [id];
-    await db.executePreparedQuery(query, values);
+    await db.executePreparedQuery('DELETE FROM datos_laborales WHERE id_datos_laborales = $1', [id]);
   }
 
   async readAll(): Promise<DatosLaborales[]> {
     const query = `
-      SELECT * FROM datos_laborales;
+      SELECT *, id_datos_laborales AS id
+      FROM datos_laborales
+      ORDER BY id_datos_laborales;
     `;
     const result = await db.executePreparedQuery(query, []);
     return result.rows;
