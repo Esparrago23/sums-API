@@ -11,15 +11,16 @@ export const roleMiddleware = (allowedRoles: number[]) => {
       }
 
       const token = authHeader.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as any;
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mi_secreto') as any;
 
-      // Ensure the decoded token has rol_id
-      if (!decoded || !decoded.rol_id) {
+      // Ensure the decoded token has rol
+      if (!decoded || !decoded.rol) {
         res.status(403).json({ error: 'Access denied: No role information in token' });
         return;
       }
 
-      if (!allowedRoles.includes(decoded.rol_id)) {
+      const rolId = parseInt(decoded.rol, 10);
+      if (!allowedRoles.includes(rolId)) {
         res.status(403).json({ error: 'Access denied: Insufficient privileges' });
         return;
       }

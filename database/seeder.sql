@@ -7,11 +7,11 @@ INSERT INTO cat_rol (nombre, descripcion) VALUES
 ON CONFLICT (nombre) DO NOTHING;
 
 -- Crear un superadmin y un admin por defecto (contraseña generada: 'password' hasheada con bcryptjs)
--- El hash de 'password' con 10 salt rounds es: $2a$10$XQxI1/1M7oD89Y5k90O91OO1Wb1.J039K9l9P0m15.J/Z1.6R/t1m
+-- El hash de 'password' con 10 salt rounds es: $2b$10$xbSgWXvdqYvPbLHv9aV9u.1p9ONjKDav9FS6yXXEAFLibZ3d.KFU6
 INSERT INTO usuario (nombre_usuario, contrasena, rol_id, fecha_registro, activo)
 VALUES
-('superadmin_master', '$2a$10$XQxI1/1M7oD89Y5k90O91OO1Wb1.J039K9l9P0m15.J/Z1.6R/t1m', 1, NOW(), true),
-('admin_regional', '$2a$10$XQxI1/1M7oD89Y5k90O91OO1Wb1.J039K9l9P0m15.J/Z1.6R/t1m', 2, NOW(), true)
+('superadmin_master', '$2b$10$xbSgWXvdqYvPbLHv9aV9u.1p9ONjKDav9FS6yXXEAFLibZ3d.KFU6', 1, NOW(), true),
+('admin_regional', '$2b$10$xbSgWXvdqYvPbLHv9aV9u.1p9ONjKDav9FS6yXXEAFLibZ3d.KFU6', 2, NOW(), true)
 ON CONFLICT (nombre_usuario) DO NOTHING;
 
 -- Insertar Vacunas
