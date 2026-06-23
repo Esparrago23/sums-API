@@ -19,7 +19,7 @@
  *             schema:
  *               $ref: '#/components/schemas/Familia'
  *       400:
- *         description: Invalid input data
+ *         description: Invalid input data (e.g., validación de fecha de registro, cierre, y jefe de persona)
  * 
  *   get:
  *     summary: Deprecated alias for listing family nuclei
@@ -81,6 +81,8 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Familia'
+ *       400:
+ *         description: Invalid input data (e.g., validación de fecha de registro, cierre, y jefe de persona)
  *       404:
  *         description: Family record not found
  * 
@@ -103,19 +105,19 @@
  */
 
 import express from 'express';
+import { validate } from '../../../shared/middleware/validateMiddleware';
+import { familiaSchema } from '../../domain/schemas/familiaSchema';
 import { createFamiliaController } from '../familia_dependencies';
 import { readAllFamiliaController } from '../familia_dependencies';
 import { deleteFamiliaController } from '../familia_dependencies';
 import { readFamiliaByIdController } from '../familia_dependencies';
 import { updateFamiliaController } from '../familia_dependencies';
 
-
-
 export const router = express.Router();
-router.post('/familias', createFamiliaController.run.bind(createFamiliaController));
+router.post('/familias', validate(familiaSchema), createFamiliaController.run.bind(createFamiliaController));
 router.get('/familias', readAllFamiliaController.run.bind(readAllFamiliaController));
 router.delete('/familias/:id', deleteFamiliaController.run.bind(deleteFamiliaController));
 router.get('/familias/:id', readFamiliaByIdController.run.bind(readFamiliaByIdController));
-router.put('/familias/:id', updateFamiliaController.run.bind(updateFamiliaController));
+router.put('/familias/:id', validate(familiaSchema), updateFamiliaController.run.bind(updateFamiliaController));
 
 export default router;

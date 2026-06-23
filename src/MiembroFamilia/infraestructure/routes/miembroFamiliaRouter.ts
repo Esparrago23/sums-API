@@ -18,7 +18,7 @@
  *             schema:
  *               $ref: '#/components/schemas/MiembroFamilia'
  *       400:
- *         description: Invalid input data
+ *         description: Invalid input data (e.g., id validations)
  * 
  *   get:
  *     summary: Get all family member records
@@ -77,6 +77,8 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/MiembroFamilia'
+ *       400:
+ *         description: Invalid input data (e.g., id validations)
  *       404:
  *         description: Record not found
  * 
@@ -98,6 +100,8 @@
  */
 
 import express from 'express';
+import { validate } from '../../../shared/middleware/validateMiddleware';
+import { miembroFamiliaSchema } from '../../domain/schemas/miembroFamiliaSchema';
 import { createMiembroFamiliaController } from '../miembroFamilia_dependencies';
 import { readAllMiembroFamiliaController } from '../miembroFamilia_dependencies';
 import { deleteMiembroFamiliaController } from '../miembroFamilia_dependencies';
@@ -105,10 +109,10 @@ import { readMiembroFamiliaByIdController } from '../miembroFamilia_dependencies
 import { updateMiembroFamiliaController } from '../miembroFamilia_dependencies';
 
 export const router = express.Router();
-router.post('/miembros_familia', createMiembroFamiliaController.run.bind(createMiembroFamiliaController));
+router.post('/miembros_familia', validate(miembroFamiliaSchema), createMiembroFamiliaController.run.bind(createMiembroFamiliaController));
 router.get('/miembros_familia', readAllMiembroFamiliaController.run.bind(readAllMiembroFamiliaController));
 router.delete('/miembros_familia/:id', deleteMiembroFamiliaController.run.bind(deleteMiembroFamiliaController));
 router.get('/miembros_familia/:id', readMiembroFamiliaByIdController.run.bind(readMiembroFamiliaByIdController));
-router.put('/miembros_familia/:id', updateMiembroFamiliaController.run.bind(updateMiembroFamiliaController));
+router.put('/miembros_familia/:id', validate(miembroFamiliaSchema), updateMiembroFamiliaController.run.bind(updateMiembroFamiliaController));
 
 export default router;

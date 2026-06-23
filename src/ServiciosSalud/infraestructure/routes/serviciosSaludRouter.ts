@@ -1,4 +1,6 @@
 import express from 'express';
+import { validate } from '../../../shared/middleware/validateMiddleware';
+import { servicioSaludSchema, visitaSchema } from '../../domain/schemas/serviciosSaludSchema';
 import { 
     createServicioSaludController,
     readAllServicioSaludController,
@@ -15,14 +17,14 @@ import {
 export const router = express.Router();
 
 // Rutas básicas de servicios de salud
-router.post('/servicios-salud', createServicioSaludController.run.bind(createServicioSaludController));
+router.post('/servicios-salud', validate(servicioSaludSchema), createServicioSaludController.run.bind(createServicioSaludController));
 router.get('/servicios-salud', readAllServicioSaludController.run.bind(readAllServicioSaludController));
 router.delete('/servicios-salud/:id', deleteServicioSaludController.run.bind(deleteServicioSaludController));
 router.get('/servicios-salud/:id', readServicioSaludByIdController.run.bind(readServicioSaludByIdController));
-router.put('/servicios-salud/:id', updateServicioSaludController.run.bind(updateServicioSaludController));
+router.put('/servicios-salud/:id', validate(servicioSaludSchema), updateServicioSaludController.run.bind(updateServicioSaludController));
 
 // Rutas para gestión de visitas
-router.post('/servicios-salud/:servicioId/visitas', agregarVisitaController.run.bind(agregarVisitaController));
+router.post('/servicios-salud/:servicioId/visitas', validate(visitaSchema), agregarVisitaController.run.bind(agregarVisitaController));
 router.delete('/servicios-salud/:servicioId/visitas/:fecha', eliminarVisitaController.run.bind(eliminarVisitaController));
 router.get('/servicios-salud/:servicioId/visitas/tipo/:tipo', obtenerVisitasPorTipoController.run.bind(obtenerVisitasPorTipoController));
 router.get('/servicios-salud/:servicioId/visitas/ultima', obtenerUltimaVisitaController.run.bind(obtenerUltimaVisitaController));
@@ -145,6 +147,8 @@ export default router;
  *     responses:
  *       201:
  *         description: Visita agregada
+ *       400:
+ *         description: Invalid input data / Validation error
 
  * /servicios-salud/{servicioId}/visitas/{fecha}:
  *   delete:

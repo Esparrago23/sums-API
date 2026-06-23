@@ -77,6 +77,8 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Dosis'
+ *       400:
+ *         description: Datos de entrada inválidos
  *       404:
  *         description: Dose not found
  * 
@@ -98,6 +100,8 @@
  */
 
 import express from 'express';
+import { validate } from '../../../shared/middleware/validateMiddleware';
+import { dosisSchema } from '../../domain/schemas/dosisSchema';
 import { createDosisController } from '../dosis_dependencies';
 import { readAllDosisController } from '../dosis_dependencies';
 import { deleteDosisController } from '../dosis_dependencies';
@@ -107,10 +111,10 @@ import { updateDosisController } from '../dosis_dependencies';
 
 export const router = express.Router();
 
-router.post('/dosis', createDosisController.run.bind(createDosisController));
+router.post('/dosis', validate(dosisSchema), createDosisController.run.bind(createDosisController));
 router.get('/dosis', readAllDosisController.run.bind(readAllDosisController));
 router.delete('/dosis/:id', deleteDosisController.run.bind(deleteDosisController));
 router.get('/dosis/:id', readDosisByIdController.run.bind(readDosisByIdController));
-router.put('/dosis/:id', updateDosisController.run.bind(updateDosisController));
+router.put('/dosis/:id', validate(dosisSchema), updateDosisController.run.bind(updateDosisController));
 
 export default router;

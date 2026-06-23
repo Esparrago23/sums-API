@@ -17,6 +17,7 @@ import { ReadUserById_Controller } from './controller/readUserById_Controller';
 import { UpdateUser_Controller } from './controller/updateUser_Controller';
 import { LoginUser_Controller } from './controller/loginUser_Controller';
 import { CreateEntrevistadorUserController } from './controller/createEntrevistadorUser_Controller';
+import { UpdateUserRoleController } from './controller/updateUserRole_Controller';
 
 export const userRepository = new InMemoryUserRepository();
 
@@ -36,3 +37,4 @@ export const readUserByIdController = new ReadUserById_Controller(readUserByIDUs
 export const updateUserController = new UpdateUser_Controller(updateUserUseCase);
 export const loginUserController = new LoginUser_Controller(loginUserUseCase);
 export const createEntrevistadorUserController = new CreateEntrevistadorUserController(createEntrevistadorUserUseCase);
+export const updateUserRoleController = new UpdateUserRoleController(updateUserUseCase);

@@ -1,4 +1,6 @@
 import express from 'express';
+import { validate } from '../../../shared/middleware/validateMiddleware';
+import { nucleoFamiliarSchema, nucleoPersonaSchema, nucleoPersonaPatchSchema } from '../../domain/schemas/nucleoFamiliarSchema';
 import { nucleoFamiliarController } from '../nucleoFamiliar_dependencies';
 
 export const router = express.Router();
@@ -18,6 +20,8 @@ export const router = express.Router();
  *     responses:
  *       201:
  *         description: Nucleo familiar creado
+ *       400:
+ *         description: Invalid input data (e.g., validación de fechas)
  *   get:
  *     summary: Listar nucleos familiares
  *     tags: [NucleoFamiliar]
@@ -43,6 +47,8 @@ export const router = express.Router();
  *     responses:
  *       201:
  *         description: Integrante agregado
+ *       400:
+ *         description: Invalid input data (e.g., missing nucleo_familiar_id o persona_id)
  *   get:
  *     summary: Listar integrantes de un nucleo familiar
  *     tags: [NucleoFamiliar]
@@ -73,14 +79,16 @@ export const router = express.Router();
  *     responses:
  *       200:
  *         description: Integrante actualizado
+ *       400:
+ *         description: Invalid input data
  */
-router.post('/nucleos-familiares', nucleoFamiliarController.create.bind(nucleoFamiliarController));
+router.post('/nucleos-familiares', validate(nucleoFamiliarSchema), nucleoFamiliarController.create.bind(nucleoFamiliarController));
 router.get('/nucleos-familiares', nucleoFamiliarController.readAll.bind(nucleoFamiliarController));
 router.get('/nucleos-familiares/:id', nucleoFamiliarController.readById.bind(nucleoFamiliarController));
-router.put('/nucleos-familiares/:id', nucleoFamiliarController.update.bind(nucleoFamiliarController));
+router.put('/nucleos-familiares/:id', validate(nucleoFamiliarSchema), nucleoFamiliarController.update.bind(nucleoFamiliarController));
 router.delete('/nucleos-familiares/:id', nucleoFamiliarController.delete.bind(nucleoFamiliarController));
-router.post('/nucleos-familiares/:id/integrantes', nucleoFamiliarController.addPersona.bind(nucleoFamiliarController));
+router.post('/nucleos-familiares/:id/integrantes', validate(nucleoPersonaSchema), nucleoFamiliarController.addPersona.bind(nucleoFamiliarController));
 router.get('/nucleos-familiares/:id/integrantes', nucleoFamiliarController.listIntegrantes.bind(nucleoFamiliarController));
-router.patch('/nucleos-familiares/:id/integrantes/:personaId', nucleoFamiliarController.updateIntegrante.bind(nucleoFamiliarController));
+router.patch('/nucleos-familiares/:id/integrantes/:personaId', validate(nucleoPersonaPatchSchema), nucleoFamiliarController.updateIntegrante.bind(nucleoFamiliarController));
 
 export default router;

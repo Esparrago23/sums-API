@@ -77,6 +77,8 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Educacion'
+ *       400:
+ *         description: Datos de entrada inválidos
  *       404:
  *         description: Education record not found
  * 
@@ -98,6 +100,8 @@
  */
 
 import express from 'express';
+import { validate } from '../../../shared/middleware/validateMiddleware';
+import { educacionSchema } from '../../domain/schemas/educacionSchema';
 import { createEducacionController } from '../educacion_dependencies';
 import { readAllEducacionController } from '../educacion_dependencies'; 
 import { deleteEducacionController } from '../educacion_dependencies';
@@ -106,10 +110,10 @@ import { updateEducacionController } from '../educacion_dependencies';
 
 
 export const router = express.Router();
-router.post('/educaciones', createEducacionController.run.bind(createEducacionController));
+router.post('/educaciones', validate(educacionSchema), createEducacionController.run.bind(createEducacionController));
 router.get('/educaciones', readAllEducacionController.run.bind(readAllEducacionController));
 router.delete('/educaciones/:id', deleteEducacionController.run.bind(deleteEducacionController));
 router.get('/educaciones/:id', readEducacionByIdController.run.bind(readEducacionByIdController));
-router.put('/educaciones/:id', updateEducacionController.run.bind(updateEducacionController));
+router.put('/educaciones/:id', validate(educacionSchema), updateEducacionController.run.bind(updateEducacionController));
 
 export default router;

@@ -9,7 +9,23 @@
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UnidadSalud'
+ *             type: object
+ *             required:
+ *               - clues
+ *               - nombre
+ *             properties:
+ *               clues:
+ *                 type: string
+ *                 pattern: "^[A-Za-z]{5}\\d{6}$"
+ *                 description: "Código CLUES de 11 caracteres (5 letras y 6 números)"
+ *               nombre:
+ *                 type: string
+ *               distrito:
+ *                 type: string
+ *               municipio_id:
+ *                 type: integer
+ *               numero_nucleos:
+ *                 type: integer
  *     responses:
  *       201:
  *         description: Health unit created successfully
@@ -69,7 +85,20 @@
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UnidadSalud'
+ *             type: object
+ *             properties:
+ *               clues:
+ *                 type: string
+ *                 pattern: "^[A-Za-z]{5}\\d{6}$"
+ *                 description: "Código CLUES de 11 caracteres (5 letras y 6 números)"
+ *               nombre:
+ *                 type: string
+ *               distrito:
+ *                 type: string
+ *               municipio_id:
+ *                 type: integer
+ *               numero_nucleos:
+ *                 type: integer
  *     responses:
  *       200:
  *         description: Health unit updated successfully
@@ -103,12 +132,14 @@ import { readAllUnidadSalud_Controller } from '../unidadsalud_dependencies'
 import { deleteUnidadSalud_Controller } from '../unidadsalud_dependencies'
 import { readUnidadSaludById_Controller } from '../unidadsalud_dependencies'
 import { updateUnidadSalud_Controller } from '../unidadsalud_dependencies'
+import { validate } from '../../../shared/middleware/validateMiddleware'
+import { unidadSaludSchema } from '../../domain/schemas/unidadSaludSchema'
 
 export const UnidadSaludRouter = express.Router()
-UnidadSaludRouter.post('/unidadSalud', createUnidadSalud_Controller.run.bind(createUnidadSalud_Controller))
+UnidadSaludRouter.post('/unidadSalud', validate(unidadSaludSchema), createUnidadSalud_Controller.run.bind(createUnidadSalud_Controller))
 UnidadSaludRouter.get('/unidadSalud', readAllUnidadSalud_Controller.run.bind(readAllUnidadSalud_Controller))
 UnidadSaludRouter.delete('/unidadSalud/:id', deleteUnidadSalud_Controller.run.bind(deleteUnidadSalud_Controller))
 UnidadSaludRouter.get('/unidadSalud/:id', readUnidadSaludById_Controller.run.bind(readUnidadSaludById_Controller))
-UnidadSaludRouter.put('/unidadSalud/:id', updateUnidadSalud_Controller.run.bind(updateUnidadSalud_Controller))
+UnidadSaludRouter.put('/unidadSalud/:id', validate(unidadSaludSchema), updateUnidadSalud_Controller.run.bind(updateUnidadSalud_Controller))
 
 export default UnidadSaludRouter

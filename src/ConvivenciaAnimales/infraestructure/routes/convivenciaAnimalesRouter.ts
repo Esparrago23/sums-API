@@ -77,6 +77,8 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ConvivenciaAnimales'
+ *       400:
+ *         description: Invalid input data / Validation error
  *       404:
  *         description: Record not found
  * 
@@ -98,6 +100,8 @@
  */
 
 import express from 'express';
+import { validate } from '../../../shared/middleware/validateMiddleware';
+import { convivenciaAnimalesSchema } from '../../domain/schemas/convivenciaAnimalesSchema';
 import { createConvivenciaAnimalesController } from '../convivenciaAnimales_dependencies';
 import { readAllConvivenciaAnimalesController } from '../convivenciaAnimales_dependencies';
 import { deleteConvivenciaAnimalesController } from '../convivenciaAnimales_dependencies';
@@ -106,10 +110,10 @@ import { updateConvivenciaAnimalesController } from '../convivenciaAnimales_depe
 
 export const router = express.Router();
 
-router.post('/convivencia-animales', createConvivenciaAnimalesController.run.bind(createConvivenciaAnimalesController));
+router.post('/convivencia-animales', validate(convivenciaAnimalesSchema), createConvivenciaAnimalesController.run.bind(createConvivenciaAnimalesController));
 router.get('/convivencia-animales', readAllConvivenciaAnimalesController.run.bind(readAllConvivenciaAnimalesController));
 router.delete('/convivencia-animales/:id', deleteConvivenciaAnimalesController.run.bind(deleteConvivenciaAnimalesController));
 router.get('/convivencia-animales/:id', readConvivenciaAnimalesByIdController.run.bind(readConvivenciaAnimalesByIdController));
-router.put('/convivencia-animales/:id', updateConvivenciaAnimalesController.run.bind(updateConvivenciaAnimalesController));
+router.put('/convivencia-animales/:id', validate(convivenciaAnimalesSchema), updateConvivenciaAnimalesController.run.bind(updateConvivenciaAnimalesController));
 
 export default router;

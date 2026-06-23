@@ -77,6 +77,8 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/MaterialesVivienda'
+ *       400:
+ *         description: Invalid input data / Validation error
  *       404:
  *         description: Record not found
  * 
@@ -98,6 +100,8 @@
  */
 
 import express from 'express';
+import { validate } from '../../../shared/middleware/validateMiddleware';
+import { materialesViviendaSchema } from '../../domain/schemas/materialesViviendaSchema';
 import { createMaterialesViviendaController } from '../materialesVivienda_dependencies';
 import { readAllMaterialesViviendaController } from '../materialesVivienda_dependencies';
 import { deleteMaterialesViviendaController } from '../materialesVivienda_dependencies';
@@ -105,10 +109,10 @@ import { readMaterialesViviendaByIdController } from '../materialesVivienda_depe
 import { updateMaterialesViviendaController } from '../materialesVivienda_dependencies';
 
 export const router = express.Router();
-router.post('/materiales_vivienda', createMaterialesViviendaController.run.bind(createMaterialesViviendaController));
+router.post('/materiales_vivienda', validate(materialesViviendaSchema), createMaterialesViviendaController.run.bind(createMaterialesViviendaController));
 router.get('/materiales_vivienda', readAllMaterialesViviendaController.run.bind(readAllMaterialesViviendaController));
 router.delete('/materiales_vivienda/:id', deleteMaterialesViviendaController.run.bind(deleteMaterialesViviendaController));
 router.get('/materiales_vivienda/:id', readMaterialesViviendaByIdController.run.bind(readMaterialesViviendaByIdController));
-router.put('/materiales_vivienda/:id', updateMaterialesViviendaController.run.bind(updateMaterialesViviendaController));
+router.put('/materiales_vivienda/:id', validate(materialesViviendaSchema), updateMaterialesViviendaController.run.bind(updateMaterialesViviendaController));
 
 export default router;
