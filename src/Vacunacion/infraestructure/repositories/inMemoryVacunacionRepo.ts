@@ -15,8 +15,11 @@ export class InMemoryVacunacionRepo implements Ivacunacion {
   async create(vacunacion: Vacunacion): Promise<Vacunacion> {
     const esquemaId = vacunacion.esquema_vacunacion_id ?? await this.createEsquemaFromLegacyPayload(vacunacion);
     const query = `
-      INSERT INTO inmunizacion (esquema_vacunacion_id, cedula_id, vacuna_id, dosis_id, fecha_aplicacion)
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO inmunizacion (
+        esquema_vacunacion_id, cedula_id, vacuna_id, dosis_id,
+        otra_vacuna_especificar, fecha_aplicacion
+      )
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *, id_inmunizacion AS id;
     `;
     const values = [
@@ -24,6 +27,7 @@ export class InMemoryVacunacionRepo implements Ivacunacion {
       vacunacion.cedula_id ?? null,
       vacunacion.vacuna_id,
       vacunacion.dosis_id ?? null,
+      vacunacion.otra_vacuna_especificar ?? null,
       formatDateForDB(vacunacion.fecha_aplicacion)
     ];
     const result = await db.executePreparedQuery(query, values);
@@ -37,8 +41,9 @@ export class InMemoryVacunacionRepo implements Ivacunacion {
           cedula_id = $2,
           vacuna_id = $3,
           dosis_id = $4,
-          fecha_aplicacion = $5
-      WHERE id_inmunizacion = $6
+          otra_vacuna_especificar = $5,
+          fecha_aplicacion = $6
+      WHERE id_inmunizacion = $7
       RETURNING *, id_inmunizacion AS id;
     `;
     const values = [
@@ -46,6 +51,7 @@ export class InMemoryVacunacionRepo implements Ivacunacion {
       vacunacion.cedula_id ?? null,
       vacunacion.vacuna_id,
       vacunacion.dosis_id ?? null,
+      vacunacion.otra_vacuna_especificar ?? null,
       formatDateForDB(vacunacion.fecha_aplicacion),
       vacunacion.id
     ];

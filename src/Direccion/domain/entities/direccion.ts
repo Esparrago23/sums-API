@@ -4,40 +4,50 @@
  *   schemas:
  *     Direccion:
  *       type: object
- *       required:
- *         - id
  *       properties:
  *         id:
  *           type: integer
- *           description: Identificador único de la dirección
+ *           readOnly: true
  *         calle:
  *           type: string
- *           description: Nombre de la calle
+ *           nullable: true
  *         numero_exterior:
  *           type: string
- *           description: Número exterior de la vivienda
+ *           nullable: true
+ *         numero_interior:
+ *           type: string
+ *           nullable: true
  *         colonia:
  *           type: string
- *           description: Nombre de la colonia o fraccionamiento
- *         municipio:
- *           type: string
- *           description: Municipio o delegación
- *         entidad:
- *           type: string
- *           description: Entidad federativa (estado)
+ *           nullable: true
  *         codigo_postal:
  *           type: string
- *           description: Código postal de la zona
+ *           nullable: true
+ *         localidad:
+ *           type: string
+ *           nullable: true
+ *         manzana:
+ *           type: string
+ *           nullable: true
+ *         vivienda_referencia:
+ *           type: string
+ *           nullable: true
+ *         asentamiento_id:
+ *           type: integer
+ *           nullable: true
  */
 
 export class Direccion {
-    constructor(
-        public id: number,
-        public calle: string,
-        public numero_exterior: string,
-        public colonia: string,
-        public municipio: string,
-        public entidad: string,
-        public codigo_postal: string
-    ) {}
+  constructor(
+    public id: number,
+    public calle: string | null,
+    public numero_exterior: string | null,
+    public numero_interior: string | null,
+    public colonia: string | null,
+    public codigo_postal: string | null,
+    public localidad: string | null,
+    public manzana: string | null,
+    public vivienda_referencia: string | null,
+    public asentamiento_id: number | null
+  ) {}
 }

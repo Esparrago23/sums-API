@@ -14,6 +14,7 @@ export class Inmunizacion {
     public cedula_id: number | null,
     public vacuna_id: number,
     public dosis_id: number | null,
+    public otra_vacuna_especificar: string | null,
     public fecha_aplicacion: Date | null
   ) {}
 }

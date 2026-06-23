@@ -12,9 +12,14 @@ export class Persona {
     public alfabetizacion: boolean | null,
     public estado_civil_id: number | null,
     public lengua_id: number | null,
+    public lengua_indigena_especificar: string | null,
     public escolaridad_id: number | null,
     public ocupacion_id: number | null,
+    public ocupacion_texto: string | null,
     public ingreso_salarial_id: number | null,
+    public cuenta_seguridad_social: boolean | null,
+    public presenta_discapacidad: boolean | null,
+    public tipo_discapacidad: string | null,
     public fecha_registro: Date | null,
     public edad?: number
   ) {}
@@ -65,6 +70,9 @@ export class Persona {
  *           type: integer
  *           nullable: true
  *           description: Se guarda en persona_lengua.
+ *         lengua_indigena_especificar:
+ *           type: string
+ *           nullable: true
  *         escolaridad_id:
  *           type: integer
  *           nullable: true
@@ -73,10 +81,25 @@ export class Persona {
  *           type: integer
  *           nullable: true
  *           description: Se guarda en persona_ocupacion.
+ *         ocupacion_texto:
+ *           type: string
+ *           nullable: true
+ *           description: Ocupacion libre cuando no aplica catalogo.
  *         ingreso_salarial_id:
  *           type: integer
  *           nullable: true
- *           description: Se guarda en persona_ingreso; reemplaza ingreso libre.
+ *           description: Se guarda en persona_ingreso.
+ *         cuenta_seguridad_social:
+ *           type: boolean
+ *           nullable: true
+ *           description: Se guarda en persona_seguridad_social.
+ *         presenta_discapacidad:
+ *           type: boolean
+ *           nullable: true
+ *           description: Se guarda en persona_discapacidad.
+ *         tipo_discapacidad:
+ *           type: string
+ *           nullable: true
  *         fecha_registro:
  *           type: string
  *           format: date-time

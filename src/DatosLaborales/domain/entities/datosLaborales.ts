@@ -4,35 +4,33 @@
  *   schemas:
  *     DatosLaborales:
  *       type: object
- *       required:
- *         - id
- *         - turnos
- *         - horario
- *         - rango_horario
- *         - cargo
  *       properties:
  *         id:
  *           type: integer
- *           description: Identificador único de los datos laborales
- *         turnos:
+ *           readOnly: true
+ *         turno_id:
+ *           type: integer
+ *           nullable: true
+ *         horario_inicio:
  *           type: string
- *           description: Turnos de trabajo (matutino, vespertino, nocturno, etc.)
- *         horario:
+ *           nullable: true
+ *         horario_fin:
  *           type: string
- *           description: Horario específico de trabajo
- *         rango_horario:
- *           type: string
- *           description: Rango de horas de la jornada laboral
+ *           nullable: true
  *         cargo:
  *           type: string
- *           description: Cargo o puesto de trabajo que desempeña
+ *           nullable: true
+ *         especialidad:
+ *           type: string
+ *           nullable: true
  */
 export class DatosLaborales {
-    constructor(
-        public id: number,
-        public turnos: string,
-        public horario: string,
-        public rango_horario: string,
-        public cargo: string
-    ) {}
+  constructor(
+    public id: number,
+    public turno_id: number | null,
+    public horario_inicio: string | null,
+    public horario_fin: string | null,
+    public cargo: string | null,
+    public especialidad: string | null
+  ) {}
 }

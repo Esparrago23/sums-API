@@ -2,7 +2,7 @@
  * @swagger
  * /register:
  *   post:
- *     summary: Registrar un nuevo usuario
+ *     summary: Registrar un nuevo usuario básico
  *     tags: [Users]
  *     requestBody:
  *       required: true
@@ -19,7 +19,120 @@
  *               $ref: '#/components/schemas/Usuario'
  *       400:
  *         description: Datos de entrada inválidos
- * 
+ *
+ * /register-entrevistador:
+ *   post:
+ *     summary: Registrar entrevistador completo (Módulos I y II de la cédula)
+ *     description: |
+ *       Crea en una sola petición la unidad de salud (Módulo I), los datos laborales
+ *       y el entrevistador (Módulo II) y el usuario de acceso al sistema.
+ *       Si la CLUES ya existe, actualiza los datos de la unidad de salud.
+ *       El rol `entrevistador` se crea automáticamente si no existe.
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - usuario
+ *               - unidad_salud
+ *               - entrevistador
+ *             properties:
+ *               usuario:
+ *                 type: object
+ *                 required:
+ *                   - nombre_usuario
+ *                   - contrasena
+ *                 properties:
+ *                   nombre_usuario:
+ *                     type: string
+ *                     example: "laura.mendez"
+ *                   contrasena:
+ *                     type: string
+ *                     format: password
+ *                     example: "secreto123"
+ *               unidad_salud:
+ *                 type: object
+ *                 required:
+ *                   - clues
+ *                   - nombre
+ *                 properties:
+ *                   clues:
+ *                     type: string
+ *                     example: "CSMSS000001"
+ *                     description: "Código de 11 caracteres (5 letras + 6 números)"
+ *                   nombre:
+ *                     type: string
+ *                     example: "Centro de Salud Urbano Tonalá"
+ *                   distrito:
+ *                     type: string
+ *                     example: "Distrito Sanitario IV"
+ *                   municipio_id:
+ *                     type: integer
+ *                     example: 42
+ *                   numero_nucleos:
+ *                     type: integer
+ *                     example: 87
+ *               datos_laborales:
+ *                 type: object
+ *                 properties:
+ *                   turno:
+ *                     type: string
+ *                     example: "Matutino"
+ *                     description: "Nombre del turno (Matutino / Vespertino)"
+ *                   horario_inicio:
+ *                     type: string
+ *                     example: "08:00"
+ *                   horario_fin:
+ *                     type: string
+ *                     example: "14:00"
+ *                   cargo:
+ *                     type: string
+ *                     example: "Médico General"
+ *                   especialidad:
+ *                     type: string
+ *                     example: "Medicina Familiar"
+ *               entrevistador:
+ *                 type: object
+ *                 required:
+ *                   - nombre
+ *                 properties:
+ *                   nombre:
+ *                     type: string
+ *                     example: "Dra. Laura Méndez Torres"
+ *     responses:
+ *       201:
+ *         description: Entrevistador registrado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   description: "Usuario creado (sin contraseña)"
+ *                 unidad_salud:
+ *                   type: object
+ *                   description: "Unidad de salud creada o actualizada"
+ *                 datos_laborales:
+ *                   type: object
+ *                   nullable: true
+ *                   description: "Datos laborales creados (null si no se enviaron)"
+ *                 entrevistador:
+ *                   type: object
+ *                   description: "Registro del entrevistador"
+ *       400:
+ *         description: "Datos inválidos o nombre_usuario / CLUES duplicados"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *
  * /login:
  *   post:
  *     summary: Autenticar usuario y obtener token
@@ -161,9 +274,9 @@
  */
 
 import express from 'express';
-import { createUserController, readAllUserController, deleteUserController, 
-         readUserByIdController, updateUserController, loginUserController } from '../user_dependencies';
-
+import { createUserController, readAllUserController, deleteUserController,
+         readUserByIdController, updateUserController, loginUserController,
+         createEntrevistadorUserController } from '../user_dependencies';
 
 import { authMiddleware } from '../middleware/authMiddleware';
 
@@ -171,6 +284,7 @@ export const router = express.Router();
 
 router.post('/register', createUserController.run.bind(createUserController));
 router.post('/login', loginUserController.run.bind(loginUserController));
+router.post('/register-entrevistador', createEntrevistadorUserController.run.bind(createEntrevistadorUserController));
 
 // Protected routes (authentication required)
 router.get('/users', authMiddleware(), readAllUserController.run.bind(readAllUserController));

@@ -5,11 +5,24 @@ import { db } from '../../../core/db_postgresql';
 export class InMemoryDireccionRepository implements IDireccionRepository {
   async create(direccion: Direccion): Promise<Direccion> {
     const query = `
-      INSERT INTO direccion (calle, numero_exterior, colonia, municipio, entidad, codigo_postal)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING *;
+      INSERT INTO direccion (
+        calle, numero_exterior, numero_interior, colonia, codigo_postal,
+        localidad, manzana, vivienda_referencia, asentamiento_id
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING *, id_direccion AS id;
     `;
-    const values = [direccion.calle, direccion.numero_exterior, direccion.colonia, direccion.municipio, direccion.entidad, direccion.codigo_postal];
+    const values = [
+      direccion.calle ?? null,
+      direccion.numero_exterior ?? null,
+      direccion.numero_interior ?? null,
+      direccion.colonia ?? null,
+      direccion.codigo_postal ?? null,
+      direccion.localidad ?? null,
+      direccion.manzana ?? null,
+      direccion.vivienda_referencia ?? null,
+      direccion.asentamiento_id ?? null
+    ];
     const result = await db.executePreparedQuery(query, values);
     return result.rows[0];
   }
@@ -17,11 +30,30 @@ export class InMemoryDireccionRepository implements IDireccionRepository {
   async update(direccion: Direccion): Promise<Direccion> {
     const query = `
       UPDATE direccion
-      SET calle = $1, numero_exterior = $2, colonia = $3, municipio = $4, entidad = $5, codigo_postal = $6
-      WHERE id = $7
-      RETURNING *;
+      SET calle = $1,
+          numero_exterior = $2,
+          numero_interior = $3,
+          colonia = $4,
+          codigo_postal = $5,
+          localidad = $6,
+          manzana = $7,
+          vivienda_referencia = $8,
+          asentamiento_id = $9
+      WHERE id_direccion = $10
+      RETURNING *, id_direccion AS id;
     `;
-    const values = [direccion.calle, direccion.numero_exterior, direccion.colonia, direccion.municipio, direccion.entidad, direccion.codigo_postal, direccion.id];
+    const values = [
+      direccion.calle ?? null,
+      direccion.numero_exterior ?? null,
+      direccion.numero_interior ?? null,
+      direccion.colonia ?? null,
+      direccion.codigo_postal ?? null,
+      direccion.localidad ?? null,
+      direccion.manzana ?? null,
+      direccion.vivienda_referencia ?? null,
+      direccion.asentamiento_id ?? null,
+      direccion.id
+    ];
     const result = await db.executePreparedQuery(query, values);
     if (result.rowCount === 0) {
       throw new Error('Direccion not found');
@@ -31,11 +63,11 @@ export class InMemoryDireccionRepository implements IDireccionRepository {
 
   async readById(id: number): Promise<Direccion> {
     const query = `
-      SELECT * FROM direccion
-      WHERE id = $1;
+      SELECT *, id_direccion AS id
+      FROM direccion
+      WHERE id_direccion = $1;
     `;
-    const values = [id];
-    const result = await db.executePreparedQuery(query, values);
+    const result = await db.executePreparedQuery(query, [id]);
     if (result.rowCount === 0) {
       throw new Error('Direccion not found');
     }
@@ -43,17 +75,14 @@ export class InMemoryDireccionRepository implements IDireccionRepository {
   }
 
   async delete(id: number): Promise<void> {
-    const query = `
-      DELETE FROM direccion
-      WHERE id = $1;
-    `;
-    const values = [id];
-    await db.executePreparedQuery(query, values);
+    await db.executePreparedQuery('DELETE FROM direccion WHERE id_direccion = $1', [id]);
   }
 
   async readAll(): Promise<Direccion[]> {
     const query = `
-      SELECT * FROM direccion;
+      SELECT *, id_direccion AS id
+      FROM direccion
+      ORDER BY id_direccion;
     `;
     const result = await db.executePreparedQuery(query, []);
     return result.rows;
