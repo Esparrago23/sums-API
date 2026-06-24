@@ -11,4 +11,8 @@ export class CatalogosUseCase {
   readAll(key: string): Promise<CatalogoItem[]> {
     return this.repository.readAll(key);
   }
+
+  createCatalogItem(key: string, data: Partial<CatalogoItem>): Promise<CatalogoItem> {
+    return this.repository.createCatalogItem(key, data);
+  }
 }

@@ -15,4 +15,13 @@ export class CatalogosController {
       res.status(404).json({ error: error.message });
     }
   }
+
+  async createCatalogItem(req: Request, res: Response) {
+    try {
+      const item = await this.useCase.createCatalogItem(req.params.catalogo, req.body);
+      res.status(201).json(item);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 }
