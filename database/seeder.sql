@@ -6,6 +6,16 @@ INSERT INTO cat_rol (nombre, descripcion) VALUES
 ('entrevistador', 'Personal de campo que levanta la cédula')
 ON CONFLICT (nombre) DO NOTHING;
 
+-- Insertar Unidad de Salud Dummy
+INSERT INTO unidad_salud (id_unidad_salud, clues, nombre, distrito)
+VALUES (1, 'DUMMYCLUES1', 'Centro de Salud Prueba', 'Distrito 1')
+ON CONFLICT (id_unidad_salud) DO NOTHING;
+
+-- Insertar Entrevistador Dummy
+INSERT INTO entrevistador (id_entrevistador, nombre, unidad_salud_id, fecha_registro)
+VALUES (1, 'Entrevistador Prueba', 1, NOW())
+ON CONFLICT (id_entrevistador) DO NOTHING;
+
 -- Crear un superadmin y un admin por defecto (contraseña generada: 'password' hasheada con bcryptjs)
 -- El hash de 'password' con 10 salt rounds es: $2b$10$xbSgWXvdqYvPbLHv9aV9u.1p9ONjKDav9FS6yXXEAFLibZ3d.KFU6
 INSERT INTO usuario (nombre_usuario, contrasena, rol_id, fecha_registro, activo, unidad_salud_id, entrevistador_id)
@@ -104,15 +114,6 @@ INSERT INTO cat_frecuencia_servicio_salud (nombre) VALUES
 ('Mensual'), ('Cada 6 meses'), ('Anual'), ('Sólo cuando se enferma'), ('Nunca')
 ON CONFLICT (nombre) DO NOTHING;
 
--- Insertar Unidad de Salud Dummy
-INSERT INTO unidad_salud (id_unidad_salud, clues, nombre, distrito)
-VALUES (1, 'DUMMYCLUES1', 'Centro de Salud Prueba', 'Distrito 1')
-ON CONFLICT (id_unidad_salud) DO NOTHING;
-
--- Insertar Entrevistador Dummy
-INSERT INTO entrevistador (id_entrevistador, nombre, unidad_salud_id, fecha_registro)
-VALUES (1, 'Entrevistador Prueba', 1, NOW())
-ON CONFLICT (id_entrevistador) DO NOTHING;
 
 -- Actualizar secuencias (postgres)
 SELECT setval('unidad_salud_id_unidad_salud_seq', (SELECT MAX(id_unidad_salud) FROM unidad_salud));
