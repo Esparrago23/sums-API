@@ -1,5 +1,7 @@
 import express from 'express';
 import { catalogosController } from '../catalogos_dependencies';
+import { validate } from '../../../shared/middleware/validateMiddleware';
+import { catalogoSchema } from '../../domain/schemas/catalogoSchema';
 
 export const router = express.Router();
 

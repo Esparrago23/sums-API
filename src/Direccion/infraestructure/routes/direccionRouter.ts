@@ -77,6 +77,8 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Direccion'
+ *       400:
+ *         description: Invalid input data / Validation error
  *       404:
  *         description: Address not found
  * 
@@ -98,6 +100,8 @@
  */
 
 import express from 'express';
+import { validate } from '../../../shared/middleware/validateMiddleware';
+import { direccionSchema } from '../../domain/schemas/direccionSchema';
 import { createDireccionController } from '../direccion_dependencies';
 import { readAllDireccionController } from '../direccion_dependencies';
 import { deleteDireccionController } from '../direccion_dependencies';
@@ -106,10 +110,10 @@ import { updateDireccionController } from '../direccion_dependencies';
 
 
 export const router = express.Router();
-router.post('/direcciones', createDireccionController.run.bind(createDireccionController));
+router.post('/direcciones', validate(direccionSchema), createDireccionController.run.bind(createDireccionController));
 router.get('/direcciones', readAllDireccionController.run.bind(readAllDireccionController));
 router.delete('/direcciones/:id', deleteDireccionController.run.bind(deleteDireccionController));
 router.get('/direcciones/:id', readDireccionByIdController.run.bind(readDireccionByIdController));
-router.put('/direcciones/:id', updateDireccionController.run.bind(updateDireccionController));
+router.put('/direcciones/:id', validate(direccionSchema), updateDireccionController.run.bind(updateDireccionController));
 
 export default router;

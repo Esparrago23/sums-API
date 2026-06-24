@@ -1,7 +1,7 @@
-// src/Post/infrastructure/services/jwt.ts
+// src/User/infrastructure/services/jwt.ts
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
-const SECRET_KEY = 'mi_secreto';
+const SECRET_KEY = process.env.JWT_SECRET || 'sums_jwt_secret_2026';
 
 interface TokenPayload extends JwtPayload {
   idUsuario: string;
@@ -9,7 +9,7 @@ interface TokenPayload extends JwtPayload {
 }
 
 export const generateToken = (idUsuario: string, rol: string): string => {
-  return jwt.sign({ idUsuario, rol }, SECRET_KEY, { expiresIn: '1h' });
+  return jwt.sign({ idUsuario, rol }, SECRET_KEY, { expiresIn: '7d' });
 };
 
 export const verifyToken = (token: string): TokenPayload => {

@@ -271,14 +271,81 @@
  *         description: User not found
  *       401:
  *         description: Unauthorized access
+ * 
+ * /users/admin/register:
+ *   post:
+ *     summary: Crea un nuevo usuario y le asigna un rol (Solo Admin/Superadmin)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nombre_usuario
+ *               - contrasena
+ *               - rol_id
+ *             properties:
+ *               nombre_usuario:
+ *                 type: string
+ *               contrasena:
+ *                 type: string
+ *                 format: password
+ *               rol_id:
+ *                 type: integer
+ *                 description: "1 = superadmin, 2 = admin, 3 = analista, 4 = entrevistador"
+ *     responses:
+ *       201:
+ *         description: Usuario creado exitosamente
+ *       400:
+ *         description: Errores de validación
+ *       403:
+ *         description: Acceso denegado
+ * 
+ * /users/{id}/role:
+ *   put:
+ *     summary: Actualiza el rol de un usuario (Solo Admin/Superadmin)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - rol_id
+ *             properties:
+ *               rol_id:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Rol actualizado exitosamente
+ *       400:
+ *         description: Errores de validación
+ *       403:
+ *         description: Acceso denegado
  */
 
 import express from 'express';
 import { createUserController, readAllUserController, deleteUserController,
          readUserByIdController, updateUserController, loginUserController,
-         createEntrevistadorUserController } from '../user_dependencies';
+         createEntrevistadorUserController, updateUserRoleController } from '../user_dependencies';
 
 import { authMiddleware } from '../middleware/authMiddleware';
+import { roleMiddleware } from '../../../shared/middleware/roleMiddleware';
+import { validate } from '../../../shared/middleware/validateMiddleware';
+import { createUserAdminSchema, updateUserRoleSchema } from '../../domain/schemas/userSchema';
 
 export const router = express.Router();
 
@@ -291,5 +358,20 @@ router.get('/users', authMiddleware(), readAllUserController.run.bind(readAllUse
 router.delete('/users/:id', authMiddleware(), deleteUserController.run.bind(deleteUserController));
 router.get('/users/:id', authMiddleware(), readUserByIdController.run.bind(readUserByIdController));
 router.put('/users/:id', authMiddleware(), updateUserController.run.bind(updateUserController));
+
+// Admin routes (require roles: 1 = superadmin, 2 = admin)
+router.post(
+  '/users/admin/register',
+  roleMiddleware([1, 2]),
+  validate(createUserAdminSchema),
+  createUserController.run.bind(createUserController)
+);
+
+router.put(
+  '/users/:id/role',
+  roleMiddleware([1, 2]),
+  validate(updateUserRoleSchema),
+  updateUserRoleController.run.bind(updateUserRoleController)
+);
 
 export default router;
