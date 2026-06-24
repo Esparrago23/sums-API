@@ -77,6 +77,8 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Cedula'
+ *       400:
+ *         description: Datos de entrada inválidos
  *       404:
  *         description: Cedula not found
  * 
@@ -98,6 +100,8 @@
  */
 
 import express from 'express';
+import { validate } from '../../../shared/middleware/validateMiddleware';
+import { cedulaSchema } from '../../domain/schemas/cedulaSchema';
 import { createCedulaController } from '../cedula_dependencies';
 import { readAllCedulaController } from '../cedula_dependencies';
 import { deleteCedulaController } from '../cedula_dependencies';
@@ -106,11 +110,11 @@ import { updateCedulaController } from '../cedula_dependencies';
 import { capturaCompletaCedulaController } from '../cedula_dependencies';
 
 export const router = express.Router();
-router.post('/cedulas', createCedulaController.run.bind(createCedulaController));
+router.post('/cedulas', validate(cedulaSchema), createCedulaController.run.bind(createCedulaController));
 router.post('/cedulas/captura-completa', capturaCompletaCedulaController.run.bind(capturaCompletaCedulaController));
 router.get('/cedulas', readAllCedulaController.run.bind(readAllCedulaController));
 router.delete('/cedulas/:id', deleteCedulaController.run.bind(deleteCedulaController));
 router.get('/cedulas/:id', readCedulaByIdController.run.bind(readCedulaByIdController));
-router.put('/cedulas/:id', updateCedulaController.run.bind(updateCedulaController));
+router.put('/cedulas/:id', validate(cedulaSchema), updateCedulaController.run.bind(updateCedulaController));
 
 export default router;

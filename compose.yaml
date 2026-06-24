@@ -36,8 +36,19 @@ services:
       DB_SSLMODE: disable
       ORIGIN_URL_1: ${ORIGIN_URL_1:-}
       ORIGIN_URL_2: ${ORIGIN_URL_2:-}
+      JWT_SECRET: ${JWT_SECRET:-sums_jwt_secret_2026}
+      DB_HOST_DB: ${DB_HOST_DB:-}
+      DB_PORT_DB: ${DB_PORT_DB:-}
+      DB_USER_DB: ${DB_USER_DB:-}
+      DB_PASSWORD_DB: ${DB_PASSWORD_DB:-}
+      DB_TEMPLATE_DB: ${DB_TEMPLATE_DB:-}
+      DB_SSLMODE_DB: ${DB_SSLMODE_DB:-disable}
     ports:
       - "${API_PORT:-3000}:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev
     depends_on:
       db:
         condition: service_healthy

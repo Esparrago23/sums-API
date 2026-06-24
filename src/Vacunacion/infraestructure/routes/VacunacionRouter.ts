@@ -17,6 +17,8 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Vacunacion'
+ *       400:
+ *         description: Datos de entrada inválidos
  * 
  *   get:
  *     summary: Get all vaccination records
@@ -71,6 +73,8 @@
  *     responses:
  *       200:
  *         description: Vaccination record updated successfully
+ *       400:
+ *         description: Datos de entrada inválidos
  *       404:
  *         description: Record not found
  * 
@@ -204,6 +208,8 @@
  */
 
 import express from "express";
+import { validate } from "../../../shared/middleware/validateMiddleware";
+import { vacunacionSchema } from '../../domain/schemas/vacunacionSchema';
 import { createVacunasController } from "../../vacunas_dependencies";
 import { readVacunasByIdController } from "../../vacunas_dependencies";
 import { readAllVacunasController } from "../../vacunas_dependencies";
@@ -234,10 +240,10 @@ router.get("/vacunaciones/por-rango-edad", getVacunacionPorRangoEdadController.r
 // Total de dosis aplicadas por persona (historial/resumen individual)
 router.get("/vacunaciones/dosis-por-persona", getDosisAplicadasPorPersonaController.run.bind(getDosisAplicadasPorPersonaController));
 
-router.post("/vacunaciones",createVacunasController.run.bind(createVacunasController));
+router.post("/vacunaciones", validate(vacunacionSchema), createVacunasController.run.bind(createVacunasController));
 router.get("/vacunaciones",readAllVacunasController.run.bind(readAllVacunasController));
 router.delete("/vacunaciones/:id",deleteVacunasController.run.bind(deleteVacunasController));
 router.get("/vacunaciones/:id",readVacunasByIdController.run.bind(readVacunasByIdController));
-router.put("/vacunaciones/:id",updateVacunasController.run.bind(updateVacunasController));
+router.put("/vacunaciones/:id", validate(vacunacionSchema), updateVacunasController.run.bind(updateVacunasController));
 
 export default router;

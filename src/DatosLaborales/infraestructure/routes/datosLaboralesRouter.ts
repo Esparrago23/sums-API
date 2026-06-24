@@ -9,7 +9,22 @@
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/DatosLaborales'
+ *             type: object
+ *             properties:
+ *               turno_id:
+ *                 type: integer
+ *               horario_inicio:
+ *                 type: string
+ *                 pattern: "^([01]\\d|2[0-3]):([0-5]\\d)(:[0-5]\\d)?$"
+ *                 description: "Formato de hora HH:MM o HH:MM:SS"
+ *               horario_fin:
+ *                 type: string
+ *                 pattern: "^([01]\\d|2[0-3]):([0-5]\\d)(:[0-5]\\d)?$"
+ *               cargo:
+ *                 type: string
+ *               especialidad:
+ *                 type: string
+ *                 description: "Especialidad o 'NA' si no aplica"
  *     responses:
  *       201:
  *         description: Employment data created successfully
@@ -69,7 +84,21 @@
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/DatosLaborales'
+ *             type: object
+ *             properties:
+ *               turno_id:
+ *                 type: integer
+ *               horario_inicio:
+ *                 type: string
+ *                 pattern: "^([01]\\d|2[0-3]):([0-5]\\d)(:[0-5]\\d)?$"
+ *               horario_fin:
+ *                 type: string
+ *                 pattern: "^([01]\\d|2[0-3]):([0-5]\\d)(:[0-5]\\d)?$"
+ *               cargo:
+ *                 type: string
+ *               especialidad:
+ *                 type: string
+ *                 description: "Especialidad o 'NA' si no aplica"
  *     responses:
  *       200:
  *         description: Employment data updated successfully
@@ -103,13 +132,15 @@ import { readAllDatosLaboralesController } from '../datosLaborales_dependencies'
 import { deleteDatosLaboralesController } from '../datosLaborales_dependencies';
 import { readDatosLaboralesByIdController } from '../datosLaborales_dependencies';
 import { updateDatosLaboralesController } from '../datosLaborales_dependencies';
+import { validate } from '../../../shared/middleware/validateMiddleware';
+import { datosLaboralesSchema } from '../../domain/schemas/datosLaboralesSchema';
 
 
 export const router = express.Router();
-router.post('/datos_laborales', createDatosLaboralesController.run.bind(createDatosLaboralesController));
+router.post('/datos_laborales', validate(datosLaboralesSchema), createDatosLaboralesController.run.bind(createDatosLaboralesController));
 router.get('/datos_laborales', readAllDatosLaboralesController.run.bind(readAllDatosLaboralesController));
 router.delete('/datos_laborales/:id', deleteDatosLaboralesController.run.bind(deleteDatosLaboralesController));
 router.get('/datos_laborales/:id', readDatosLaboralesByIdController.run.bind(readDatosLaboralesByIdController));
-router.put('/datos_laborales/:id', updateDatosLaboralesController.run.bind(updateDatosLaboralesController));
+router.put('/datos_laborales/:id', validate(datosLaboralesSchema), updateDatosLaboralesController.run.bind(updateDatosLaboralesController));
 
 export default router;
