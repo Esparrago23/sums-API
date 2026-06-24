@@ -64,72 +64,7 @@
  *           type: integer
  *         required: true
  *         description: ID of the housing record to update
-/**
- * @swagger
- * /viviendas:
- *   post:
- *     summary: Create a new housing record
- *     tags: [Viviendas]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Vivienda'
- *     responses:
- *       201:
- *         description: Housing record created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Vivienda'
- *       400:
- *         description: Invalid input data
- * 
- *   get:
- *     summary: Get all housing records
- *     tags: [Viviendas]
- *     responses:
- *       200:
- *         description: List of all housing records
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Vivienda'
- * 
- * /viviendas/{id}:
- *   get:
- *     summary: Get a housing record by ID
- *     tags: [Viviendas]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *         required: true
- *         description: ID of the housing record
- *     responses:
- *       200:
- *         description: Housing record found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Vivienda'
- *       404:
- *         description: Housing record not found
- * 
- *   put:
- *     summary: Update a housing record
- *     tags: [Viviendas]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *         required: true
- *         description: ID of the housing record to update
+
  *     requestBody:
  *       required: true
  *       content:

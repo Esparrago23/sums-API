@@ -1,5 +1,16 @@
-import express from 'express';
+import fs from 'fs';
 import dotenv from 'dotenv';
+dotenv.config(); // ← MUST be first, before any module that reads process.env
+
+process.on('uncaughtException', (err) => {
+  fs.appendFileSync('crash.log', 'UNCAUGHT EXCEPTION: ' + err.stack + '\n');
+  console.error('UNCAUGHT EXCEPTION:', err);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  fs.appendFileSync('crash.log', 'UNHANDLED REJECTION: ' + reason + '\n');
+  console.error('UNHANDLED REJECTION:', reason);
+});
+import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './src/docs/swagger';
@@ -20,7 +31,6 @@ import DosisRouter from './src/Dosis/infraestructure/routes/dosisRouter';
 import CatalogosRouter from './src/Catalogos/infraestructure/routes/catalogosRouter';
 import NucleoFamiliarRouter from './src/NucleoFamiliar/infraestructure/routes/nucleoFamiliarRouter';
 import PersonaSaludRouter from './src/PersonaSalud/infraestructure/routes/personaSaludRouter';
-dotenv.config();
 
 const app = express();
 
@@ -75,7 +85,8 @@ setInterval(() => {
   });
 }, 24 * 60 * 60 * 1000); // cada 24 horas
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.API_PORT || process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}/sums`);
 });
+// Trigger restart

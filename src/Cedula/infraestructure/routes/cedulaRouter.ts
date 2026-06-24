@@ -65,73 +65,6 @@
  *         required: true
  *         description: ID of the cedula to update
  *     requestBody:
-/**
- * @swagger
- * /cedulas:
- *   post:
- *     summary: Create a new cedula
- *     tags: [Cedulas]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Cedula'
- *     responses:
- *       201:
- *         description: Cedula created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Cedula'
- *       400:
- *         description: Invalid input data
- * 
- *   get:
- *     summary: Get all cedulas
- *     tags: [Cedulas]
- *     responses:
- *       200:
- *         description: List of all cedulas
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Cedula'
- * 
- * /cedulas/{id}:
- *   get:
- *     summary: Get a cedula by ID
- *     tags: [Cedulas]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *         required: true
- *         description: ID of the cedula
- *     responses:
- *       200:
- *         description: Cedula found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Cedula'
- *       404:
- *         description: Cedula not found
- * 
- *   put:
- *     summary: Update a cedula
- *     tags: [Cedulas]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *         required: true
- *         description: ID of the cedula to update
- *     requestBody:
  *       required: true
  *       content:
  *         application/json:
@@ -178,7 +111,7 @@ import { capturaCompletaCedulaController } from '../cedula_dependencies';
 
 export const router = express.Router();
 router.post('/cedulas', validate(cedulaSchema), createCedulaController.run.bind(createCedulaController));
-router.post('/cedulas/captura-completa', validate(cedulaSchema), capturaCompletaCedulaController.run.bind(capturaCompletaCedulaController));
+router.post('/cedulas/captura-completa', capturaCompletaCedulaController.run.bind(capturaCompletaCedulaController));
 router.get('/cedulas', readAllCedulaController.run.bind(readAllCedulaController));
 router.delete('/cedulas/:id', deleteCedulaController.run.bind(deleteCedulaController));
 router.get('/cedulas/:id', readCedulaByIdController.run.bind(readCedulaByIdController));

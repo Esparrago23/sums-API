@@ -38,6 +38,10 @@ services:
       ORIGIN_URL_2: ${ORIGIN_URL_2:-}
     ports:
       - "${API_PORT:-3000}:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev
     depends_on:
       db:
         condition: service_healthy
