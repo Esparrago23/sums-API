@@ -50,5 +50,6 @@ export const router = express.Router();
  */
 router.get('/catalogos', catalogosController.listCatalogos.bind(catalogosController));
 router.get('/catalogos/:catalogo', catalogosController.readAll.bind(catalogosController));
+router.post('/catalogos/:catalogo', catalogosController.createCatalogItem.bind(catalogosController));
 
 export default router;
