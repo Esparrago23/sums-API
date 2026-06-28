@@ -31,6 +31,10 @@ import DosisRouter from './src/Dosis/infraestructure/routes/dosisRouter';
 import CatalogosRouter from './src/Catalogos/infraestructure/routes/catalogosRouter';
 import NucleoFamiliarRouter from './src/NucleoFamiliar/infraestructure/routes/nucleoFamiliarRouter';
 import PersonaSaludRouter from './src/PersonaSalud/infraestructure/routes/personaSaludRouter';
+import EstadisticasOperacionRouter from './src/EstadisticasOperacion/infraestructure/routes/estadisticasOperacionRouter';
+import EstadisticasDemografiaRouter from './src/EstadisticasDemografia/infraestructure/routes/estadisticasDemografiaRouter';
+import EstadisticasSaludRouter from './src/EstadisticasSalud/infraestructure/routes/estadisticasSaludRouter';
+import EstadisticasViviendaRouter from './src/EstadisticasVivienda/infraestructure/routes/estadisticasViviendaRouter';
 
 const app = express();
 
@@ -63,6 +67,10 @@ app.use('/sums',
     VacunacionRouter,
     VacunasRouter,
     ViviendaRouter,
+    EstadisticasOperacionRouter,
+    EstadisticasDemografiaRouter,
+    EstadisticasSaludRouter,
+    EstadisticasViviendaRouter,
 );
 
 // Ruta de prueba para verificar la conexión
