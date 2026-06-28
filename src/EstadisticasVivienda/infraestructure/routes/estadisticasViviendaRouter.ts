@@ -6,6 +6,33 @@
  *     tags: [Estadísticas - Vivienda]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: fecha_inicio
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: "Filtra viviendas cuyo núcleo tenga al menos una cédula con fecha_registro mayor o igual a esta fecha (formato: YYYY-MM-DD)"
+ *       - in: query
+ *         name: fecha_fin
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: "Filtra viviendas cuyo núcleo tenga al menos una cédula con fecha_registro menor o igual a esta fecha (formato: YYYY-MM-DD)"
+ *       - in: query
+ *         name: unidad_salud_id
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         description: "Filtra viviendas cuyo núcleo tenga al menos una cédula de esta unidad de salud"
+ *       - in: query
+ *         name: localidad
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: "Filtra viviendas por localidad (match exacto contra direccion.localidad)"
  *     responses:
  *       200:
  *         description: Estadísticas de servicios básicos obtenidas correctamente
@@ -38,6 +65,8 @@
  *                 con_fosa_septica:
  *                   type: integer
  *                   description: Viviendas con fosa séptica
+ *       400:
+ *         description: Parámetros de filtro inválidos (fecha mal formada o unidad_salud_id no entero)
  *       401:
  *         description: No autorizado (token inválido o ausente)
  *
@@ -47,6 +76,33 @@
  *     tags: [Estadísticas - Vivienda]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: fecha_inicio
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: "Filtra viviendas cuyo núcleo tenga al menos una cédula con fecha_registro mayor o igual a esta fecha (formato: YYYY-MM-DD)"
+ *       - in: query
+ *         name: fecha_fin
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: "Filtra viviendas cuyo núcleo tenga al menos una cédula con fecha_registro menor o igual a esta fecha (formato: YYYY-MM-DD)"
+ *       - in: query
+ *         name: unidad_salud_id
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         description: "Filtra viviendas cuyo núcleo tenga al menos una cédula de esta unidad de salud"
+ *       - in: query
+ *         name: localidad
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: "Filtra viviendas por localidad (match exacto contra direccion.localidad)"
  *     responses:
  *       200:
  *         description: Estadísticas de hacinamiento obtenidas correctamente
@@ -68,6 +124,8 @@
  *                   type: number
  *                   format: float
  *                   description: Promedio de personas por cuarto
+ *       400:
+ *         description: Parámetros de filtro inválidos (fecha mal formada o unidad_salud_id no entero)
  *       401:
  *         description: No autorizado (token inválido o ausente)
  *
@@ -77,6 +135,33 @@
  *     tags: [Estadísticas - Vivienda]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: fecha_inicio
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: "Filtra viviendas cuyo núcleo tenga al menos una cédula con fecha_registro mayor o igual a esta fecha (formato: YYYY-MM-DD)"
+ *       - in: query
+ *         name: fecha_fin
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: "Filtra viviendas cuyo núcleo tenga al menos una cédula con fecha_registro menor o igual a esta fecha (formato: YYYY-MM-DD)"
+ *       - in: query
+ *         name: unidad_salud_id
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         description: "Filtra viviendas cuyo núcleo tenga al menos una cédula de esta unidad de salud"
+ *       - in: query
+ *         name: localidad
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: "Filtra viviendas por localidad (match exacto contra direccion.localidad)"
  *     responses:
  *       200:
  *         description: Estadísticas de materiales y condiciones de riesgo obtenidas correctamente

@@ -206,6 +206,68 @@ export class SeguridadSocialDTO {
   ) {}
 }
 
+// 7. Frecuencia de uso de servicios de salud
+export class ServicioSaludDTO {
+  /**
+   * @swagger
+   * components:
+   *   schemas:
+   *     ServicioSaludDTO:
+   *       type: object
+   *       properties:
+   *         nombre:
+   *           type: string
+   *           description: Nombre de la frecuencia de uso del servicio de salud
+   *         total:
+   *           type: number
+   *           description: Número de personas (distintas) con esa frecuencia de uso
+   */
+  constructor(
+    public nombre: string,
+    public total: number
+  ) {}
+}
+
+// 8. Higiene bucodental
+export class HigieneBucodentalDTO {
+  /**
+   * @swagger
+   * components:
+   *   schemas:
+   *     HigieneBucodentalDTO:
+   *       type: object
+   *       properties:
+   *         diaria:
+   *           type: number
+   *           description: Personas con higiene bucodental diaria
+   *         no_diaria:
+   *           type: number
+   *           description: Personas sin higiene bucodental diaria
+   *         sin_dato:
+   *           type: number
+   *           description: Personas sin dato de higiene bucodental
+   *         total:
+   *           type: number
+   *           description: Total de registros de higiene
+   */
+  constructor(
+    public diaria: number,
+    public no_diaria: number,
+    public sin_dato: number,
+    public total: number
+  ) {}
+}
+
+// Filtros opcionales y combinables aplicables a TODOS los endpoints del módulo (§C).
+// Si un campo viene undefined, ese filtro no se aplica (comportamiento global actual).
+export interface SaludFiltros {
+  fecha_inicio?: string;     // YYYY-MM-DD
+  fecha_fin?: string;        // YYYY-MM-DD
+  unidad_salud_id?: number;  // entero
+  localidad?: string;        // match exacto contra direccion.localidad
+  vacuna_id?: number;        // ID de la vacuna para la pirámide poblacional
+}
+
 // 6. Alimentación
 export class AlimentacionDTO {
   /**
@@ -235,3 +297,31 @@ export class AlimentacionDTO {
     public total_registros: number
   ) {}
 }
+
+// 9. Pirámide poblacional por vacuna
+export class PiramideVacunaDTO {
+  /**
+   * @swagger
+   * components:
+   *   schemas:
+   *     PiramideVacunaDTO:
+   *       type: object
+   *       properties:
+   *         rango_edad:
+   *           type: string
+   *           description: Rango de edad de la persona
+   *         sexo:
+   *           type: string
+   *           description: Sexo de la persona
+   *         total:
+   *           type: number
+   *           description: Total de personas en este rango de edad y sexo con la vacuna
+   *           example: 124
+   */
+  constructor(
+    public rango_edad: string,
+    public sexo: string,
+    public total: number
+  ) {}
+}
+

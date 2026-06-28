@@ -5,15 +5,19 @@ import {
   DiscapacidadDTO,
   SaludPreventivaDTO,
   SeguridadSocialDTO,
-  AlimentacionDTO
+  AlimentacionDTO,
+  ServicioSaludDTO,
+  HigieneBucodentalDTO,
+  SaludFiltros,
+  PiramideVacunaDTO
 } from "../domain/entities/estadisticasSalud";
 
 // 1. Personas por enfermedad crónica
 export class GetEnfermedadesCronicasUseCase {
   constructor(private estadisticasSaludRepository: IEstadisticasSalud) {}
 
-  async execute(): Promise<EnfermedadCronicaDTO[]> {
-    return this.estadisticasSaludRepository.getEnfermedadesCronicas();
+  async execute(filtros?: SaludFiltros): Promise<EnfermedadCronicaDTO[]> {
+    return this.estadisticasSaludRepository.getEnfermedadesCronicas(filtros);
   }
 }
 
@@ -21,8 +25,8 @@ export class GetEnfermedadesCronicasUseCase {
 export class GetToxicomaniasUseCase {
   constructor(private estadisticasSaludRepository: IEstadisticasSalud) {}
 
-  async execute(): Promise<ToxicomaniaDTO[]> {
-    return this.estadisticasSaludRepository.getToxicomanias();
+  async execute(filtros?: SaludFiltros): Promise<ToxicomaniaDTO[]> {
+    return this.estadisticasSaludRepository.getToxicomanias(filtros);
   }
 }
 
@@ -30,8 +34,8 @@ export class GetToxicomaniasUseCase {
 export class GetDiscapacidadUseCase {
   constructor(private estadisticasSaludRepository: IEstadisticasSalud) {}
 
-  async execute(): Promise<DiscapacidadDTO> {
-    return this.estadisticasSaludRepository.getDiscapacidad();
+  async execute(filtros?: SaludFiltros): Promise<DiscapacidadDTO> {
+    return this.estadisticasSaludRepository.getDiscapacidad(filtros);
   }
 }
 
@@ -39,8 +43,8 @@ export class GetDiscapacidadUseCase {
 export class GetSaludPreventivaUseCase {
   constructor(private estadisticasSaludRepository: IEstadisticasSalud) {}
 
-  async execute(): Promise<SaludPreventivaDTO> {
-    return this.estadisticasSaludRepository.getSaludPreventiva();
+  async execute(filtros?: SaludFiltros): Promise<SaludPreventivaDTO> {
+    return this.estadisticasSaludRepository.getSaludPreventiva(filtros);
   }
 }
 
@@ -48,8 +52,8 @@ export class GetSaludPreventivaUseCase {
 export class GetSeguridadSocialUseCase {
   constructor(private estadisticasSaludRepository: IEstadisticasSalud) {}
 
-  async execute(): Promise<SeguridadSocialDTO> {
-    return this.estadisticasSaludRepository.getSeguridadSocial();
+  async execute(filtros?: SaludFiltros): Promise<SeguridadSocialDTO> {
+    return this.estadisticasSaludRepository.getSeguridadSocial(filtros);
   }
 }
 
@@ -57,7 +61,35 @@ export class GetSeguridadSocialUseCase {
 export class GetAlimentacionUseCase {
   constructor(private estadisticasSaludRepository: IEstadisticasSalud) {}
 
-  async execute(): Promise<AlimentacionDTO> {
-    return this.estadisticasSaludRepository.getAlimentacion();
+  async execute(filtros?: SaludFiltros): Promise<AlimentacionDTO> {
+    return this.estadisticasSaludRepository.getAlimentacion(filtros);
   }
 }
+
+// 7. Frecuencia de uso de servicios de salud
+export class GetServiciosSaludUseCase {
+  constructor(private estadisticasSaludRepository: IEstadisticasSalud) {}
+
+  async execute(filtros?: SaludFiltros): Promise<ServicioSaludDTO[]> {
+    return this.estadisticasSaludRepository.getServiciosSalud(filtros);
+  }
+}
+
+// 8. Higiene bucodental
+export class GetHigieneBucodentalUseCase {
+  constructor(private estadisticasSaludRepository: IEstadisticasSalud) {}
+
+  async execute(filtros?: SaludFiltros): Promise<HigieneBucodentalDTO> {
+    return this.estadisticasSaludRepository.getHigieneBucodental(filtros);
+  }
+}
+
+// 9. Pirámide poblacional por vacuna
+export class GetPiramideVacunaUseCase {
+  constructor(private estadisticasSaludRepository: IEstadisticasSalud) {}
+
+  async execute(filtros?: SaludFiltros): Promise<PiramideVacunaDTO[]> {
+    return this.estadisticasSaludRepository.getPiramideVacuna(filtros);
+  }
+}
+

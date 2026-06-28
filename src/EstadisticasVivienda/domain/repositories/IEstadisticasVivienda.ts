@@ -2,19 +2,20 @@ import {
   ServiciosViviendaDTO,
   HacinamientoDTO,
   MaterialesRiesgoDTO,
-  AnimalesDTO
+  AnimalesDTO,
+  ViviendaFiltros
 } from "../entities/consultas";
 
 export interface IEstadisticasVivienda {
   // 1. Servicios básicos de la vivienda
-  getServicios(): Promise<ServiciosViviendaDTO>;
+  getServicios(filtros?: ViviendaFiltros): Promise<ServiciosViviendaDTO>;
 
   // 2. Hacinamiento (habitantes / cuartos > 2.5)
-  getHacinamiento(): Promise<HacinamientoDTO>;
+  getHacinamiento(filtros?: ViviendaFiltros): Promise<HacinamientoDTO>;
 
   // 3. Materiales y condiciones de riesgo
-  getMaterialesRiesgo(): Promise<MaterialesRiesgoDTO>;
+  getMaterialesRiesgo(filtros?: ViviendaFiltros): Promise<MaterialesRiesgoDTO>;
 
   // 4. Animales / mascotas
-  getAnimales(): Promise<AnimalesDTO>;
+  getAnimales(filtros?: ViviendaFiltros): Promise<AnimalesDTO>;
 }

@@ -117,3 +117,78 @@ export class DistribucionLenguaDTO {
       public total: number
     ) {}
 }
+
+// 6. Distribución por ingreso salarial
+export class DistribucionIngresoDTO {
+    /**
+     * @swagger
+     * components:
+     *   schemas:
+     *     DistribucionIngresoDTO:
+     *       type: object
+     *       properties:
+     *         rango:
+     *           type: string
+     *           description: Rango de ingreso salarial
+     *         total:
+     *           type: number
+     *           description: Total de personas en ese rango de ingreso
+     */
+    constructor(
+      public rango: string,
+      public total: number
+    ) {}
+}
+
+// 7. Distribución por ocupación
+export class DistribucionOcupacionDTO {
+    /**
+     * @swagger
+     * components:
+     *   schemas:
+     *     DistribucionOcupacionDTO:
+     *       type: object
+     *       properties:
+     *         nombre:
+     *           type: string
+     *           description: Nombre de la ocupación
+     *         total:
+     *           type: number
+     *           description: Total de personas con esa ocupación
+     */
+    constructor(
+      public nombre: string,
+      public total: number
+    ) {}
+}
+
+// 8. Distribución por estado civil
+export class DistribucionEstadoCivilDTO {
+    /**
+     * @swagger
+     * components:
+     *   schemas:
+     *     DistribucionEstadoCivilDTO:
+     *       type: object
+     *       properties:
+     *         nombre:
+     *           type: string
+     *           description: Nombre del estado civil
+     *         total:
+     *           type: number
+     *           description: Total de personas con ese estado civil
+     */
+    constructor(
+      public nombre: string,
+      public total: number
+    ) {}
+}
+
+// Filtros opcionales y combinables aplicables a TODOS los endpoints del módulo (§C).
+// Si un campo viene undefined, ese filtro no se aplica (comportamiento global).
+export interface DemografiaFiltros {
+  fecha_inicio?: string;     // YYYY-MM-DD
+  fecha_fin?: string;        // YYYY-MM-DD
+  unidad_salud_id?: number;  // entero
+  localidad?: string;        // match exacto contra direccion.localidad
+}

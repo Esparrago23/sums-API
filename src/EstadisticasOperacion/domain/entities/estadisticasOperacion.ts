@@ -67,3 +67,25 @@ export interface CedulasPorLocalidadDTO {
   localidad: string;
   total: number;
 }
+
+// 10. Cédulas por colonia
+export interface CedulasPorColoniaDTO {
+  colonia: string;
+  total: number;
+}
+
+// 11. Histograma de tamaño de núcleos familiares
+export interface NucleosTamanoDTO {
+  integrantes: number;
+  total_nucleos: number;
+}
+
+// Filtros §C: parámetros opcionales y combinables para acotar las
+// estadísticas globales basadas en cédula. Todos los campos son opcionales;
+// si ninguno llega, el comportamiento es el actual (sin filtros).
+export interface FiltrosEstadisticas {
+  fecha_inicio?: string;     // YYYY-MM-DD (cedula.fecha_registro >= )
+  fecha_fin?: string;        // YYYY-MM-DD (cedula.fecha_registro <= )
+  unidad_salud_id?: number;  // cedula.unidad_salud_id =
+  localidad?: string;        // direccion.localidad = (exacto, vía nucleo_direccion)
+}

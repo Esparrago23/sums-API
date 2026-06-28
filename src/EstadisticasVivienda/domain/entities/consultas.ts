@@ -58,3 +58,12 @@ export class AnimalesDTO {
     public mascotas: MascotasDTO
   ) {}
 }
+
+// Filtros opcionales y combinables aplicables a TODOS los endpoints del módulo (§C).
+// Si un campo viene undefined, ese filtro no se aplica (comportamiento actual).
+export interface ViviendaFiltros {
+  fecha_inicio?: string;     // YYYY-MM-DD
+  fecha_fin?: string;        // YYYY-MM-DD
+  unidad_salud_id?: number;  // entero
+  localidad?: string;        // match exacto contra direccion.localidad
+}

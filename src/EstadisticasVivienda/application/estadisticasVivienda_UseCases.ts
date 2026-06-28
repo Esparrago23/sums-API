@@ -3,15 +3,16 @@ import {
   ServiciosViviendaDTO,
   HacinamientoDTO,
   MaterialesRiesgoDTO,
-  AnimalesDTO
+  AnimalesDTO,
+  ViviendaFiltros
 } from "../domain/entities/consultas";
 
 // 1. Servicios básicos de la vivienda
 export class GetServiciosUseCase {
   constructor(private estadisticasViviendaRepository: IEstadisticasVivienda) {}
 
-  async execute(): Promise<ServiciosViviendaDTO> {
-    return this.estadisticasViviendaRepository.getServicios();
+  async execute(filtros?: ViviendaFiltros): Promise<ServiciosViviendaDTO> {
+    return this.estadisticasViviendaRepository.getServicios(filtros);
   }
 }
 
@@ -19,8 +20,8 @@ export class GetServiciosUseCase {
 export class GetHacinamientoUseCase {
   constructor(private estadisticasViviendaRepository: IEstadisticasVivienda) {}
 
-  async execute(): Promise<HacinamientoDTO> {
-    return this.estadisticasViviendaRepository.getHacinamiento();
+  async execute(filtros?: ViviendaFiltros): Promise<HacinamientoDTO> {
+    return this.estadisticasViviendaRepository.getHacinamiento(filtros);
   }
 }
 
@@ -28,8 +29,8 @@ export class GetHacinamientoUseCase {
 export class GetMaterialesRiesgoUseCase {
   constructor(private estadisticasViviendaRepository: IEstadisticasVivienda) {}
 
-  async execute(): Promise<MaterialesRiesgoDTO> {
-    return this.estadisticasViviendaRepository.getMaterialesRiesgo();
+  async execute(filtros?: ViviendaFiltros): Promise<MaterialesRiesgoDTO> {
+    return this.estadisticasViviendaRepository.getMaterialesRiesgo(filtros);
   }
 }
 
@@ -37,7 +38,7 @@ export class GetMaterialesRiesgoUseCase {
 export class GetAnimalesUseCase {
   constructor(private estadisticasViviendaRepository: IEstadisticasVivienda) {}
 
-  async execute(): Promise<AnimalesDTO> {
-    return this.estadisticasViviendaRepository.getAnimales();
+  async execute(filtros?: ViviendaFiltros): Promise<AnimalesDTO> {
+    return this.estadisticasViviendaRepository.getAnimales(filtros);
   }
 }

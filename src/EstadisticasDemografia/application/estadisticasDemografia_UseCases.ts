@@ -4,15 +4,19 @@ import {
   DistribucionGeneroDTO,
   DistribucionEscolaridadDTO,
   AlfabetizacionDTO,
-  DistribucionLenguaDTO
+  DistribucionLenguaDTO,
+  DistribucionIngresoDTO,
+  DistribucionOcupacionDTO,
+  DistribucionEstadoCivilDTO,
+  DemografiaFiltros
 } from "../domain/entities/demografia";
 
 // 1. Pirámide poblacional (rango de edad x sexo)
 export class GetPiramidePoblacionalUseCase {
   constructor(private estadisticasDemografiaRepository: IestadisticasDemografia) {}
 
-  async execute(): Promise<PiramidePoblacionalDTO[]> {
-    return this.estadisticasDemografiaRepository.getPiramidePoblacional();
+  async execute(filtros?: DemografiaFiltros): Promise<PiramidePoblacionalDTO[]> {
+    return this.estadisticasDemografiaRepository.getPiramidePoblacional(filtros);
   }
 }
 
@@ -20,8 +24,8 @@ export class GetPiramidePoblacionalUseCase {
 export class GetDistribucionGeneroUseCase {
   constructor(private estadisticasDemografiaRepository: IestadisticasDemografia) {}
 
-  async execute(): Promise<DistribucionGeneroDTO[]> {
-    return this.estadisticasDemografiaRepository.getDistribucionGenero();
+  async execute(filtros?: DemografiaFiltros): Promise<DistribucionGeneroDTO[]> {
+    return this.estadisticasDemografiaRepository.getDistribucionGenero(filtros);
   }
 }
 
@@ -29,8 +33,8 @@ export class GetDistribucionGeneroUseCase {
 export class GetDistribucionEscolaridadUseCase {
   constructor(private estadisticasDemografiaRepository: IestadisticasDemografia) {}
 
-  async execute(): Promise<DistribucionEscolaridadDTO[]> {
-    return this.estadisticasDemografiaRepository.getDistribucionEscolaridad();
+  async execute(filtros?: DemografiaFiltros): Promise<DistribucionEscolaridadDTO[]> {
+    return this.estadisticasDemografiaRepository.getDistribucionEscolaridad(filtros);
   }
 }
 
@@ -38,8 +42,8 @@ export class GetDistribucionEscolaridadUseCase {
 export class GetAlfabetizacionUseCase {
   constructor(private estadisticasDemografiaRepository: IestadisticasDemografia) {}
 
-  async execute(): Promise<AlfabetizacionDTO> {
-    return this.estadisticasDemografiaRepository.getAlfabetizacion();
+  async execute(filtros?: DemografiaFiltros): Promise<AlfabetizacionDTO> {
+    return this.estadisticasDemografiaRepository.getAlfabetizacion(filtros);
   }
 }
 
@@ -47,7 +51,34 @@ export class GetAlfabetizacionUseCase {
 export class GetDistribucionLenguaUseCase {
   constructor(private estadisticasDemografiaRepository: IestadisticasDemografia) {}
 
-  async execute(): Promise<DistribucionLenguaDTO[]> {
-    return this.estadisticasDemografiaRepository.getDistribucionLengua();
+  async execute(filtros?: DemografiaFiltros): Promise<DistribucionLenguaDTO[]> {
+    return this.estadisticasDemografiaRepository.getDistribucionLengua(filtros);
+  }
+}
+
+// 6. Distribución por ingreso salarial
+export class GetDistribucionIngresoUseCase {
+  constructor(private estadisticasDemografiaRepository: IestadisticasDemografia) {}
+
+  async execute(filtros?: DemografiaFiltros): Promise<DistribucionIngresoDTO[]> {
+    return this.estadisticasDemografiaRepository.getDistribucionIngreso(filtros);
+  }
+}
+
+// 7. Distribución por ocupación
+export class GetDistribucionOcupacionUseCase {
+  constructor(private estadisticasDemografiaRepository: IestadisticasDemografia) {}
+
+  async execute(filtros?: DemografiaFiltros): Promise<DistribucionOcupacionDTO[]> {
+    return this.estadisticasDemografiaRepository.getDistribucionOcupacion(filtros);
+  }
+}
+
+// 8. Distribución por estado civil
+export class GetDistribucionEstadoCivilUseCase {
+  constructor(private estadisticasDemografiaRepository: IestadisticasDemografia) {}
+
+  async execute(filtros?: DemografiaFiltros): Promise<DistribucionEstadoCivilDTO[]> {
+    return this.estadisticasDemografiaRepository.getDistribucionEstadoCivil(filtros);
   }
 }

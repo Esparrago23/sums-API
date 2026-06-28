@@ -6,7 +6,10 @@ import {
   GetDiscapacidadUseCase,
   GetSaludPreventivaUseCase,
   GetSeguridadSocialUseCase,
-  GetAlimentacionUseCase
+  GetAlimentacionUseCase,
+  GetServiciosSaludUseCase,
+  GetHigieneBucodentalUseCase,
+  GetPiramideVacunaUseCase
 } from "./application/estadisticasSalud_UseCases";
 
 import { EstadisticasSaludController } from "./infraestructure/controllers/EstadisticasSaludController";
@@ -19,6 +22,9 @@ export const getDiscapacidadUseCase = new GetDiscapacidadUseCase(estadisticasSal
 export const getSaludPreventivaUseCase = new GetSaludPreventivaUseCase(estadisticasSaludRepository);//4
 export const getSeguridadSocialUseCase = new GetSeguridadSocialUseCase(estadisticasSaludRepository);//5
 export const getAlimentacionUseCase = new GetAlimentacionUseCase(estadisticasSaludRepository);//6
+export const getServiciosSaludUseCase = new GetServiciosSaludUseCase(estadisticasSaludRepository);//7
+export const getHigieneBucodentalUseCase = new GetHigieneBucodentalUseCase(estadisticasSaludRepository);//8
+export const getPiramideVacunaUseCase = new GetPiramideVacunaUseCase(estadisticasSaludRepository);//9
 
 export const estadisticasSaludController = new EstadisticasSaludController(
   getEnfermedadesCronicasUseCase,
@@ -26,5 +32,8 @@ export const estadisticasSaludController = new EstadisticasSaludController(
   getDiscapacidadUseCase,
   getSaludPreventivaUseCase,
   getSeguridadSocialUseCase,
-  getAlimentacionUseCase
+  getAlimentacionUseCase,
+  getServiciosSaludUseCase,
+  getHigieneBucodentalUseCase,
+  getPiramideVacunaUseCase
 );
