@@ -43,6 +43,10 @@ const swaggerOptions: swaggerJSDoc.Options = {
     './src/Vacunacion/**/*.ts',
     './src/Vacunas/**/*.ts',
     './src/Vivienda/**/*.ts',
+    './src/EstadisticasOperacion/**/*.ts',
+    './src/EstadisticasDemografia/**/*.ts',
+    './src/EstadisticasSalud/**/*.ts',
+    './src/EstadisticasVivienda/**/*.ts',
   ],
 };
 

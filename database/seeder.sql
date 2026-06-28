@@ -1,3 +1,18 @@
+-- =============================================================================
+-- Catálogos alineados a la CÉDULA OFICIAL de Microdiagnóstico Familiar IMSS-BIENESTAR
+-- (jun-2026). Se corrigieron: escolaridad, lengua, atención embarazo, frecuencia de
+-- servicio de salud, animales (Porcinos) y se completó el esquema de vacunación.
+--
+-- NOTA: los INSERT usan ON CONFLICT DO NOTHING (no reemplazan valores previos). Si la BD
+-- ya tenía catálogos con los valores viejos (p.ej. 'Preparatoria', 'Cerdos'), para dejar
+-- el catálogo limpio hay que vaciar primero las tablas cat_* afectadas. En una BD de
+-- desarrollo sin datos importantes:
+--   TRUNCATE cat_escolaridad, cat_lengua, cat_animal, cat_atencion_embarazo,
+--            cat_frecuencia_servicio_salud, cat_toxicomania, cat_enfermedad_cronica
+--            RESTART IDENTITY CASCADE;
+-- (CASCADE borra también las filas persona_* que referencien esos catálogos.)
+-- =============================================================================
+
 -- Insertar Roles
 INSERT INTO cat_rol (nombre, descripcion) VALUES
 ('superadmin', 'Acceso total al sistema'),
@@ -25,18 +40,25 @@ VALUES
 ('entrevistador1', '$2b$10$xbSgWXvdqYvPbLHv9aV9u.1p9ONjKDav9FS6yXXEAFLibZ3d.KFU6', 4, NOW(), true, 1, 1)
 ON CONFLICT (nombre_usuario) DO NOTHING;
 
--- Insertar Vacunas
+-- Insertar Vacunas (esquema oficial completo de la Cédula de Microdiagnóstico)
 INSERT INTO vacuna (nombre, descripcion) VALUES
 ('BCG', 'Tuberculosis'),
+('COVID-19', 'COVID-19'),
+('DPT (Difteria, bordetella pertusis y tétanos)', 'Difteria, tos ferina, tétanos'),
+('Hepatitis A', 'Hepatitis A'),
 ('Hepatitis B', 'Hepatitis B'),
 ('Hexavalente (DPaT+VPI+Hib+HepB)', 'Difteria, tos ferina, tétanos, polio, Haemophilus influenzae B y Hepatitis B'),
-('Rotavirus (RV1)', 'Diarrea por rotavirus'),
+('Influenza estacional', 'Influenza'),
 ('Neumocócica conjugada (13 valente)', 'Neumonía, meningitis, otitis'),
 ('Neumocócica Polisacárida (23 serotipos)', 'Neumonía, meningitis'),
-('Influenza estacional', 'Influenza'),
-('DPT (Difteria, bordetella pertusis y tétanos)', 'Difteria, tos ferina, tétanos'),
+('Rotavirus (RV1)', 'Diarrea por rotavirus'),
 ('SR (Sarampión,rubeola)', 'Sarampión, rubéola'),
-('COVID-19', 'COVID-19')
+('SRP Triple viral (Sarampión, rubeola y parotiditis)', 'Sarampión, rubéola, parotiditis'),
+('Td (Tétanos, difteria)', 'Tétanos, difteria'),
+('Tdpa (Tétanos, difteria, tos ferina)', 'Tétanos, difteria, tos ferina'),
+('VPH (Virus del Papiloma Humano)', 'Virus del papiloma humano'),
+('Varicela', 'Varicela'),
+('Otra', 'Otra vacuna (especifique)')
 ON CONFLICT (nombre) DO NOTHING;
 
 -- Insertar Dosis
@@ -69,14 +91,14 @@ INSERT INTO cat_ocupacion (nombre) VALUES
 ('Estudiante'), ('Hogar'), ('Desempleo')
 ON CONFLICT (nombre) DO NOTHING;
 
--- Insertar Toxicomanías
+-- Insertar Toxicomanías (cédula: si no consume, se anota "NA" → sin fila)
 INSERT INTO cat_toxicomania (nombre) VALUES
-('Alcoholismo'), ('Tabaquismo'), ('Ninguna'), ('Otra')
+('Alcoholismo'), ('Tabaquismo'), ('Otras sustancias')
 ON CONFLICT (nombre) DO NOTHING;
 
--- Insertar Enfermedades Crónicas
+-- Insertar Enfermedades Crónicas (cédula: si no padece, se anota "NA" → sin fila)
 INSERT INTO cat_enfermedad_cronica (nombre) VALUES
-('Obesidad'), ('Hipertensión'), ('Diabetes Mellitus tipo 2'), ('Tosedor crónico'), ('Ninguna')
+('Obesidad'), ('Hipertensión'), ('Diabetes Mellitus tipo 2'), ('Tosedor crónico')
 ON CONFLICT (nombre) DO NOTHING;
 
 -- Insertar Ingreso Salarial
@@ -89,29 +111,29 @@ INSERT INTO cat_ingreso_salarial (rango, descripcion) VALUES
 ('No recibe ingresos', 'Sin ingresos')
 ON CONFLICT (rango) DO NOTHING;
 
--- Insertar Escolaridad
+-- Insertar Escolaridad (cédula: si no cuenta con escolaridad, se anota "NA" → sin fila)
 INSERT INTO cat_escolaridad (nombre) VALUES
-('Ninguna'), ('Primaria'), ('Secundaria'), ('Preparatoria'), ('Licenciatura'), ('Posgrado')
+('Preescolar'), ('Primaria'), ('Secundaria'), ('Bachillerato'), ('Licenciatura'), ('Maestría'), ('Doctorado')
 ON CONFLICT (nombre) DO NOTHING;
 
--- Insertar Lengua
+-- Insertar Lengua (cédula: Español o Lengua indígena; el nombre va en lengua_indigena_especificar)
 INSERT INTO cat_lengua (nombre) VALUES
-('Español'), ('Náhuatl'), ('Maya'), ('Zapoteco'), ('Mixteco'), ('Otra')
+('Español'), ('Lengua indígena')
 ON CONFLICT (nombre) DO NOTHING;
 
--- Insertar Animales
+-- Insertar Animales (cédula "otros animales"; perros/gatos van en la tabla vivienda)
 INSERT INTO cat_animal (nombre) VALUES
-('Aves de corral'), ('Bovinos'), ('Cerdos'), ('Perros'), ('Gatos'), ('Caballos'), ('Otros')
+('Aves de corral'), ('Bovinos'), ('Porcinos'), ('Otros')
 ON CONFLICT (nombre) DO NOTHING;
 
--- Insertar Atencion Embarazo
+-- Insertar Atencion Embarazo (cédula: Sector Público / Sector Privado / Hogar)
 INSERT INTO cat_atencion_embarazo (nombre) VALUES
-('Ninguno'), ('IMSS'), ('ISSSTE'), ('Secretaría de Salud'), ('Privado'), ('Otro')
+('Sector Público'), ('Sector Privado'), ('Hogar')
 ON CONFLICT (nombre) DO NOTHING;
 
--- Insertar Frecuencia Servicio de Salud
+-- Insertar Frecuencia Servicio de Salud (cédula: Mensual / Trimestral / Semestral / Anual)
 INSERT INTO cat_frecuencia_servicio_salud (nombre) VALUES
-('Mensual'), ('Cada 6 meses'), ('Anual'), ('Sólo cuando se enferma'), ('Nunca')
+('Mensual'), ('Trimestral'), ('Semestral'), ('Anual')
 ON CONFLICT (nombre) DO NOTHING;
 
 
