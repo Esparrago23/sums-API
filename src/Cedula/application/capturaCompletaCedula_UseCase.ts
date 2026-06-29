@@ -1,4 +1,5 @@
 import { db } from '../../core/db_postgresql';
+import { encryptValue } from '../../shared/security/sensitiveFields';
 
 type Dict = Record<string, any>;
 
@@ -100,14 +101,14 @@ export class CapturaCompletaCedulaUseCase {
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING id_direccion;`,
       [
-        calle,
-        this.textValue(familia.numero_exterior),
-        this.textValue(familia.numero_interior),
-        this.textValue(familia.colonia),
+        encryptValue('direccion', 'calle', calle),
+        encryptValue('direccion', 'numero_exterior', this.textValue(familia.numero_exterior)),
+        encryptValue('direccion', 'numero_interior', this.textValue(familia.numero_interior)),
+        encryptValue('direccion', 'colonia', this.textValue(familia.colonia)),
         this.textValue(familia.codigo_postal),
         localidad,
         manzana,
-        viviendaReferencia,
+        encryptValue('direccion', 'vivienda_referencia', viviendaReferencia),
         this.intValue(familia.asentamiento_id)
       ]
     );
@@ -234,10 +235,10 @@ export class CapturaCompletaCedulaUseCase {
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
        RETURNING id_persona;`,
       [
-        nameParts.primer_nombre,
-        nameParts.segundo_nombre,
-        nameParts.apellido_paterno,
-        nameParts.apellido_materno,
+        encryptValue('persona', 'primer_nombre', nameParts.primer_nombre),
+        encryptValue('persona', 'segundo_nombre', nameParts.segundo_nombre),
+        encryptValue('persona', 'apellido_paterno', nameParts.apellido_paterno),
+        encryptValue('persona', 'apellido_materno', nameParts.apellido_materno),
         fechaNacimiento,
         sexo,
         estadoCivilId,
