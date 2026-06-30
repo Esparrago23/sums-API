@@ -93,7 +93,7 @@ setInterval(() => {
   });
 }, 24 * 60 * 60 * 1000); // cada 24 horas
 
-const PORT = process.env.API_PORT || process.env.PORT || 3000;
+const PORT = process.env.PORT || process.env.API_PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}/sums`);
 });

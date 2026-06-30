@@ -10,12 +10,8 @@ const swaggerOptions: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: 'https://sums-api.troy.engineer/sums',
-        description: 'Production server',
-      },
-      {
-        url: `http://localhost:${process.env.PORT || process.env.API_PORT || 3000}/sums`,
-        description: 'Development server',
+        url: '/sums',
+        description: 'Current environment',
       },
     ],
     components: {

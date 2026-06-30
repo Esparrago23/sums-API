@@ -1,4 +1,5 @@
 import { db } from "../../../core/db_postgresql";
+import { decrypt } from "../../../shared/security/encryption";
 import {
   IestadisticasOperacion,
   PeriodoAgrupacion,
@@ -334,7 +335,10 @@ export class EstadisticasOperacionRepo implements IestadisticasOperacion {
       ${whereExtra}
       GROUP BY d.colonia ORDER BY total DESC;
     `;
-    return await db.fetchRows(query, valores);
+    const rows = await db.fetchRows(query, valores);
+    // colonia se cifra de forma DETERMINISTA -> el GROUP BY agrupa correctamente;
+    // aquí se descifra la etiqueta para mostrar el nombre real de la colonia.
+    return rows.map((r: any) => ({ ...r, colonia: decrypt(r.colonia, "direccion") }));
   }
 
   // 11. Histograma de tamaño de núcleos familiares (con filtros §C)

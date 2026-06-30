@@ -11,6 +11,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/schema.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
+      - ./database/seeder.sql:/docker-entrypoint-initdb.d/20-seeder.sql:ro
     healthcheck:
       test:
         [
