@@ -13,6 +13,10 @@
 -- (CASCADE borra también las filas persona_* que referencien esos catálogos.)
 -- =============================================================================
 
+-- Garantiza que siempre se ejecuta contra la BD template, tanto en Docker init
+-- como si se corre manualmente con psql.
+\c sums_template
+
 -- Insertar Roles
 INSERT INTO cat_rol (nombre, descripcion) VALUES
 ('superadmin', 'Acceso total al sistema'),
@@ -31,13 +35,14 @@ INSERT INTO entrevistador (id_entrevistador, nombre, unidad_salud_id, fecha_regi
 VALUES (1, 'Entrevistador Prueba', 1, NOW())
 ON CONFLICT (id_entrevistador) DO NOTHING;
 
--- Crear un superadmin y un admin por defecto (contraseña generada: 'password' hasheada con bcryptjs)
--- El hash de 'password' con 10 salt rounds es: $2b$10$xbSgWXvdqYvPbLHv9aV9u.1p9ONjKDav9FS6yXXEAFLibZ3d.KFU6
+-- Crear un superadmin y un admin por defecto (contraseña: 'password' hasheada con bcryptjs 10 rounds)
+-- Hash regenerado y verificado localmente. Para generar uno nuevo:
+--   node -e "require('bcryptjs').hash('password',10).then(h=>console.log(h))"
 INSERT INTO usuario (nombre_usuario, contrasena, rol_id, fecha_registro, activo, unidad_salud_id, entrevistador_id)
 VALUES
-('superadmin_master', '$2b$10$xbSgWXvdqYvPbLHv9aV9u.1p9ONjKDav9FS6yXXEAFLibZ3d.KFU6', 1, NOW(), true, NULL, NULL),
-('admin_regional', '$2b$10$xbSgWXvdqYvPbLHv9aV9u.1p9ONjKDav9FS6yXXEAFLibZ3d.KFU6', 2, NOW(), true, NULL, NULL),
-('entrevistador1', '$2b$10$xbSgWXvdqYvPbLHv9aV9u.1p9ONjKDav9FS6yXXEAFLibZ3d.KFU6', 4, NOW(), true, 1, 1)
+('superadmin_master', '$2b$10$LGMEBhV7TDSP4/0pQb9LeefrwTmslagVIAAHGsBALf4Xq2WzX/dW.', 1, NOW(), true, NULL, NULL),
+('admin_regional', '$2b$10$LGMEBhV7TDSP4/0pQb9LeefrwTmslagVIAAHGsBALf4Xq2WzX/dW.', 2, NOW(), true, NULL, NULL),
+('entrevistador1', '$2b$10$LGMEBhV7TDSP4/0pQb9LeefrwTmslagVIAAHGsBALf4Xq2WzX/dW.', 4, NOW(), true, 1, 1)
 ON CONFLICT (nombre_usuario) DO NOTHING;
 
 -- Insertar Vacunas (esquema oficial completo de la Cédula de Microdiagnóstico)

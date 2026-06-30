@@ -1,5 +1,8 @@
 # Cifrado de datos sensibles en reposo (4º entregable)
 
+> Diagrama de componentes de cómo funciona: [`docs/cifrado_componentes.puml`](docs/cifrado_componentes.puml).
+
+
 La API cifra de forma **transparente** los datos personales sensibles antes de guardarlos en
 PostgreSQL y los descifra al leerlos. Portado del patrón "universal" del profesor
 (<https://github.com/RodrigoMijangos/encription_pipeline>) a TypeScript y **endurecido con
