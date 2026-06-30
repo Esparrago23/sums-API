@@ -48,14 +48,14 @@ CREATE TABLE "cat_asentamiento" (
 
 CREATE TABLE "direccion" (
   "id_direccion" SERIAL PRIMARY KEY,
-  "calle" VARCHAR(150),
-  "numero_exterior" VARCHAR(50),
-  "numero_interior" VARCHAR(50),
-  "colonia" VARCHAR(150),
+  "calle" TEXT,
+  "numero_exterior" TEXT,
+  "numero_interior" TEXT,
+  "colonia" TEXT,
   "codigo_postal" VARCHAR(10),
   "localidad" VARCHAR(150),
   "manzana" VARCHAR(50),
-  "vivienda_referencia" VARCHAR(50),
+  "vivienda_referencia" TEXT,
   "asentamiento_id" INT
 );
 
@@ -155,10 +155,10 @@ CREATE TABLE "cat_ingreso_salarial" (
 
 CREATE TABLE "persona" (
   "id_persona" SERIAL PRIMARY KEY,
-  "primer_nombre" VARCHAR(100) NOT NULL,
-  "segundo_nombre" VARCHAR(100),
-  "apellido_paterno" VARCHAR(100) NOT NULL,
-  "apellido_materno" VARCHAR(100),
+  "primer_nombre" TEXT NOT NULL,
+  "segundo_nombre" TEXT,
+  "apellido_paterno" TEXT NOT NULL,
+  "apellido_materno" TEXT,
   "fecha_nacimiento" DATE NOT NULL,
   "sexo" sexo_persona NOT NULL,
   "estado_civil_id" INT,

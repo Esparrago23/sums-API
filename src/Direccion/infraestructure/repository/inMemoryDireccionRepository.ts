@@ -1,6 +1,7 @@
 import { Direccion } from '../../domain/entities/direccion';
 import { IDireccionRepository } from '../../domain/repository/IDireccionRepository';
 import { db } from '../../../core/db_postgresql';
+import { encryptValue, decryptRow } from '../../../shared/security/sensitiveFields';
 
 export class InMemoryDireccionRepository implements IDireccionRepository {
   async create(direccion: Direccion): Promise<Direccion> {
@@ -13,18 +14,18 @@ export class InMemoryDireccionRepository implements IDireccionRepository {
       RETURNING *, id_direccion AS id;
     `;
     const values = [
-      direccion.calle ?? null,
-      direccion.numero_exterior ?? null,
-      direccion.numero_interior ?? null,
-      direccion.colonia ?? null,
+      encryptValue('direccion', 'calle', direccion.calle ?? null),
+      encryptValue('direccion', 'numero_exterior', direccion.numero_exterior ?? null),
+      encryptValue('direccion', 'numero_interior', direccion.numero_interior ?? null),
+      encryptValue('direccion', 'colonia', direccion.colonia ?? null),
       direccion.codigo_postal ?? null,
       direccion.localidad ?? null,
       direccion.manzana ?? null,
-      direccion.vivienda_referencia ?? null,
+      encryptValue('direccion', 'vivienda_referencia', direccion.vivienda_referencia ?? null),
       direccion.asentamiento_id ?? null
     ];
     const result = await db.executePreparedQuery(query, values);
-    return result.rows[0];
+    return decryptRow('direccion', result.rows[0]);
   }
 
   async update(direccion: Direccion): Promise<Direccion> {
@@ -43,14 +44,14 @@ export class InMemoryDireccionRepository implements IDireccionRepository {
       RETURNING *, id_direccion AS id;
     `;
     const values = [
-      direccion.calle ?? null,
-      direccion.numero_exterior ?? null,
-      direccion.numero_interior ?? null,
-      direccion.colonia ?? null,
+      encryptValue('direccion', 'calle', direccion.calle ?? null),
+      encryptValue('direccion', 'numero_exterior', direccion.numero_exterior ?? null),
+      encryptValue('direccion', 'numero_interior', direccion.numero_interior ?? null),
+      encryptValue('direccion', 'colonia', direccion.colonia ?? null),
       direccion.codigo_postal ?? null,
       direccion.localidad ?? null,
       direccion.manzana ?? null,
-      direccion.vivienda_referencia ?? null,
+      encryptValue('direccion', 'vivienda_referencia', direccion.vivienda_referencia ?? null),
       direccion.asentamiento_id ?? null,
       direccion.id
     ];
@@ -58,7 +59,7 @@ export class InMemoryDireccionRepository implements IDireccionRepository {
     if (result.rowCount === 0) {
       throw new Error('Direccion not found');
     }
-    return result.rows[0];
+    return decryptRow('direccion', result.rows[0]);
   }
 
   async readById(id: number): Promise<Direccion> {
@@ -71,7 +72,7 @@ export class InMemoryDireccionRepository implements IDireccionRepository {
     if (result.rowCount === 0) {
       throw new Error('Direccion not found');
     }
-    return result.rows[0];
+    return decryptRow('direccion', result.rows[0]);
   }
 
   async delete(id: number): Promise<void> {
@@ -85,6 +86,6 @@ export class InMemoryDireccionRepository implements IDireccionRepository {
       ORDER BY id_direccion;
     `;
     const result = await db.executePreparedQuery(query, []);
-    return result.rows;
+    return result.rows.map((row: any) => decryptRow('direccion', row));
   }
 }
