@@ -82,7 +82,6 @@ services:
       DB_HOST_DB: ${DB_HOST_DB:-}
       DB_PORT_DB: ${DB_PORT_DB:-}
       DB_USER_DB: ${DB_USER_DB:-}
-      DB_PASSWORD_DB: ${DB_PASSWORD_DB:-}
       DB_TEMPLATE_DB: ${DB_TEMPLATE_DB:-}
       DB_SSLMODE_DB: ${DB_SSLMODE_DB:-disable}
     volumes:
@@ -99,6 +98,48 @@ services:
           "node",
           "-e",
           "fetch('http://localhost:3003/sums/ping').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  auth_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: 3004
+      AUTH_PORT: 3004
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASS: ${DB_PASS:-postgres}
+      DB_TEMPLATE: ${DB_TEMPLATE:-sums_template}
+      DB_SSLMODE: disable
+      ORIGIN_URL_1: ${ORIGIN_URL_1:-}
+      ORIGIN_URL_2: ${ORIGIN_URL_2:-}
+      JWT_SECRET: ${JWT_SECRET:-sums_jwt_secret_2026}
+      DB_HOST_DB: ${DB_HOST_DB:-}
+      DB_PORT_DB: ${DB_PORT_DB:-}
+      DB_USER_DB: ${DB_USER_DB:-}
+      DB_TEMPLATE_DB: ${DB_TEMPLATE_DB:-}
+      DB_SSLMODE_DB: ${DB_SSLMODE_DB:-disable}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev:auth
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3004/sums/auth/ping').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))",
         ]
       interval: 10s
       timeout: 5s

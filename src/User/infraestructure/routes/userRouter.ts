@@ -339,7 +339,7 @@
 
 import express from 'express';
 import { createUserController, readAllUserController, deleteUserController,
-         readUserByIdController, updateUserController, loginUserController,
+         readUserByIdController, updateUserController,
          createEntrevistadorUserController, updateUserRoleController } from '../user_dependencies';
 
 import { authMiddleware } from '../middleware/authMiddleware';
@@ -350,7 +350,6 @@ import { createUserAdminSchema, updateUserRoleSchema } from '../../domain/schema
 export const router = express.Router();
 
 router.post('/register', createUserController.run.bind(createUserController));
-router.post('/login', loginUserController.run.bind(loginUserController));
 router.post('/register-entrevistador', createEntrevistadorUserController.run.bind(createEntrevistadorUserController));
 
 // Protected routes (authentication required)
