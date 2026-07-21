@@ -134,12 +134,13 @@ import { readUnidadSaludById_Controller } from '../unidadsalud_dependencies'
 import { updateUnidadSalud_Controller } from '../unidadsalud_dependencies'
 import { validate } from '../../../shared/middleware/validateMiddleware'
 import { unidadSaludSchema } from '../../domain/schemas/unidadSaludSchema'
+import { authMiddleware } from '../../../User/infraestructure/middleware/authMiddleware'
 
 export const UnidadSaludRouter = express.Router()
-UnidadSaludRouter.post('/unidadSalud', validate(unidadSaludSchema), createUnidadSalud_Controller.run.bind(createUnidadSalud_Controller))
-UnidadSaludRouter.get('/unidadSalud', readAllUnidadSalud_Controller.run.bind(readAllUnidadSalud_Controller))
-UnidadSaludRouter.delete('/unidadSalud/:id', deleteUnidadSalud_Controller.run.bind(deleteUnidadSalud_Controller))
-UnidadSaludRouter.get('/unidadSalud/:id', readUnidadSaludById_Controller.run.bind(readUnidadSaludById_Controller))
-UnidadSaludRouter.put('/unidadSalud/:id', validate(unidadSaludSchema), updateUnidadSalud_Controller.run.bind(updateUnidadSalud_Controller))
+UnidadSaludRouter.post('/unidadSalud', authMiddleware(), validate(unidadSaludSchema), createUnidadSalud_Controller.run.bind(createUnidadSalud_Controller))
+UnidadSaludRouter.get('/unidadSalud', authMiddleware(), readAllUnidadSalud_Controller.run.bind(readAllUnidadSalud_Controller))
+UnidadSaludRouter.delete('/unidadSalud/:id', authMiddleware(), deleteUnidadSalud_Controller.run.bind(deleteUnidadSalud_Controller))
+UnidadSaludRouter.get('/unidadSalud/:id', authMiddleware(), readUnidadSaludById_Controller.run.bind(readUnidadSaludById_Controller))
+UnidadSaludRouter.put('/unidadSalud/:id', authMiddleware(), validate(unidadSaludSchema), updateUnidadSalud_Controller.run.bind(updateUnidadSalud_Controller))
 
 export default UnidadSaludRouter

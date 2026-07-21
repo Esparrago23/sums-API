@@ -1,15 +1,16 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { ReadAllDireccionUseCase } from "../../application/readAllDireccion_UseCase";
 
 export class ReadAllDireccion_Controller {
   constructor(private readAllDireccion: ReadAllDireccionUseCase) {}
 
-  async run(req: Request, res: Response) {
+  async run(req: Request, res: Response, next: NextFunction) {
     try {
       const direcciones = await this.readAllDireccion.execute();
       res.status(200).json(direcciones);
     } catch (error: any) {
-      res.status(400).json({ error: error.message });
+      (error as any).status = 400;
+      next(error);
     }
   }
 }

@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { CreateEntrevistadorUseCase } from "../../application/createEntrevistador_UseCase";
 
 export class CreateEntrevistador_Controller {
     constructor(private createEntrevistador: CreateEntrevistadorUseCase) {}
 
-    async run(req: Request, res: Response) {
+    async run(req: Request, res: Response, next: NextFunction) {
         try {
             const entrevistadorData = req.body;
 
@@ -16,7 +16,8 @@ export class CreateEntrevistador_Controller {
             const newEntrevistador = await this.createEntrevistador.execute(entrevistadorData);
             res.status(201).json(newEntrevistador);
         } catch (error: any) {
-            res.status(400).json({ error: error.message });
+            (error as any).status = 400;
+            next(error);
         }
     }
 }

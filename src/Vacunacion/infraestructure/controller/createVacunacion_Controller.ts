@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { CreateVacunacionUseCase } from "../../application/createVacunacion_UseCase";
 
 export class CreateVacunacion_Controller {
   constructor(private createVacunacion: CreateVacunacionUseCase) {}
 
-  async run(req: Request, res: Response) {
+  async run(req: Request, res: Response, next: NextFunction) {
     try {
       const vacunacionData = req.body;
 
@@ -16,7 +16,8 @@ export class CreateVacunacion_Controller {
       const newVacunacion = await this.createVacunacion.execute(vacunacionData);
       res.status(201).json(newVacunacion);
     } catch (error: any) {
-      res.status(400).json({ error: error.message });
+      (error as any).status = 400;
+      next(error);
     }
   }
 }

@@ -24,14 +24,18 @@ export class InMemoryUserRepository implements IUserRepository {
       user.entrevistador_id ?? null
     ];
     const result = await db.executePreparedQuery(query, values);
-    return this.mapUser(result.rows[0]);
+    // No se devuelve el hash de la contraseña en la respuesta de creación.
+    return this.mapUser(result.rows[0], { includePassword: false });
   }
 
   async update(user: User): Promise<User> {
+    // COALESCE($2, contrasena): si no se provee una contraseña nueva (p.ej. porque el
+    // objeto viene de un readById() que ya excluye el hash por seguridad), se conserva
+    // el hash existente en BD en lugar de sobrescribirlo con NULL.
     const query = `
       UPDATE usuario
       SET nombre_usuario = $1,
-          contrasena = $2,
+          contrasena = COALESCE($2, contrasena),
           rol_id = $3,
           activo = $4,
           unidad_salud_id = $5,
@@ -54,7 +58,8 @@ export class InMemoryUserRepository implements IUserRepository {
     if (result.rowCount === 0) {
       throw new Error('User not found');
     }
-    return this.mapUser(result.rows[0]);
+    // No se devuelve el hash de la contraseña en la respuesta de actualización.
+    return this.mapUser(result.rows[0], { includePassword: false });
   }
 
   async readById(id: number): Promise<User> {
@@ -67,7 +72,8 @@ export class InMemoryUserRepository implements IUserRepository {
     if (result.rowCount === 0) {
       throw new Error('User not found');
     }
-    return this.mapUser(result.rows[0]);
+    // No se devuelve el hash de la contraseña en las respuestas de lectura.
+    return this.mapUser(result.rows[0], { includePassword: false });
   }
 
   async delete(id: number): Promise<void> {
@@ -81,7 +87,8 @@ export class InMemoryUserRepository implements IUserRepository {
       ORDER BY id_usuario;
     `;
     const result = await db.executePreparedQuery(query, []);
-    return result.rows.map((row: any) => this.mapUser(row));
+    // No se devuelve el hash de la contraseña en las respuestas de lectura.
+    return result.rows.map((row: any) => this.mapUser(row, { includePassword: false }));
   }
 
   async findByCredentials(nombre_usuario: string, contrasena: string): Promise<User | null> {
@@ -104,8 +111,14 @@ export class InMemoryUserRepository implements IUserRepository {
     return this.mapUser(user);
   }
 
-  private mapUser(row: any): User {
+  private mapUser(row: any, options: { includePassword?: boolean } = {}): User {
     row.fecha_registro = parseDBDate(row.fecha_registro);
+    if (options.includePassword === false) {
+      // Whitelist explícito: excluye la columna contrasena (hash bcrypt) de la
+      // respuesta. Nunca debe llegar al cliente en /users o /users/:id.
+      const { contrasena, ...safeRow } = row;
+      return safeRow as User;
+    }
     return row;
   }
 }

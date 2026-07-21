@@ -121,7 +121,10 @@ export class CreateEntrevistadorUserUseCase {
     datosLaboralesId: number | null,
     entrevistadorId: number
   ): Promise<Dict> {
-    const rolId = this.intValue(usuario.rol_id) ?? await this.findOrCreateRol('entrevistador');
+    // /register-entrevistador es público: el rol_id enviado por el cliente se ignora
+    // deliberadamente para evitar que se auto-asigne un rol distinto (p.ej. admin).
+    // Todo usuario creado por esta ruta recibe siempre el rol "entrevistador".
+    const rolId = await this.findOrCreateRol('entrevistador');
     const hashedPassword = await hashPassword(String(usuario.contrasena));
     const result = await db.executePreparedQuery(
       `INSERT INTO usuario (

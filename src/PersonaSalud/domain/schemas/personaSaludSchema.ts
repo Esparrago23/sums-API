@@ -30,7 +30,7 @@ export const personaDiscapacidadSchema = z.object({
   body: z.object({
     persona_id: z.number().int(),
     presenta_discapacidad: z.boolean(),
-    tipo_discapacidad: z.string().nullable().optional()
+    tipo_discapacidad: z.string().trim().nullable().optional()
   }).refine((data) => {
     if (data.tipo_discapacidad && !data.presenta_discapacidad) return false;
     return true;
@@ -44,7 +44,7 @@ export const personaToxicomaniaSchema = z.object({
   body: z.object({
     persona_id: z.number().int(),
     toxicomania_id: z.number().int(),
-    otra_sustancia: z.string().nullable().optional()
+    otra_sustancia: z.string().trim().nullable().optional()
   })
 });
 
@@ -71,7 +71,7 @@ export const personaServicioSaludSchema = z.object({
   body: z.object({
     persona_id: z.number().int(),
     frecuencia_servicio_salud_id: z.number().int().nullable().optional(),
-    motivo_uso: z.string().nullable().optional(),
+    motivo_uso: z.string().trim().nullable().optional(),
     fecha_registro: z.string().nullable().optional().refine((date) => !date || !isNaN(Date.parse(date)), { message: "Fecha inválida" })
   })
 });

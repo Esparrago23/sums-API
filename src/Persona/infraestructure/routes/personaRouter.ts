@@ -107,12 +107,13 @@ import { readAllPersonaController } from '../persona_dependencies';
 import { deletePersonaController } from '../persona_dependencies';
 import { readPersonaByIdController } from '../persona_dependencies';
 import { updatePersonaController } from '../persona_dependencies';
+import { authMiddleware } from '../../../User/infraestructure/middleware/authMiddleware';
 
 export const router = express.Router();
-router.post('/personas', validate(personaSchema), createPersonaController.run.bind(createPersonaController));
-router.get('/personas', readAllPersonaController.run.bind(readAllPersonaController));
-router.delete('/personas/:id', deletePersonaController.run.bind(deletePersonaController));
-router.get('/personas/:id', readPersonaByIdController.run.bind(readPersonaByIdController));
-router.put('/personas/:id', validate(personaSchema), updatePersonaController.run.bind(updatePersonaController));
+router.post('/personas', authMiddleware(), validate(personaSchema), createPersonaController.run.bind(createPersonaController));
+router.get('/personas', authMiddleware(), readAllPersonaController.run.bind(readAllPersonaController));
+router.delete('/personas/:id', authMiddleware(), deletePersonaController.run.bind(deletePersonaController));
+router.get('/personas/:id', authMiddleware(), readPersonaByIdController.run.bind(readPersonaByIdController));
+router.put('/personas/:id', authMiddleware(), validate(personaSchema), updatePersonaController.run.bind(updatePersonaController));
 
 export default router;

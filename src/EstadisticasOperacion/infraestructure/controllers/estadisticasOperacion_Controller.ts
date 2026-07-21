@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import {
   GetMisCedulasResumenUseCase,
   GetMisCedulasSerieUseCase,
@@ -36,18 +36,19 @@ export class EstadisticasOperacion_Controller {
   ) {}
 
   // 1. GET /estadisticas/mis-cedulas/resumen
-  async misCedulasResumen(req: Request, res: Response) {
+  async misCedulasResumen(req: Request, res: Response, next: NextFunction) {
     try {
       const idUsuario = (req as any).user.idUsuario;
       const resultado = await this.getMisCedulasResumen.execute(idUsuario);
       res.status(200).json(resultado);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      (error as any).status = 500;
+      next(error);
     }
   }
 
   // 2. GET /estadisticas/mis-cedulas/serie?dias=30
-  async misCedulasSerie(req: Request, res: Response) {
+  async misCedulasSerie(req: Request, res: Response, next: NextFunction) {
     try {
       const idUsuario = (req as any).user.idUsuario;
 
@@ -67,43 +68,47 @@ export class EstadisticasOperacion_Controller {
       const resultado = await this.getMisCedulasSerie.execute(idUsuario, dias);
       res.status(200).json(resultado);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      (error as any).status = 500;
+      next(error);
     }
   }
 
   // 3. GET /estadisticas/mis-cedulas/por-estado
-  async misCedulasPorEstado(req: Request, res: Response) {
+  async misCedulasPorEstado(req: Request, res: Response, next: NextFunction) {
     try {
       const idUsuario = (req as any).user.idUsuario;
       const resultado = await this.getMisCedulasPorEstado.execute(idUsuario);
       res.status(200).json(resultado);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      (error as any).status = 500;
+      next(error);
     }
   }
 
   // 4. GET /estadisticas/resumen-general
-  async resumenGeneral(req: Request, res: Response) {
+  async resumenGeneral(req: Request, res: Response, next: NextFunction) {
     try {
       const resultado = await this.getResumenGeneral.execute();
       res.status(200).json(resultado);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      (error as any).status = 500;
+      next(error);
     }
   }
 
   // 5. GET /estadisticas/productividad/entrevistadores
-  async productividadEntrevistadores(req: Request, res: Response) {
+  async productividadEntrevistadores(req: Request, res: Response, next: NextFunction) {
     try {
       const resultado = await this.getProductividadEntrevistadores.execute();
       res.status(200).json(resultado);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      (error as any).status = 500;
+      next(error);
     }
   }
 
   // 6. GET /estadisticas/cedulas/serie?agrupar=mes
-  async cedulasSerie(req: Request, res: Response) {
+  async cedulasSerie(req: Request, res: Response, next: NextFunction) {
     try {
       // 'agrupar' validado contra lista blanca; por defecto 'mes' -> 'month'.
       const agrupar = (req.query.agrupar as string) ?? "mes";
@@ -118,37 +123,41 @@ export class EstadisticasOperacion_Controller {
       const resultado = await this.getCedulasSerie.execute(periodo);
       res.status(200).json(resultado);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      (error as any).status = 500;
+      next(error);
     }
   }
 
   // 7. GET /estadisticas/cedulas/por-estado
-  async cedulasPorEstado(req: Request, res: Response) {
+  async cedulasPorEstado(req: Request, res: Response, next: NextFunction) {
     try {
       const resultado = await this.getCedulasPorEstado.execute();
       res.status(200).json(resultado);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      (error as any).status = 500;
+      next(error);
     }
   }
 
   // 8. GET /estadisticas/cedulas/por-unidad
-  async cedulasPorUnidad(req: Request, res: Response) {
+  async cedulasPorUnidad(req: Request, res: Response, next: NextFunction) {
     try {
       const resultado = await this.getCedulasPorUnidad.execute();
       res.status(200).json(resultado);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      (error as any).status = 500;
+      next(error);
     }
   }
 
   // 9. GET /estadisticas/cedulas/por-localidad
-  async cedulasPorLocalidad(req: Request, res: Response) {
+  async cedulasPorLocalidad(req: Request, res: Response, next: NextFunction) {
     try {
       const resultado = await this.getCedulasPorLocalidad.execute();
       res.status(200).json(resultado);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      (error as any).status = 500;
+      next(error);
     }
   }
 }
