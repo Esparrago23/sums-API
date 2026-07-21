@@ -107,13 +107,14 @@ import { readAllDireccionController } from '../direccion_dependencies';
 import { deleteDireccionController } from '../direccion_dependencies';
 import { readDireccionByIdController } from '../direccion_dependencies';
 import { updateDireccionController } from '../direccion_dependencies';
+import { authMiddleware } from '../../../User/infraestructure/middleware/authMiddleware';
 
 
 export const router = express.Router();
-router.post('/direcciones', validate(direccionSchema), createDireccionController.run.bind(createDireccionController));
-router.get('/direcciones', readAllDireccionController.run.bind(readAllDireccionController));
-router.delete('/direcciones/:id', deleteDireccionController.run.bind(deleteDireccionController));
-router.get('/direcciones/:id', readDireccionByIdController.run.bind(readDireccionByIdController));
-router.put('/direcciones/:id', validate(direccionSchema), updateDireccionController.run.bind(updateDireccionController));
+router.post('/direcciones', authMiddleware(), validate(direccionSchema), createDireccionController.run.bind(createDireccionController));
+router.get('/direcciones', authMiddleware(), readAllDireccionController.run.bind(readAllDireccionController));
+router.delete('/direcciones/:id', authMiddleware(), deleteDireccionController.run.bind(deleteDireccionController));
+router.get('/direcciones/:id', authMiddleware(), readDireccionByIdController.run.bind(readDireccionByIdController));
+router.put('/direcciones/:id', authMiddleware(), validate(direccionSchema), updateDireccionController.run.bind(updateDireccionController));
 
 export default router;

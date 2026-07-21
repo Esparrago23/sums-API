@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { UpdateDatosLaboralesUseCase } from "../../application/updateDatosLaborales_UseCase";
 
 export class UpdateDatosLaborales_Controller {
     constructor(private updateDatosLaborales: UpdateDatosLaboralesUseCase) {}
 
-    async run(req: Request, res: Response) {
+    async run(req: Request, res: Response, next: NextFunction) {
         try {
             const id = parseInt(req.params.id, 10);
             const datosLaboralesData = req.body;
@@ -15,7 +15,8 @@ export class UpdateDatosLaborales_Controller {
                 res.status(404).json({ error: "Datos laborales not found" });
             }
         } catch (error: any) {
-            res.status(400).json({ error: error.message });
+            (error as any).status = 400;
+            next(error);
         }
     }
 }

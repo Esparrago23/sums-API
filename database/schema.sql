@@ -396,7 +396,16 @@ CREATE TABLE "inmunizacion" (
   "vacuna_id" INT NOT NULL,
   "dosis_id" INT,
   "otra_vacuna_especificar" VARCHAR(150),
-  "fecha_aplicacion" DATE
+  "fecha_aplicacion" DATE,
+  -- Evita registrar dos veces la misma dosis de la misma vacuna para el mismo
+  -- esquema de vacunación (y por lo tanto para la misma persona, ya que cada
+  -- esquema_vacunacion pertenece a una sola persona). Antes solo existía como
+  -- migración manual (database/migrations/002_unique_inmunizacion.sql); ahora
+  -- queda incluida desde la inicialización inicial de la BD (docker-entrypoint-
+  -- initdb.d). Igual que en la migración: al ser un UNIQUE normal, PostgreSQL
+  -- trata cada NULL de dosis_id como distinto, así que no cubre duplicados
+  -- cuando dosis_id es NULL (ver migración 002 para el índice parcial opcional).
+  CONSTRAINT "uq_inmunizacion_esquema_vacuna_dosis" UNIQUE ("esquema_vacunacion_id", "vacuna_id", "dosis_id")
 );
 
 CREATE UNIQUE INDEX "idx_nucleo_persona_1" ON "nucleo_persona" ("nucleo_familiar_id", "persona_id");

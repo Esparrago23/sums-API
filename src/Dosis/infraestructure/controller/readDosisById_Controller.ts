@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { ReadDosisByIdUseCase } from "../../application/readDosisById_UseCase";
 
 export class ReadDosisById_Controller {
     constructor(private readDosisById: ReadDosisByIdUseCase) {}
 
-    async run(req: Request, res: Response) {
+    async run(req: Request, res: Response, next: NextFunction) {
         try {
             const id = parseInt(req.params.id, 10);
             const dosis = await this.readDosisById.execute(id);
@@ -14,7 +14,8 @@ export class ReadDosisById_Controller {
                 res.status(404).json({ error: "Dosis not found" });
             }
         } catch (error: any) {
-            res.status(400).json({ error: error.message });
+            (error as any).status = 400;
+            next(error);
         }
     }
 }

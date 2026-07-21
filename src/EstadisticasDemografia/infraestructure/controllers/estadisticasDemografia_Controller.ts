@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import {
   GetPiramidePoblacionalUseCase,
   GetDistribucionGeneroUseCase,
@@ -76,7 +76,7 @@ export class EstadisticasDemografia_Controller {
   }
 
   // 1. Pirámide poblacional (rango de edad x sexo)
-  async piramide(req: Request, res: Response) {
+  async piramide(req: Request, res: Response, next: NextFunction) {
     try {
       const { filtros, error } = this.parseFiltros(req);
       if (error) {
@@ -86,12 +86,12 @@ export class EstadisticasDemografia_Controller {
       const resultado = await this.getPiramidePoblacional.execute(filtros);
       res.status(200).json(resultado);
     } catch (error) {
-      res.status(500).json({ error });
+      next(error);
     }
   }
 
   // 2. Distribución por género
-  async genero(req: Request, res: Response) {
+  async genero(req: Request, res: Response, next: NextFunction) {
     try {
       const { filtros, error } = this.parseFiltros(req);
       if (error) {
@@ -101,12 +101,12 @@ export class EstadisticasDemografia_Controller {
       const resultado = await this.getDistribucionGenero.execute(filtros);
       res.status(200).json(resultado);
     } catch (error) {
-      res.status(500).json({ error });
+      next(error);
     }
   }
 
   // 3. Distribución por escolaridad
-  async escolaridad(req: Request, res: Response) {
+  async escolaridad(req: Request, res: Response, next: NextFunction) {
     try {
       const { filtros, error } = this.parseFiltros(req);
       if (error) {
@@ -116,12 +116,12 @@ export class EstadisticasDemografia_Controller {
       const resultado = await this.getDistribucionEscolaridad.execute(filtros);
       res.status(200).json(resultado);
     } catch (error) {
-      res.status(500).json({ error });
+      next(error);
     }
   }
 
   // 4. Alfabetización (alfabetizados / no alfabetizados / sin dato)
-  async alfabetizacion(req: Request, res: Response) {
+  async alfabetizacion(req: Request, res: Response, next: NextFunction) {
     try {
       const { filtros, error } = this.parseFiltros(req);
       if (error) {
@@ -131,12 +131,12 @@ export class EstadisticasDemografia_Controller {
       const resultado = await this.getAlfabetizacion.execute(filtros);
       res.status(200).json(resultado);
     } catch (error) {
-      res.status(500).json({ error });
+      next(error);
     }
   }
 
   // 5. Distribución por lengua indígena
-  async lenguaIndigena(req: Request, res: Response) {
+  async lenguaIndigena(req: Request, res: Response, next: NextFunction) {
     try {
       const { filtros, error } = this.parseFiltros(req);
       if (error) {
@@ -146,12 +146,12 @@ export class EstadisticasDemografia_Controller {
       const resultado = await this.getDistribucionLengua.execute(filtros);
       res.status(200).json(resultado);
     } catch (error) {
-      res.status(500).json({ error });
+      next(error);
     }
   }
 
   // 6. Distribución por ingreso salarial
-  async ingreso(req: Request, res: Response) {
+  async ingreso(req: Request, res: Response, next: NextFunction) {
     try {
       const { filtros, error } = this.parseFiltros(req);
       if (error) {
@@ -161,12 +161,12 @@ export class EstadisticasDemografia_Controller {
       const resultado = await this.getDistribucionIngreso.execute(filtros);
       res.status(200).json(resultado);
     } catch (error) {
-      res.status(500).json({ error });
+      next(error);
     }
   }
 
   // 7. Distribución por ocupación
-  async ocupacion(req: Request, res: Response) {
+  async ocupacion(req: Request, res: Response, next: NextFunction) {
     try {
       const { filtros, error } = this.parseFiltros(req);
       if (error) {
@@ -176,12 +176,12 @@ export class EstadisticasDemografia_Controller {
       const resultado = await this.getDistribucionOcupacion.execute(filtros);
       res.status(200).json(resultado);
     } catch (error) {
-      res.status(500).json({ error });
+      next(error);
     }
   }
 
   // 8. Distribución por estado civil
-  async estadoCivil(req: Request, res: Response) {
+  async estadoCivil(req: Request, res: Response, next: NextFunction) {
     try {
       const { filtros, error } = this.parseFiltros(req);
       if (error) {
@@ -191,7 +191,7 @@ export class EstadisticasDemografia_Controller {
       const resultado = await this.getDistribucionEstadoCivil.execute(filtros);
       res.status(200).json(resultado);
     } catch (error) {
-      res.status(500).json({ error });
+      next(error);
     }
   }
 }

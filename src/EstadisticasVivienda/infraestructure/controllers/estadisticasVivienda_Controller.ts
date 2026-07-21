@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import {
   GetServiciosUseCase,
   GetHacinamientoUseCase,
@@ -73,7 +73,7 @@ function parseFiltros(req: Request): ParseResult {
 export class GetServicios_Controller {
   constructor(private getServicios: GetServiciosUseCase) {}
 
-  async run(req: Request, res: Response) {
+  async run(req: Request, res: Response, next: NextFunction) {
     const parsed = parseFiltros(req);
     if (!parsed.ok) {
       res.status(400).json({ error: parsed.error });
@@ -83,7 +83,7 @@ export class GetServicios_Controller {
       const data = await this.getServicios.execute(parsed.filtros);
       res.status(200).json(data);
     } catch (error: any) {
-      res.status(500).json({ error });
+      next(error);
     }
   }
 }
@@ -92,7 +92,7 @@ export class GetServicios_Controller {
 export class GetHacinamiento_Controller {
   constructor(private getHacinamiento: GetHacinamientoUseCase) {}
 
-  async run(req: Request, res: Response) {
+  async run(req: Request, res: Response, next: NextFunction) {
     const parsed = parseFiltros(req);
     if (!parsed.ok) {
       res.status(400).json({ error: parsed.error });
@@ -102,7 +102,7 @@ export class GetHacinamiento_Controller {
       const data = await this.getHacinamiento.execute(parsed.filtros);
       res.status(200).json(data);
     } catch (error: any) {
-      res.status(500).json({ error });
+      next(error);
     }
   }
 }
@@ -111,7 +111,7 @@ export class GetHacinamiento_Controller {
 export class GetMaterialesRiesgo_Controller {
   constructor(private getMaterialesRiesgo: GetMaterialesRiesgoUseCase) {}
 
-  async run(req: Request, res: Response) {
+  async run(req: Request, res: Response, next: NextFunction) {
     const parsed = parseFiltros(req);
     if (!parsed.ok) {
       res.status(400).json({ error: parsed.error });
@@ -121,7 +121,7 @@ export class GetMaterialesRiesgo_Controller {
       const data = await this.getMaterialesRiesgo.execute(parsed.filtros);
       res.status(200).json(data);
     } catch (error: any) {
-      res.status(500).json({ error });
+      next(error);
     }
   }
 }
@@ -130,7 +130,7 @@ export class GetMaterialesRiesgo_Controller {
 export class GetAnimales_Controller {
   constructor(private getAnimales: GetAnimalesUseCase) {}
 
-  async run(req: Request, res: Response) {
+  async run(req: Request, res: Response, next: NextFunction) {
     const parsed = parseFiltros(req);
     if (!parsed.ok) {
       res.status(400).json({ error: parsed.error });
@@ -140,7 +140,7 @@ export class GetAnimales_Controller {
       const data = await this.getAnimales.execute(parsed.filtros);
       res.status(200).json(data);
     } catch (error: any) {
-      res.status(500).json({ error });
+      next(error);
     }
   }
 }

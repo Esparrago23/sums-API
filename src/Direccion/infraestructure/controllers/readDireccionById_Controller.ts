@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { ReadDireccionByIdUseCase } from "../../application/readDireccionById_UseCase";
 
 export class ReadDireccionById_Controller {
   constructor(private readDireccionById: ReadDireccionByIdUseCase) {}
 
-  async run(req: Request, res: Response) {
+  async run(req: Request, res: Response, next: NextFunction) {
     try {
       const id = parseInt(req.params.id, 10);
       const direccion = await this.readDireccionById.execute(id);
@@ -14,7 +14,8 @@ export class ReadDireccionById_Controller {
         res.status(404).json({ error: "Direccion not found" });
       }
     } catch (error: any) {
-      res.status(400).json({ error: error.message });
+      (error as any).status = 400;
+      next(error);
     }
   }
 }

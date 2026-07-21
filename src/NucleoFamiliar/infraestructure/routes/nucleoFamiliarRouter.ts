@@ -2,6 +2,7 @@ import express from 'express';
 import { validate } from '../../../shared/middleware/validateMiddleware';
 import { nucleoFamiliarSchema, nucleoPersonaSchema, nucleoPersonaPatchSchema } from '../../domain/schemas/nucleoFamiliarSchema';
 import { nucleoFamiliarController } from '../nucleoFamiliar_dependencies';
+import { authMiddleware } from '../../../User/infraestructure/middleware/authMiddleware';
 
 export const router = express.Router();
 
@@ -82,13 +83,13 @@ export const router = express.Router();
  *       400:
  *         description: Invalid input data
  */
-router.post('/nucleos-familiares', validate(nucleoFamiliarSchema), nucleoFamiliarController.create.bind(nucleoFamiliarController));
-router.get('/nucleos-familiares', nucleoFamiliarController.readAll.bind(nucleoFamiliarController));
-router.get('/nucleos-familiares/:id', nucleoFamiliarController.readById.bind(nucleoFamiliarController));
-router.put('/nucleos-familiares/:id', validate(nucleoFamiliarSchema), nucleoFamiliarController.update.bind(nucleoFamiliarController));
-router.delete('/nucleos-familiares/:id', nucleoFamiliarController.delete.bind(nucleoFamiliarController));
-router.post('/nucleos-familiares/:id/integrantes', validate(nucleoPersonaSchema), nucleoFamiliarController.addPersona.bind(nucleoFamiliarController));
-router.get('/nucleos-familiares/:id/integrantes', nucleoFamiliarController.listIntegrantes.bind(nucleoFamiliarController));
-router.patch('/nucleos-familiares/:id/integrantes/:personaId', validate(nucleoPersonaPatchSchema), nucleoFamiliarController.updateIntegrante.bind(nucleoFamiliarController));
+router.post('/nucleos-familiares', authMiddleware(), validate(nucleoFamiliarSchema), nucleoFamiliarController.create.bind(nucleoFamiliarController));
+router.get('/nucleos-familiares', authMiddleware(), nucleoFamiliarController.readAll.bind(nucleoFamiliarController));
+router.get('/nucleos-familiares/:id', authMiddleware(), nucleoFamiliarController.readById.bind(nucleoFamiliarController));
+router.put('/nucleos-familiares/:id', authMiddleware(), validate(nucleoFamiliarSchema), nucleoFamiliarController.update.bind(nucleoFamiliarController));
+router.delete('/nucleos-familiares/:id', authMiddleware(), nucleoFamiliarController.delete.bind(nucleoFamiliarController));
+router.post('/nucleos-familiares/:id/integrantes', authMiddleware(), validate(nucleoPersonaSchema), nucleoFamiliarController.addPersona.bind(nucleoFamiliarController));
+router.get('/nucleos-familiares/:id/integrantes', authMiddleware(), nucleoFamiliarController.listIntegrantes.bind(nucleoFamiliarController));
+router.patch('/nucleos-familiares/:id/integrantes/:personaId', authMiddleware(), validate(nucleoPersonaPatchSchema), nucleoFamiliarController.updateIntegrante.bind(nucleoFamiliarController));
 
 export default router;
