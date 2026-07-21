@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { SyncCedulasUseCase } from '../../application/syncCedulas_UseCase';
 
 export class SyncCedulasController {
   constructor(private syncCedulas: SyncCedulasUseCase) {}
 
-  async run(req: Request, res: Response): Promise<void> {
+  async run(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       let payloads = req.body;
       if (req.body.payloads && Array.isArray(req.body.payloads)) {
@@ -23,7 +23,8 @@ export class SyncCedulasController {
       res.status(201).json(results);
     } catch (error: any) {
       console.log('Error caught in sync controller:', error);
-      res.status(400).json({ error: error?.message || 'Unknown error' });
+      (error as any).status = 400;
+      next(error);
     }
   }
 }

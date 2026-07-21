@@ -216,34 +216,35 @@ import { readAllVacunasController } from "../../vacunas_dependencies";
 import { deleteVacunasController } from "../../vacunas_dependencies";
 import { updateVacunasController } from "../../vacunas_dependencies";
 import {getAplicacionesPorAnioVacunaController, getDosisAplicadasPorPersonaController,getVacunacionPorVacunaController ,getAplicacionesPorVacunaYDosisController, getPersonasVacunadasPorVacunaController, getVacunacionPorRangoEdadController, getVacunacionPorSexoController} from "../../vacunas_dependencies";
+import { authMiddleware } from "../../../User/infraestructure/middleware/authMiddleware";
 
 getVacunacionPorSexoController
 export const router = express.Router();
 // Total de aplicaciones por tipo de vacuna y dosis
-router.get("/vacunaciones/por-vacuna-dosis", getAplicacionesPorVacunaYDosisController.run.bind(getAplicacionesPorVacunaYDosisController));
+router.get("/vacunaciones/por-vacuna-dosis", authMiddleware(), getAplicacionesPorVacunaYDosisController.run.bind(getAplicacionesPorVacunaYDosisController));
 
 // Aplicaciones por tipo de vacuna y dosis para una persona específica
-router.get("/vacunaciones/por-persona/:persona_id", getVacunacionPorVacunaController.run.bind(getVacunacionPorVacunaController));
+router.get("/vacunaciones/por-persona/:persona_id", authMiddleware(), getVacunacionPorVacunaController.run.bind(getVacunacionPorVacunaController));
 
 // Número de personas vacunadas por cada vacuna (sin repetir persona)
-router.get("/vacunaciones/personas-por-vacuna", getPersonasVacunadasPorVacunaController.run.bind(getPersonasVacunadasPorVacunaController));
+router.get("/vacunaciones/personas-por-vacuna", authMiddleware(), getPersonasVacunadasPorVacunaController.run.bind(getPersonasVacunadasPorVacunaController));
 
 // Aplicaciones por año y tipo de vacuna
-router.get("/vacunaciones/por-anio", getAplicacionesPorAnioVacunaController.run.bind(getAplicacionesPorAnioVacunaController));
+router.get("/vacunaciones/por-anio", authMiddleware(), getAplicacionesPorAnioVacunaController.run.bind(getAplicacionesPorAnioVacunaController));
 
 // Vacunación segmentada por sexo
-router.get("/vacunaciones/por-sexo/:sexo", getVacunacionPorSexoController.run.bind(getVacunacionPorSexoController));
+router.get("/vacunaciones/por-sexo/:sexo", authMiddleware(), getVacunacionPorSexoController.run.bind(getVacunacionPorSexoController));
 
 // Vacunación por rangos de edad (0-17, 18-49, 50+)
-router.get("/vacunaciones/por-rango-edad", getVacunacionPorRangoEdadController.run.bind(getVacunacionPorRangoEdadController));
+router.get("/vacunaciones/por-rango-edad", authMiddleware(), getVacunacionPorRangoEdadController.run.bind(getVacunacionPorRangoEdadController));
 
 // Total de dosis aplicadas por persona (historial/resumen individual)
-router.get("/vacunaciones/dosis-por-persona", getDosisAplicadasPorPersonaController.run.bind(getDosisAplicadasPorPersonaController));
+router.get("/vacunaciones/dosis-por-persona", authMiddleware(), getDosisAplicadasPorPersonaController.run.bind(getDosisAplicadasPorPersonaController));
 
-router.post("/vacunaciones", validate(vacunacionSchema), createVacunasController.run.bind(createVacunasController));
-router.get("/vacunaciones",readAllVacunasController.run.bind(readAllVacunasController));
-router.delete("/vacunaciones/:id",deleteVacunasController.run.bind(deleteVacunasController));
-router.get("/vacunaciones/:id",readVacunasByIdController.run.bind(readVacunasByIdController));
-router.put("/vacunaciones/:id", validate(vacunacionSchema), updateVacunasController.run.bind(updateVacunasController));
+router.post("/vacunaciones", authMiddleware(), validate(vacunacionSchema), createVacunasController.run.bind(createVacunasController));
+router.get("/vacunaciones", authMiddleware(), readAllVacunasController.run.bind(readAllVacunasController));
+router.delete("/vacunaciones/:id", authMiddleware(), deleteVacunasController.run.bind(deleteVacunasController));
+router.get("/vacunaciones/:id", authMiddleware(), readVacunasByIdController.run.bind(readVacunasByIdController));
+router.put("/vacunaciones/:id", authMiddleware(), validate(vacunacionSchema), updateVacunasController.run.bind(updateVacunasController));
 
 export default router;

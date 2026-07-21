@@ -112,12 +112,13 @@ import { readAllFamiliaController } from '../familia_dependencies';
 import { deleteFamiliaController } from '../familia_dependencies';
 import { readFamiliaByIdController } from '../familia_dependencies';
 import { updateFamiliaController } from '../familia_dependencies';
+import { authMiddleware } from '../../../User/infraestructure/middleware/authMiddleware';
 
 export const router = express.Router();
-router.post('/familias', validate(familiaSchema), createFamiliaController.run.bind(createFamiliaController));
-router.get('/familias', readAllFamiliaController.run.bind(readAllFamiliaController));
-router.delete('/familias/:id', deleteFamiliaController.run.bind(deleteFamiliaController));
-router.get('/familias/:id', readFamiliaByIdController.run.bind(readFamiliaByIdController));
-router.put('/familias/:id', validate(familiaSchema), updateFamiliaController.run.bind(updateFamiliaController));
+router.post('/familias', authMiddleware(), validate(familiaSchema), createFamiliaController.run.bind(createFamiliaController));
+router.get('/familias', authMiddleware(), readAllFamiliaController.run.bind(readAllFamiliaController));
+router.delete('/familias/:id', authMiddleware(), deleteFamiliaController.run.bind(deleteFamiliaController));
+router.get('/familias/:id', authMiddleware(), readFamiliaByIdController.run.bind(readFamiliaByIdController));
+router.put('/familias/:id', authMiddleware(), validate(familiaSchema), updateFamiliaController.run.bind(updateFamiliaController));
 
 export default router;
