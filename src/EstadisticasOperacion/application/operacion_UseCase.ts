@@ -8,7 +8,9 @@ import {
   CedulasSerieDTO,
   CedulasPorEstadoDTO,
   CedulasPorUnidadDTO,
-  CedulasPorLocalidadDTO
+  CedulasPorLocalidadDTO,
+  CedulasPorColoniaDTO,
+  NucleosTamanoDTO
 } from "../domain/entities/estadisticasOperacion";
 
 // Casos de uso de estadísticas globales de operación / productividad.
@@ -64,5 +66,23 @@ export class GetCedulasPorLocalidadUseCase {
 
   async execute(): Promise<CedulasPorLocalidadDTO[]> {
     return this.repo.getCedulasPorLocalidad();
+  }
+}
+
+// 10. Cédulas por colonia
+export class GetCedulasPorColoniaUseCase {
+  constructor(private repo: IestadisticasOperacion) {}
+
+  async execute(): Promise<CedulasPorColoniaDTO[]> {
+    return this.repo.getCedulasPorColonia();
+  }
+}
+
+// 11. Histograma de tamaño de núcleos familiares
+export class GetNucleosTamanoUseCase {
+  constructor(private repo: IestadisticasOperacion) {}
+
+  async execute(): Promise<NucleosTamanoDTO[]> {
+    return this.repo.getNucleosTamano();
   }
 }
