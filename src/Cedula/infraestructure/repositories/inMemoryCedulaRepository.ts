@@ -1,5 +1,5 @@
 import { Cedula } from '../../domain/entities/cedula';
-import { ICedulaRepository } from '../../domain/repositories/ICedulaRepository';
+import { ICedulaRepository, PaginatedResult } from '../../domain/repositories/ICedulaRepository';
 import { db } from '../../../core/db_postgresql';
 import { formatDateForDB, parseDBDate } from '../../../core/date_utils';
 
@@ -73,14 +73,53 @@ export class InMemoryCedulaRepository implements ICedulaRepository {
     await db.executePreparedQuery('DELETE FROM cedula WHERE id_cedula = $1', [id]);
   }
 
-  async readAll(): Promise<Cedula[]> {
+  async readAll(page: number, limit: number, search: string): Promise<PaginatedResult<Cedula>> {
+    const offset = (page - 1) * limit;
+    
+    let whereClause = '';
+    const values: any[] = [];
+    
+    if (search) {
+      whereClause = `
+        WHERE TRIM(CONCAT_WS(' ', p.primer_nombre, p.segundo_nombre, p.apellido_paterno, p.apellido_materno)) ILIKE $1
+      `;
+      values.push(`%${search}%`);
+    }
+
     const query = `
-      SELECT *, id_cedula AS id
-      FROM cedula
-      ORDER BY id_cedula;
+      SELECT 
+        c.*, 
+        c.id_cedula AS id,
+        TRIM(CONCAT_WS(' ', p.primer_nombre, p.segundo_nombre, p.apellido_paterno, p.apellido_materno)) AS informante_nombre
+      FROM cedula c
+      LEFT JOIN nucleo_familiar nf ON c.nucleo_familiar_id = nf.id_nucleo_familiar
+      LEFT JOIN persona p ON nf.jefe_persona_id = p.id_persona
+      ${whereClause}
+      ORDER BY c.id_cedula DESC
+      LIMIT $${search ? 2 : 1} OFFSET $${search ? 3 : 2};
     `;
-    const result = await db.executePreparedQuery(query, []);
-    return result.rows.map((row: any) => this.mapCedula(row));
+    
+    const queryParams = [...values, limit, offset];
+    const result = await db.executePreparedQuery(query, queryParams);
+    
+    const countQuery = `
+      SELECT COUNT(*) as total
+      FROM cedula c
+      LEFT JOIN nucleo_familiar nf ON c.nucleo_familiar_id = nf.id_nucleo_familiar
+      LEFT JOIN persona p ON nf.jefe_persona_id = p.id_persona
+      ${whereClause};
+    `;
+    const countResult = await db.executePreparedQuery(countQuery, values);
+    const total = parseInt(countResult.rows[0].total, 10);
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: result.rows.map((row: any) => this.mapCedula(row)),
+      total,
+      page,
+      limit,
+      totalPages
+    };
   }
 
   private mapCedula(row: any): Cedula {

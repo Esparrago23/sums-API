@@ -98,6 +98,11 @@ class Conn_PostgreSQL {
   private listenToPool() {
     this.pool.on('connect', () => {
       console.log(`✅ Conexión establecida a centro_medico_${this.currentYear}`);
+      this.pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_cedula_id ON cedula(id_cedula DESC);
+        CREATE INDEX IF NOT EXISTS idx_cedula_nucleo ON cedula(nucleo_familiar_id);
+        CREATE INDEX IF NOT EXISTS idx_nucleo_jefe ON nucleo_familiar(jefe_persona_id);
+      `).catch(e => console.warn('⚠️ No se pudieron crear los índices:', e.message));
     });
 
     this.pool.on('error', (err) => {
