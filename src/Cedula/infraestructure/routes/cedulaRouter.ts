@@ -21,17 +21,46 @@
  *         description: Invalid input data
  * 
  *   get:
- *     summary: Get all cedulas
+ *     summary: Get all cedulas paginated
  *     tags: [Cedulas]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *         description: Items per page (max 100)
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search text on the full name
  *     responses:
  *       200:
- *         description: List of all cedulas
+ *         description: Paginated list of cedulas
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Cedula'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Cedula'
+ *                 total:
+ *                   type: integer
+ *                 page:
+ *                   type: integer
+ *                 limit:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
  * 
  * /cedulas/{id}:
  *   get:
