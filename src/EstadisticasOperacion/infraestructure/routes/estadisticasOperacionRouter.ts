@@ -324,6 +324,62 @@
  *         description: No autorizado (token ausente o inválido)
  *       500:
  *         description: Error interno del servidor
+ *
+ * /estadisticas/cedulas/por-colonia:
+ *   get:
+ *     summary: Conteo de cédulas por colonia
+ *     tags: [Estadísticas - Operación]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Conteo de cédulas por colonia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   colonia:
+ *                     type: string
+ *                     example: "Las Palmas"
+ *                   total:
+ *                     type: integer
+ *                     example: 87
+ *       401:
+ *         description: No autorizado (token ausente o inválido)
+ *       500:
+ *         description: Error interno del servidor
+ *
+ * /estadisticas/cedulas/nucleos-tamano:
+ *   get:
+ *     summary: Histograma de tamaño de núcleos familiares (nº de integrantes vs. nº de núcleos)
+ *     tags: [Estadísticas - Operación]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Histograma de tamaño de núcleos familiares
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   tamano:
+ *                     type: integer
+ *                     description: Número de integrantes del núcleo familiar
+ *                     example: 4
+ *                   total:
+ *                     type: integer
+ *                     description: Número de núcleos familiares con ese tamaño
+ *                     example: 210
+ *       401:
+ *         description: No autorizado (token ausente o inválido)
+ *       500:
+ *         description: Error interno del servidor
  */
 
 import express from "express";
@@ -341,7 +397,9 @@ import {
   GetCedulasSerieUseCase,
   GetCedulasPorEstadoUseCase,
   GetCedulasPorUnidadUseCase,
-  GetCedulasPorLocalidadUseCase
+  GetCedulasPorLocalidadUseCase,
+  GetCedulasPorColoniaUseCase,
+  GetNucleosTamanoUseCase
 } from "../../application/operacion_UseCase";
 import { EstadisticasOperacion_Controller } from "../controllers/estadisticasOperacion_Controller";
 
@@ -357,7 +415,9 @@ const controller = new EstadisticasOperacion_Controller(
   new GetCedulasSerieUseCase(repo),
   new GetCedulasPorEstadoUseCase(repo),
   new GetCedulasPorUnidadUseCase(repo),
-  new GetCedulasPorLocalidadUseCase(repo)
+  new GetCedulasPorLocalidadUseCase(repo),
+  new GetCedulasPorColoniaUseCase(repo),
+  new GetNucleosTamanoUseCase(repo)
 );
 
 const router = express.Router();
@@ -423,6 +483,20 @@ router.get(
   "/estadisticas/cedulas/por-localidad",
   authMiddleware(),
   controller.cedulasPorLocalidad.bind(controller)
+);
+
+// 10. Cédulas por colonia
+router.get(
+  "/estadisticas/cedulas/por-colonia",
+  authMiddleware(),
+  controller.cedulasPorColonia.bind(controller)
+);
+
+// 11. Histograma de tamaño de núcleos familiares
+router.get(
+  "/estadisticas/cedulas/nucleos-tamano",
+  authMiddleware(),
+  controller.nucleosTamano.bind(controller)
 );
 
 export default router;

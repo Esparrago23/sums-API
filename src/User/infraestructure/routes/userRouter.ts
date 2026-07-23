@@ -338,6 +338,7 @@
  */
 
 import express from 'express';
+
 import { createUserController, createUserAdminController, readAllUserController, deleteUserController,
          readUserByIdController, updateUserController, loginUserController,
          createEntrevistadorUserController, updateUserRoleController } from '../user_dependencies';
@@ -351,6 +352,7 @@ import { createEntrevistadorUserSchema } from '../../domain/schemas/createEntrev
 
 export const router = express.Router();
 
+
 router.post('/register', validate(createUserSchema), createUserController.run.bind(createUserController));
 router.post('/login', loginUserController.run.bind(loginUserController));
 router.post(
@@ -358,6 +360,7 @@ router.post(
   validate(createEntrevistadorUserSchema),
   createEntrevistadorUserController.run.bind(createEntrevistadorUserController)
 );
+
 
 // Protected routes (authentication required)
 router.get('/users', authMiddleware(), readAllUserController.run.bind(readAllUserController));
