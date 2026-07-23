@@ -68,4 +68,34 @@ export class InMemoryCatalogosRepository implements ICatalogosRepository {
     const result = await db.executePreparedQuery(query, []);
     return result.rows;
   }
+
+  async createCatalogItem(key: string, data: Partial<CatalogoItem>): Promise<CatalogoItem> {
+    const config = catalogos.find((catalogo) => catalogo.key === key);
+    if (!config) {
+      throw new Error(`Catalogo no soportado: ${key}`);
+    }
+
+    if (config.staticData) {
+      throw new Error(`No se pueden insertar elementos en catalogos estáticos: ${key}`);
+    }
+
+    const cols = [config.labelColumn!];
+    const vals: any[] = [data.nombre];
+
+    if (config.descriptionColumn && data.descripcion) {
+      cols.push(config.descriptionColumn);
+      vals.push(data.descripcion);
+    }
+
+    const placeholders = cols.map((_, i) => `$${i + 1}`).join(', ');
+    const query = `
+      INSERT INTO ${config.tableName} (${cols.join(', ')})
+      VALUES (${placeholders})
+      RETURNING ${config.idColumn} AS id, ${config.labelColumn} AS nombre
+      ${config.descriptionColumn ? `, ${config.descriptionColumn} AS descripcion` : ''};
+    `;
+
+    const result = await db.executePreparedQuery(query, vals);
+    return result.rows[0];
+  }
 }

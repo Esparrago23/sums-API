@@ -30,7 +30,11 @@ export const loginUserUseCase = new LoginUserUseCase(userRepository);
 export const createEntrevistadorUserUseCase = new CreateEntrevistadorUserUseCase();
 
 // Export controllers
+// createUserController: usado por /register (público) -> ignora rol_id del cliente.
 export const createUserController = new CreateUser_Controller(createUserUseCase);
+// createUserAdminController: usado por /users/admin/register (protegida con
+// roleMiddleware([1, 2])) -> respeta el rol_id validado por createUserAdminSchema.
+export const createUserAdminController = new CreateUser_Controller(createUserUseCase, true);
 export const readAllUserController = new ReadAllUser_Controller(readAllUserUseCase);
 export const deleteUserController = new DeleteUser_Controller(deleteUserUseCase);
 export const readUserByIdController = new ReadUserById_Controller(readUserByIDUseCase);

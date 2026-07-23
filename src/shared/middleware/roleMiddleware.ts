@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { verifyToken } from '../../User/infraestructure/services/jwt';
 
 export const roleMiddleware = (allowedRoles: number[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
@@ -11,7 +11,9 @@ export const roleMiddleware = (allowedRoles: number[]) => {
       }
 
       const token = authHeader.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mi_secreto') as any;
+      // Reutiliza verifyToken (mismo JWT_SECRET y algorithms: ['HS256'] que
+      // authMiddleware) en vez de mantener un segundo secreto de fallback distinto.
+      const decoded = verifyToken(token) as any;
 
       // Ensure the decoded token has rol
       if (!decoded || !decoded.rol) {

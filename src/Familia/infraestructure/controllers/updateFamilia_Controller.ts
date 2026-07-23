@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { UpdateFamiliaUseCase } from "../../application/updateFamilia_UseCase";
 
 export class UpdateFamilia_Controller {
     constructor(private updateFamilia: UpdateFamiliaUseCase) {}
 
-    async run(req: Request, res: Response) {
+    async run(req: Request, res: Response, next: NextFunction) {
         try {
             const id = parseInt(req.params.id, 10);
             const familiaData = req.body;
@@ -21,7 +21,8 @@ export class UpdateFamilia_Controller {
                 res.status(404).json({ error: "Familia not found" });
             }
         } catch (error: any) {
-            res.status(400).json({ error: error.message });
+            (error as any).status = 400;
+            next(error);
         }
     }
 }

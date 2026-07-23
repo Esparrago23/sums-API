@@ -10,8 +10,8 @@ const swaggerOptions: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: `http://localhost:${process.env.PORT || 3000}/sums`,
-        description: 'Development server',
+        url: '/sums',
+        description: 'Current environment',
       },
     ],
     components: {
@@ -43,6 +43,10 @@ const swaggerOptions: swaggerJSDoc.Options = {
     './src/Vacunacion/**/*.ts',
     './src/Vacunas/**/*.ts',
     './src/Vivienda/**/*.ts',
+    './src/EstadisticasOperacion/**/*.ts',
+    './src/EstadisticasDemografia/**/*.ts',
+    './src/EstadisticasSalud/**/*.ts',
+    './src/EstadisticasVivienda/**/*.ts',
   ],
 };
 

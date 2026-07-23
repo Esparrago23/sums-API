@@ -48,14 +48,14 @@ CREATE TABLE "cat_asentamiento" (
 
 CREATE TABLE "direccion" (
   "id_direccion" SERIAL PRIMARY KEY,
-  "calle" VARCHAR(150),
-  "numero_exterior" VARCHAR(50),
-  "numero_interior" VARCHAR(50),
-  "colonia" VARCHAR(150),
+  "calle" TEXT,
+  "numero_exterior" TEXT,
+  "numero_interior" TEXT,
+  "colonia" TEXT,
   "codigo_postal" VARCHAR(10),
   "localidad" VARCHAR(150),
   "manzana" VARCHAR(50),
-  "vivienda_referencia" VARCHAR(50),
+  "vivienda_referencia" TEXT,
   "asentamiento_id" INT
 );
 
@@ -155,10 +155,10 @@ CREATE TABLE "cat_ingreso_salarial" (
 
 CREATE TABLE "persona" (
   "id_persona" SERIAL PRIMARY KEY,
-  "primer_nombre" VARCHAR(100) NOT NULL,
-  "segundo_nombre" VARCHAR(100),
-  "apellido_paterno" VARCHAR(100) NOT NULL,
-  "apellido_materno" VARCHAR(100),
+  "primer_nombre" TEXT NOT NULL,
+  "segundo_nombre" TEXT,
+  "apellido_paterno" TEXT NOT NULL,
+  "apellido_materno" TEXT,
   "fecha_nacimiento" DATE NOT NULL,
   "sexo" sexo_persona NOT NULL,
   "estado_civil_id" INT,
@@ -396,7 +396,16 @@ CREATE TABLE "inmunizacion" (
   "vacuna_id" INT NOT NULL,
   "dosis_id" INT,
   "otra_vacuna_especificar" VARCHAR(150),
-  "fecha_aplicacion" DATE
+  "fecha_aplicacion" DATE,
+  -- Evita registrar dos veces la misma dosis de la misma vacuna para el mismo
+  -- esquema de vacunación (y por lo tanto para la misma persona, ya que cada
+  -- esquema_vacunacion pertenece a una sola persona). Antes solo existía como
+  -- migración manual (database/migrations/002_unique_inmunizacion.sql); ahora
+  -- queda incluida desde la inicialización inicial de la BD (docker-entrypoint-
+  -- initdb.d). Igual que en la migración: al ser un UNIQUE normal, PostgreSQL
+  -- trata cada NULL de dosis_id como distinto, así que no cubre duplicados
+  -- cuando dosis_id es NULL (ver migración 002 para el índice parcial opcional).
+  CONSTRAINT "uq_inmunizacion_esquema_vacuna_dosis" UNIQUE ("esquema_vacunacion_id", "vacuna_id", "dosis_id")
 );
 
 CREATE UNIQUE INDEX "idx_nucleo_persona_1" ON "nucleo_persona" ("nucleo_familiar_id", "persona_id");

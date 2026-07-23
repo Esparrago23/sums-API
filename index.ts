@@ -12,9 +12,13 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './src/docs/swagger';
 import { db } from './src/core/db_postgresql';
+import { swaggerBasicAuth } from './src/shared/middleware/swaggerBasicAuth';
+import { errorHandler } from './src/shared/middleware/errorHandler';
 
 import UserRouter from './src/User/infraestructure/routes/userRouter';
 import EntrevistadorRouter from './src/Entrevistador/infraestructure/routes/entrevistadorRouter';
@@ -31,21 +35,64 @@ import DosisRouter from './src/Dosis/infraestructure/routes/dosisRouter';
 import CatalogosRouter from './src/Catalogos/infraestructure/routes/catalogosRouter';
 import NucleoFamiliarRouter from './src/NucleoFamiliar/infraestructure/routes/nucleoFamiliarRouter';
 import PersonaSaludRouter from './src/PersonaSalud/infraestructure/routes/personaSaludRouter';
+import EstadisticasOperacionRouter from './src/EstadisticasOperacion/infraestructure/routes/estadisticasOperacionRouter';
+import EstadisticasDemografiaRouter from './src/EstadisticasDemografia/infraestructure/routes/estadisticasDemografiaRouter';
+import EstadisticasSaludRouter from './src/EstadisticasSalud/infraestructure/routes/estadisticasSaludRouter';
+import EstadisticasViviendaRouter from './src/EstadisticasVivienda/infraestructure/routes/estadisticasViviendaRouter';
 
 const app = express();
 
+// contentSecurityPolicy se deshabilita porque su valor por defecto rompe los
+// assets inline que sirve swagger-ui-express en /sums/api-docs; el resto de
+// protecciones de helmet (X-Content-Type-Options, X-Frame-Options, etc.) se
+// mantienen activas. La API en sí solo sirve JSON, así que el riesgo de XSS que
+// CSP mitiga en páginas HTML no aplica al resto de las rutas.
+app.use(helmet({ contentSecurityPolicy: false }));
 
+// Orígenes permitidos: se arma la lista con cualquier variable que SÍ esté
+// definida (filter(Boolean)). Antes se usaba "&&" (AND lógico), así que bastaba
+// con que faltara UNA sola variable para que el CORS cayera a '*' (abierto a
+// cualquier origen) incluso si la otra sí estaba configurada. Ahora solo se cae
+// a '*' cuando NINGUNA de las variables está definida.
+const configuredOrigins = [process.env.ORIGIN_URL_1, process.env.ORIGIN_URL_2].filter(
+  (origin): origin is string => Boolean(origin)
+);
 app.use(cors({
-  origin: process.env.ORIGIN_URL_1 && process.env.ORIGIN_URL_2 ? 
-    [process.env.ORIGIN_URL_1, process.env.ORIGIN_URL_2].filter(Boolean) : 
-    '*',
+  origin: configuredOrigins.length > 0 ? configuredOrigins : '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
 
+// Confía en 1 salto de proxy (nginx delante de la API, ver nginx/nginx.conf y
+// compose.yaml). Sin esto, express-rate-limit y cualquier lógica basada en
+// req.ip usan la IP del proxy (siempre la misma) en vez de la IP real del
+// cliente (X-Forwarded-For), agrupando a todos los usuarios en un solo cupo.
+app.set('trust proxy', 1);
 
-app.use('/sums/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Rate limiting general: 100 solicitudes / 15 min por IP.
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiadas solicitudes. Intenta de nuevo más tarde.' }
+});
+app.use(generalLimiter);
+
+// Rate limiting más estricto para login/registro (mitiga fuerza bruta / abuso
+// de creación de cuentas): 10 intentos / 15 min por IP.
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiados intentos. Intenta de nuevo más tarde.' }
+});
+app.use(['/sums/login', '/sums/register', '/sums/register-entrevistador'], authLimiter);
+
+// Swagger UI protegido con HTTP Basic Auth (antes era público sin restricción).
+app.use('/sums/api-docs', swaggerBasicAuth, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/sums',
     UserRouter,
@@ -63,15 +110,21 @@ app.use('/sums',
     VacunacionRouter,
     VacunasRouter,
     ViviendaRouter,
+    EstadisticasOperacionRouter,
+    EstadisticasDemografiaRouter,
+    EstadisticasSaludRouter,
+    EstadisticasViviendaRouter,
 );
 
 // Ruta de prueba para verificar la conexión
-app.get('/sums/ping', async (req, res) => {
+app.get('/sums/ping', async (req, res, next) => {
   try {
     const result = await db.executePreparedQuery('SELECT 1', []);
     res.json({ message: 'pong', result: result.rows });
   } catch (err) {
-    res.status(500).json({ error: err });
+    // No se expone el objeto de error de pg (puede incluir detalles de la
+    // consulta/esquema). Se delega al middleware de errores centralizado.
+    next(err);
   }
 });
 
@@ -85,7 +138,10 @@ setInterval(() => {
   });
 }, 24 * 60 * 60 * 1000); // cada 24 horas
 
-const PORT = process.env.API_PORT || process.env.PORT || 3000;
+// Middleware de errores centralizado: debe ir después de todas las rutas.
+app.use(errorHandler);
+
+const PORT = process.env.PORT || process.env.API_PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}/sums`);
 });

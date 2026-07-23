@@ -1,4 +1,5 @@
 import { Vacunacion } from '../../domain/entities/vacunacion';
+import { decrypt } from '../../../shared/security/encryption';
 import { Ivacunacion } from '../../domain/repositories/Ivacunacion';
 import {
   AplicacionesPorAnioVacunaDTO,
@@ -192,9 +193,11 @@ export class InMemoryVacunacionRepo implements Ivacunacion {
   }
 
   async getDosisAplicadasPorPersona(): Promise<DosisPorPersonaDTO[]> {
+    // Los nombres están cifrados por campo: se traen por separado y se descifran/concatenan en JS
+    // (no se puede descifrar un CONCAT_WS de 4 ciphertexts independientes).
     const query = `
       SELECT
-        CONCAT_WS(' ', p.primer_nombre, p.segundo_nombre, p.apellido_paterno, p.apellido_materno) AS nombre_completo,
+        p.primer_nombre, p.segundo_nombre, p.apellido_paterno, p.apellido_materno,
         COUNT(*)::int AS total_dosis_aplicadas
       FROM inmunizacion i
       JOIN esquema_vacunacion ev ON i.esquema_vacunacion_id = ev.id_esquema_vacunacion
@@ -203,7 +206,15 @@ export class InMemoryVacunacionRepo implements Ivacunacion {
       ORDER BY total_dosis_aplicadas DESC;
     `;
     const result = await db.executePreparedQuery(query, []);
-    return result.rows;
+    return result.rows.map((row: any) => ({
+      nombre_completo: [
+        decrypt(row.primer_nombre, 'persona'),
+        decrypt(row.segundo_nombre, 'persona'),
+        decrypt(row.apellido_paterno, 'persona'),
+        decrypt(row.apellido_materno, 'persona')
+      ].filter((part) => part !== null && part !== undefined && part !== '').join(' '),
+      total_dosis_aplicadas: row.total_dosis_aplicadas
+    }));
   }
 
   private async createEsquemaFromLegacyPayload(vacunacion: Vacunacion): Promise<number> {

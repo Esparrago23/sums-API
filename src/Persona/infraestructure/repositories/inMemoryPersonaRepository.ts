@@ -2,6 +2,7 @@ import { Persona } from '../../domain/entities/Persona';
 import { IPersonaRepository } from '../../domain/repositories/IPersonaRepository';
 import { db } from '../../../core/db_postgresql';
 import { formatDateForDB, parseDBDate } from '../../../core/date_utils';
+import { encryptValue, decryptRow } from '../../../shared/security/sensitiveFields';
 
 export class InMemoryPersonaRepository implements IPersonaRepository {
   async create(persona: Persona): Promise<Persona> {
@@ -14,10 +15,10 @@ export class InMemoryPersonaRepository implements IPersonaRepository {
       RETURNING *;
     `;
     const values = [
-      persona.primer_nombre,
-      persona.segundo_nombre,
-      persona.apellido_paterno,
-      persona.apellido_materno,
+      encryptValue('persona', 'primer_nombre', persona.primer_nombre),
+      encryptValue('persona', 'segundo_nombre', persona.segundo_nombre),
+      encryptValue('persona', 'apellido_paterno', persona.apellido_paterno),
+      encryptValue('persona', 'apellido_materno', persona.apellido_materno),
       formatDateForDB(persona.fecha_nacimiento),
       persona.sexo,
       persona.estado_civil_id,
@@ -46,10 +47,10 @@ export class InMemoryPersonaRepository implements IPersonaRepository {
       RETURNING *;
     `;
     const values = [
-      persona.primer_nombre,
-      persona.segundo_nombre,
-      persona.apellido_paterno,
-      persona.apellido_materno,
+      encryptValue('persona', 'primer_nombre', persona.primer_nombre),
+      encryptValue('persona', 'segundo_nombre', persona.segundo_nombre),
+      encryptValue('persona', 'apellido_paterno', persona.apellido_paterno),
+      encryptValue('persona', 'apellido_materno', persona.apellido_materno),
       formatDateForDB(persona.fecha_nacimiento),
       persona.sexo,
       persona.estado_civil_id,
@@ -178,6 +179,7 @@ export class InMemoryPersonaRepository implements IPersonaRepository {
   }
 
   private mapPersona(row: any): Persona {
+    decryptRow('persona', row); // descifra nombres antes de devolver al dominio
     row.fecha_nacimiento = parseDBDate(row.fecha_nacimiento);
     row.fecha_registro = parseDBDate(row.fecha_registro);
     return row;

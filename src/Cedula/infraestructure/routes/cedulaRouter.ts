@@ -101,20 +101,40 @@
 
 import express from 'express';
 import { validate } from '../../../shared/middleware/validateMiddleware';
-import { cedulaSchema } from '../../domain/schemas/cedulaSchema';
+import { cedulaSchema, capturaCompletaSchema, syncCedulasSchema } from '../../domain/schemas/cedulaSchema';
 import { createCedulaController } from '../cedula_dependencies';
 import { readAllCedulaController } from '../cedula_dependencies';
 import { deleteCedulaController } from '../cedula_dependencies';
 import { readCedulaByIdController } from '../cedula_dependencies';
 import { updateCedulaController } from '../cedula_dependencies';
 import { capturaCompletaCedulaController } from '../cedula_dependencies';
+import { syncCedulasController } from '../cedula_dependencies';
+import { authMiddleware } from '../../../User/infraestructure/middleware/authMiddleware';
+import { roleMiddleware } from '../../../shared/middleware/roleMiddleware';
+
+// Roles con permiso para levantar/sincronizar cédulas en campo:
+// 1 = superadmin, 2 = admin, 4 = entrevistador.
+const CAPTURA_ROLES = [1, 2, 4];
 
 export const router = express.Router();
-router.post('/cedulas', validate(cedulaSchema), createCedulaController.run.bind(createCedulaController));
-router.post('/cedulas/captura-completa', capturaCompletaCedulaController.run.bind(capturaCompletaCedulaController));
-router.get('/cedulas', readAllCedulaController.run.bind(readAllCedulaController));
-router.delete('/cedulas/:id', deleteCedulaController.run.bind(deleteCedulaController));
-router.get('/cedulas/:id', readCedulaByIdController.run.bind(readCedulaByIdController));
-router.put('/cedulas/:id', validate(cedulaSchema), updateCedulaController.run.bind(updateCedulaController));
+router.post('/cedulas', authMiddleware(), validate(cedulaSchema), createCedulaController.run.bind(createCedulaController));
+router.post(
+  '/cedulas/captura-completa',
+  authMiddleware(),
+  roleMiddleware(CAPTURA_ROLES),
+  validate(capturaCompletaSchema),
+  capturaCompletaCedulaController.run.bind(capturaCompletaCedulaController)
+);
+router.post(
+  '/sums/sync',
+  authMiddleware(),
+  roleMiddleware(CAPTURA_ROLES),
+  validate(syncCedulasSchema),
+  syncCedulasController.run.bind(syncCedulasController)
+);
+router.get('/cedulas', authMiddleware(), readAllCedulaController.run.bind(readAllCedulaController));
+router.delete('/cedulas/:id', authMiddleware(), deleteCedulaController.run.bind(deleteCedulaController));
+router.get('/cedulas/:id', authMiddleware(), readCedulaByIdController.run.bind(readCedulaByIdController));
+router.put('/cedulas/:id', authMiddleware(), validate(cedulaSchema), updateCedulaController.run.bind(updateCedulaController));
 
 export default router;

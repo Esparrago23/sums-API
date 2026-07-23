@@ -338,32 +338,45 @@
  */
 
 import express from 'express';
-import { createUserController, readAllUserController, deleteUserController,
-         readUserByIdController, updateUserController,
+
+import { createUserController, createUserAdminController, readAllUserController, deleteUserController,
+         readUserByIdController, updateUserController, loginUserController,
          createEntrevistadorUserController, updateUserRoleController } from '../user_dependencies';
 
 import { authMiddleware } from '../middleware/authMiddleware';
 import { roleMiddleware } from '../../../shared/middleware/roleMiddleware';
+import { selfOrAdminMiddleware } from '../../../shared/middleware/selfOrAdminMiddleware';
 import { validate } from '../../../shared/middleware/validateMiddleware';
-import { createUserAdminSchema, updateUserRoleSchema } from '../../domain/schemas/userSchema';
+import { createUserSchema, createUserAdminSchema, updateUserRoleSchema } from '../../domain/schemas/userSchema';
+import { createEntrevistadorUserSchema } from '../../domain/schemas/createEntrevistadorUserSchema';
 
 export const router = express.Router();
 
-router.post('/register', createUserController.run.bind(createUserController));
-router.post('/register-entrevistador', createEntrevistadorUserController.run.bind(createEntrevistadorUserController));
+
+router.post('/register', validate(createUserSchema), createUserController.run.bind(createUserController));
+router.post('/login', loginUserController.run.bind(loginUserController));
+router.post(
+  '/register-entrevistador',
+  validate(createEntrevistadorUserSchema),
+  createEntrevistadorUserController.run.bind(createEntrevistadorUserController)
+);
+
 
 // Protected routes (authentication required)
 router.get('/users', authMiddleware(), readAllUserController.run.bind(readAllUserController));
-router.delete('/users/:id', authMiddleware(), deleteUserController.run.bind(deleteUserController));
-router.get('/users/:id', authMiddleware(), readUserByIdController.run.bind(readUserByIdController));
-router.put('/users/:id', authMiddleware(), updateUserController.run.bind(updateUserController));
+// GET/PUT/DELETE /users/:id: solo admin/superadmin, o el propio usuario autenticado
+// (self-service). Evita IDOR: antes cualquier usuario autenticado podía leer/editar/
+// borrar la cuenta de cualquier otro.
+router.delete('/users/:id', authMiddleware(), selfOrAdminMiddleware(), deleteUserController.run.bind(deleteUserController));
+router.get('/users/:id', authMiddleware(), selfOrAdminMiddleware(), readUserByIdController.run.bind(readUserByIdController));
+router.put('/users/:id', authMiddleware(), selfOrAdminMiddleware(), updateUserController.run.bind(updateUserController));
 
 // Admin routes (require roles: 1 = superadmin, 2 = admin)
 router.post(
   '/users/admin/register',
   roleMiddleware([1, 2]),
   validate(createUserAdminSchema),
-  createUserController.run.bind(createUserController)
+  createUserAdminController.run.bind(createUserAdminController)
 );
 
 router.put(

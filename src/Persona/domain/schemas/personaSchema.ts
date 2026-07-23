@@ -2,24 +2,24 @@ import { z } from 'zod';
 
 export const personaSchema = z.object({
   body: z.object({
-    primer_nombre: z.string().min(1, "El primer nombre es requerido"),
-    segundo_nombre: z.string().nullable().optional(),
-    apellido_paterno: z.string().min(1, "El apellido paterno es requerido"),
-    apellido_materno: z.string().nullable().optional(),
-    fecha_nacimiento: z.string().refine((date) => !isNaN(Date.parse(date)), { message: "Fecha de nacimiento inválida" }),
+    primer_nombre: z.string().trim().min(1, "El primer nombre es requerido"),
+    segundo_nombre: z.string().trim().nullable().optional(),
+    apellido_paterno: z.string().trim().min(1, "El apellido paterno es requerido"),
+    apellido_materno: z.string().trim().nullable().optional(),
+    fecha_nacimiento: z.string().trim().refine((date) => !isNaN(Date.parse(date)), { message: "Fecha de nacimiento inválida" }),
     sexo: z.enum(['masculino', 'femenino']),
     alfabetizacion: z.boolean().nullable().optional(),
     estado_civil_id: z.number().int().nullable().optional(),
     lengua_id: z.number().int().nullable().optional(),
-    lengua_indigena_especificar: z.string().nullable().optional(),
+    lengua_indigena_especificar: z.string().trim().nullable().optional(),
     escolaridad_id: z.number().int().nullable().optional(),
     ocupacion_id: z.number().int().nullable().optional(),
-    ocupacion_texto: z.string().nullable().optional(),
+    ocupacion_texto: z.string().trim().nullable().optional(),
     ingreso_salarial_id: z.number().int().nullable().optional(),
     cuenta_seguridad_social: z.boolean().nullable().optional(),
     presenta_discapacidad: z.boolean().nullable().optional(),
-    tipo_discapacidad: z.string().nullable().optional(),
-    fecha_registro: z.string().nullable().optional().refine((date) => !date || !isNaN(Date.parse(date)), { message: "Fecha de registro inválida" })
+    tipo_discapacidad: z.string().trim().nullable().optional(),
+    fecha_registro: z.string().trim().nullable().optional().refine((date) => !date || !isNaN(Date.parse(date)), { message: "Fecha de registro inválida" })
   }).refine((data) => {
     // Guía del microdiagnóstico: Si se especifica un tipo de discapacidad, la bandera debe ser true
     if (data.tipo_discapacidad && !data.presenta_discapacidad) return false;

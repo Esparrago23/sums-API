@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { UpdateCedulaUseCase } from "../../application/updateCedula_UseCase";
 import { normalizeDateField, parsePositiveId } from "../../../shared/validation";
 
 export class UpdateCedula_Controller {
     constructor(private updateCedula: UpdateCedulaUseCase) {}
 
-    async run(req: Request, res: Response) {
+    async run(req: Request, res: Response, next: NextFunction) {
         try {
             const id = parsePositiveId(req.params.id);
             const cedulaData = req.body;
@@ -17,7 +17,8 @@ export class UpdateCedula_Controller {
                 res.status(404).json({ error: "Cedula not found" });
             }
         } catch (error: any) {
-            res.status(400).json({ error: error.message });
+            (error as any).status = 400;
+            next(error);
         }
     }
 }

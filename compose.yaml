@@ -11,6 +11,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/schema.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
+      - ./database/seeder.sql:/docker-entrypoint-initdb.d/20-seeder.sql:ro
     healthcheck:
       test:
         [
@@ -36,7 +37,10 @@ services:
       DB_SSLMODE: disable
       ORIGIN_URL_1: ${ORIGIN_URL_1:-}
       ORIGIN_URL_2: ${ORIGIN_URL_2:-}
-      JWT_SECRET: ${JWT_SECRET:-sums_jwt_secret_2026}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET debe definirse en tu .env (no hay valor por defecto inseguro)}
+      ENCRYPTION_MASTER_KEY: ${ENCRYPTION_MASTER_KEY:?ENCRYPTION_MASTER_KEY debe definirse en tu .env (no hay valor por defecto inseguro)}
+      SWAGGER_USER: ${SWAGGER_USER:?SWAGGER_USER debe definirse en tu .env (no hay valor por defecto inseguro)}
+      SWAGGER_PASSWORD: ${SWAGGER_PASSWORD:?SWAGGER_PASSWORD debe definirse en tu .env (no hay valor por defecto inseguro)}
       DB_HOST_DB: ${DB_HOST_DB:-}
       DB_PORT_DB: ${DB_PORT_DB:-}
       DB_USER_DB: ${DB_USER_DB:-}
@@ -78,7 +82,10 @@ services:
       DB_SSLMODE: disable
       ORIGIN_URL_1: ${ORIGIN_URL_1:-}
       ORIGIN_URL_2: ${ORIGIN_URL_2:-}
-      JWT_SECRET: ${JWT_SECRET:-sums_jwt_secret_2026}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET debe definirse en tu .env (no hay valor por defecto inseguro)}
+      ENCRYPTION_MASTER_KEY: ${ENCRYPTION_MASTER_KEY:?ENCRYPTION_MASTER_KEY debe definirse en tu .env (no hay valor por defecto inseguro)}
+      SWAGGER_USER: ${SWAGGER_USER:?SWAGGER_USER debe definirse en tu .env (no hay valor por defecto inseguro)}
+      SWAGGER_PASSWORD: ${SWAGGER_PASSWORD:?SWAGGER_PASSWORD debe definirse en tu .env (no hay valor por defecto inseguro)}
       DB_HOST_DB: ${DB_HOST_DB:-}
       DB_PORT_DB: ${DB_PORT_DB:-}
       DB_USER_DB: ${DB_USER_DB:-}

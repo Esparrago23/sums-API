@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { UpdatePersonaUseCase } from "../../application/updatePersona_UseCase";
 import { normalizeDateField, parsePositiveId } from "../../../shared/validation";
 
 export class UpdatePersona_Controller {
   constructor(private updatePersona: UpdatePersonaUseCase) {}
 
-  async run(req: Request, res: Response) {
+  async run(req: Request, res: Response, next: NextFunction) {
     try {
       const id = parsePositiveId(req.params.id);
       const personaData = req.body;
@@ -18,7 +18,8 @@ export class UpdatePersona_Controller {
         res.status(404).json({ error: "Persona not found" });
       }
     } catch (error: any) {
-      res.status(400).json({ error: error.message });
+      (error as any).status = 400;
+      next(error);
     }
   }
 }

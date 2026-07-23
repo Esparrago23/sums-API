@@ -109,18 +109,19 @@ import { deleteViviendaController } from '../vivienda_dependencies';
 import { readViviendaByIdController } from '../vivienda_dependencies';
 import { updateViviendaController } from '../vivienda_dependencies';
 import { viviendaRelacionesController } from '../vivienda_dependencies';
+import { authMiddleware } from '../../../User/infraestructure/middleware/authMiddleware';
 
 export const router = express.Router();
-router.post('/viviendas', validate(viviendaSchema), createViviendaController.run.bind(createViviendaController));
-router.get('/viviendas', readAllViviendaController.run.bind(readAllViviendaController));
-router.delete('/viviendas/:id', deleteViviendaController.run.bind(deleteViviendaController));
-router.get('/viviendas/:id', readViviendaByIdController.run.bind(readViviendaByIdController));
-router.put('/viviendas/:id', validate(viviendaSchema), updateViviendaController.run.bind(updateViviendaController));
+router.post('/viviendas', authMiddleware(), validate(viviendaSchema), createViviendaController.run.bind(createViviendaController));
+router.get('/viviendas', authMiddleware(), readAllViviendaController.run.bind(readAllViviendaController));
+router.delete('/viviendas/:id', authMiddleware(), deleteViviendaController.run.bind(deleteViviendaController));
+router.get('/viviendas/:id', authMiddleware(), readViviendaByIdController.run.bind(readViviendaByIdController));
+router.put('/viviendas/:id', authMiddleware(), validate(viviendaSchema), updateViviendaController.run.bind(updateViviendaController));
 
-router.post('/familias-animales', validate(familiaAnimalSchema), viviendaRelacionesController.create('animales'));
-router.get('/familias-animales', viviendaRelacionesController.readAll('animales'));
-router.get('/familias-animales/:id', viviendaRelacionesController.readById('animales'));
-router.put('/familias-animales/:id', validate(familiaAnimalSchema), viviendaRelacionesController.update('animales'));
-router.delete('/familias-animales/:id', viviendaRelacionesController.delete('animales'));
+router.post('/familias-animales', authMiddleware(), validate(familiaAnimalSchema), viviendaRelacionesController.create('animales'));
+router.get('/familias-animales', authMiddleware(), viviendaRelacionesController.readAll('animales'));
+router.get('/familias-animales/:id', authMiddleware(), viviendaRelacionesController.readById('animales'));
+router.put('/familias-animales/:id', authMiddleware(), validate(familiaAnimalSchema), viviendaRelacionesController.update('animales'));
+router.delete('/familias-animales/:id', authMiddleware(), viviendaRelacionesController.delete('animales'));
 
 export default router;

@@ -107,14 +107,15 @@ import { readAllDosisController } from '../dosis_dependencies';
 import { deleteDosisController } from '../dosis_dependencies';
 import { readDosisByIdController } from '../dosis_dependencies';
 import { updateDosisController } from '../dosis_dependencies';
+import { authMiddleware } from '../../../User/infraestructure/middleware/authMiddleware';
 
 
 export const router = express.Router();
 
-router.post('/dosis', validate(dosisSchema), createDosisController.run.bind(createDosisController));
-router.get('/dosis', readAllDosisController.run.bind(readAllDosisController));
-router.delete('/dosis/:id', deleteDosisController.run.bind(deleteDosisController));
-router.get('/dosis/:id', readDosisByIdController.run.bind(readDosisByIdController));
-router.put('/dosis/:id', validate(dosisSchema), updateDosisController.run.bind(updateDosisController));
+router.post('/dosis', authMiddleware(), validate(dosisSchema), createDosisController.run.bind(createDosisController));
+router.get('/dosis', authMiddleware(), readAllDosisController.run.bind(readAllDosisController));
+router.delete('/dosis/:id', authMiddleware(), deleteDosisController.run.bind(deleteDosisController));
+router.get('/dosis/:id', authMiddleware(), readDosisByIdController.run.bind(readDosisByIdController));
+router.put('/dosis/:id', authMiddleware(), validate(dosisSchema), updateDosisController.run.bind(updateDosisController));
 
 export default router;

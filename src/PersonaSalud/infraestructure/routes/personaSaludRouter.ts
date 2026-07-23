@@ -3,6 +3,7 @@ import { personaSaludController } from '../personaSalud_dependencies';
 import { PersonaSaludTipo } from '../../domain/repositories/IPersonaSaludRepository';
 import { validate } from '../../../shared/middleware/validateMiddleware';
 import { schemaByTipo } from '../../domain/schemas/personaSaludSchema';
+import { authMiddleware } from '../../../User/infraestructure/middleware/authMiddleware';
 
 export const router = express.Router();
 
@@ -73,11 +74,11 @@ const routeMap: Array<{ path: string; tipo: PersonaSaludTipo }> = [
  *         description: Invalid input data (e.g., tipo_discapacidad requiere presenta_discapacidad=true)
  */
 for (const route of routeMap) {
-  router.post(route.path, validate(schemaByTipo[route.tipo]), personaSaludController.create(route.tipo));
-  router.get(route.path, personaSaludController.readAll(route.tipo));
-  router.get(`${route.path}/:id`, personaSaludController.readById(route.tipo));
-  router.put(`${route.path}/:id`, validate(schemaByTipo[route.tipo]), personaSaludController.update(route.tipo));
-  router.delete(`${route.path}/:id`, personaSaludController.delete(route.tipo));
+  router.post(route.path, authMiddleware(), validate(schemaByTipo[route.tipo]), personaSaludController.create(route.tipo));
+  router.get(route.path, authMiddleware(), personaSaludController.readAll(route.tipo));
+  router.get(`${route.path}/:id`, authMiddleware(), personaSaludController.readById(route.tipo));
+  router.put(`${route.path}/:id`, authMiddleware(), validate(schemaByTipo[route.tipo]), personaSaludController.update(route.tipo));
+  router.delete(`${route.path}/:id`, authMiddleware(), personaSaludController.delete(route.tipo));
 }
 
 export default router;

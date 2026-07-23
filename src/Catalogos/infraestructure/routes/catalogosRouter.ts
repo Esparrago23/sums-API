@@ -2,6 +2,7 @@ import express from 'express';
 import { catalogosController } from '../catalogos_dependencies';
 import { validate } from '../../../shared/middleware/validateMiddleware';
 import { catalogoSchema } from '../../domain/schemas/catalogoSchema';
+import { authMiddleware } from '../../../User/infraestructure/middleware/authMiddleware';
 
 export const router = express.Router();
 
@@ -48,7 +49,8 @@ export const router = express.Router();
  *       200:
  *         description: Elementos del catalogo
  */
-router.get('/catalogos', catalogosController.listCatalogos.bind(catalogosController));
-router.get('/catalogos/:catalogo', catalogosController.readAll.bind(catalogosController));
+router.get('/catalogos', authMiddleware(), catalogosController.listCatalogos.bind(catalogosController));
+router.get('/catalogos/:catalogo', authMiddleware(), catalogosController.readAll.bind(catalogosController));
+router.post('/catalogos/:catalogo', authMiddleware(), validate(catalogoSchema), catalogosController.createCatalogItem.bind(catalogosController));
 
 export default router;
