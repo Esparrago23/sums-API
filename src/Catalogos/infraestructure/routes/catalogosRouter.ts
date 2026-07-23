@@ -32,15 +32,11 @@ export const router = express.Router();
  *             - escolaridad
  *             - ocupacion
  *             - ingreso-salarial
- *             - discapacidad
  *             - material
- *             - tipo-material-vivienda
- *             - servicio-vivienda
  *             - manejo-excretas
  *             - animal
  *             - toxicomania
  *             - enfermedad-cronica
- *             - alimentacion
  *             - frecuencia-servicio-salud
  *             - atencion-embarazo
  *             - vacuna
