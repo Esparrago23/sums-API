@@ -17,14 +17,18 @@ export const errorHandler = (err: any, _req: Request, res: Response, _next: Next
 
   const status = typeof err?.status === 'number' ? err.status : 500;
 
-  // Los controladores (ver next(error) en src/**/*_Controller.ts) marcan sus
-  // errores esperados/de negocio (validación, "no encontrado", duplicados,
-  // credenciales inválidas, etc.) con err.status en el rango 4xx: ese mensaje
-  // ya fue redactado pensando en el cliente y es seguro exponerlo. Cualquier
-  // otro caso (5xx, o un error sin status explícito -p.ej. una excepción cruda
-  // del driver de PostgreSQL-) sigue devolviendo un mensaje genérico para no
-  // filtrar detalles internos (stack traces, esquema de BD, rutas de archivo).
-  const message = status >= 400 && status < 500 && typeof err?.message === 'string' && err.message.length > 0
+  // Todos los *_Controller.ts hacen `(error as any).status = 400; next(error)`
+  // de forma ciega en su catch, sin distinguir un error de negocio (p.ej.
+  // "contraseña inválida") de una excepción cruda del driver de PostgreSQL
+  // (p.ej. una violación de FK, que trae nombres reales de tabla/constraint
+  // en err.message). Como el status ya viene forzado a 400 en ambos casos,
+  // no sirve por sí solo para decidir si el mensaje es seguro de exponer.
+  // El driver `pg` sí marca sus propios errores con un `code` (SQLSTATE de 5
+  // caracteres, p.ej. "23503"); un Error de negocio lanzado a mano con
+  // `new Error(...)` nunca tiene esa propiedad. Se usa eso para filtrar.
+  const looksLikeRawDriverError = typeof err?.code === 'string';
+  const message = status >= 400 && status < 500 && !looksLikeRawDriverError
+    && typeof err?.message === 'string' && err.message.length > 0
     ? err.message
     : 'Error interno del servidor';
 

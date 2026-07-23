@@ -2,6 +2,7 @@
 import { User } from "../domain/entities/User";
 import { IUserRepository } from "../domain/repositories/IUserRepositoy";
 import { hashPassword } from "../infraestructure/services/bcrypt";
+import { getEntrevistadorRolId, ensureEntrevistadorLink } from "../../shared/services/rolCatalog";
 
 export class UpdateUserUseCase {
   constructor(private userRepository: IUserRepository) {}
@@ -13,6 +14,27 @@ export class UpdateUserUseCase {
     }
 
     const updatedUser: any = { ...user, ...userData };
+
+    // Un usuario con rol "entrevistador" sin unidad_salud_id/entrevistador_id
+    // queda con el rol pero sin poder capturar cédulas (el móvil rechaza sus
+    // registros por violar la FK cedula_entrevistador_id_fkey). PUT /users/:id
+    // y PUT /users/:id/role antes solo tocaban rol_id, dejando pasar esta
+    // cuenta a medio configurar. Ahora, si faltan, se autoprovisiona el
+    // registro de entrevistador (ver ensureEntrevistadorLink).
+    const entrevistadorRolId = await getEntrevistadorRolId();
+    if (
+      entrevistadorRolId !== null &&
+      Number(updatedUser.rol_id) === entrevistadorRolId &&
+      (!updatedUser.unidad_salud_id || !updatedUser.entrevistador_id)
+    ) {
+      const link = await ensureEntrevistadorLink({
+        entrevistadorId: updatedUser.entrevistador_id,
+        unidadSaludId: updatedUser.unidad_salud_id,
+        nombreUsuario: updatedUser.nombre_usuario
+      });
+      updatedUser.entrevistador_id = link.entrevistadorId;
+      updatedUser.unidad_salud_id = link.unidadSaludId;
+    }
 
     if (userData.contrasena) {
       // La contraseña nunca se persiste en texto plano: se re-hashea con la misma
