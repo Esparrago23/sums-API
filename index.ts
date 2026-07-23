@@ -70,10 +70,10 @@ app.use(express.json({ limit: '1mb' }));
 // cliente (X-Forwarded-For), agrupando a todos los usuarios en un solo cupo.
 app.set('trust proxy', 1);
 
-// Rate limiting general: 100 solicitudes / 15 min por IP.
+// Rate limiting general: 1000 solicitudes / 15 min por IP.
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 100,
+  limit: 1000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Demasiadas solicitudes. Intenta de nuevo más tarde.' }
