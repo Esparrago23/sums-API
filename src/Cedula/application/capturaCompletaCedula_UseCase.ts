@@ -415,10 +415,43 @@ export class CapturaCompletaCedulaUseCase {
 
   private async createCedulaIfPossible(payload: Dict, nucleoId: number, warnings: string[]): Promise<number | null> {
     const unidadSaludId = this.intValue(payload.unidad_salud_id);
-    const entrevistadorId = this.intValue(payload.entrevistador_id);
+    let entrevistadorId = this.intValue(payload.entrevistador_id);
     if (!unidadSaludId || !entrevistadorId) {
       warnings.push('Cedula formal no creada: faltan unidad_salud_id y/o entrevistador_id.');
       return null;
+    }
+
+    // RESOLUCIÓN DE ENTREVISTADOR:
+    // sumsMobile envía user.id (id_usuario), pero Postgres espera id_entrevistador.
+    // Verificamos si existe en entrevistador directamente.
+    const entCheck = await db.executePreparedQuery(
+      `SELECT id_entrevistador FROM entrevistador WHERE id_entrevistador = $1`,
+      [entrevistadorId]
+    );
+    if (entCheck.rows.length === 0) {
+      // Si no existe como id_entrevistador, comprobamos si es id_usuario y extraemos su entrevistador_id
+      const userCheck = await db.executePreparedQuery(
+        `SELECT entrevistador_id FROM usuario WHERE id_usuario = $1`,
+        [entrevistadorId]
+      );
+      if (userCheck.rows.length > 0 && userCheck.rows[0].entrevistador_id) {
+        entrevistadorId = userCheck.rows[0].entrevistador_id;
+      } else {
+        // Si no tiene entrevistador_id (o era 0), creamos un registro de entrevistador de emergencia para evitar FK error.
+        const nombreRescate = payload.entrevistador_nombre ?? 'Rescate Sync';
+        const newEnt = await db.executePreparedQuery(
+          `INSERT INTO entrevistador (nombre, unidad_salud_id, fecha_registro) VALUES ($1, $2, CURRENT_DATE) RETURNING id_entrevistador`,
+          [nombreRescate, unidadSaludId]
+        );
+        entrevistadorId = newEnt.rows[0].id_entrevistador;
+        // Vinculamos el usuario a este nuevo entrevistador si existe el usuario
+        if (userCheck.rows.length > 0) {
+          await db.executePreparedQuery(
+            `UPDATE usuario SET entrevistador_id = $1 WHERE id_usuario = $2`,
+            [entrevistadorId, this.intValue(payload.entrevistador_id)]
+          );
+        }
+      }
     }
 
     const estado = this.estadoCedulaValue(payload.estado) ?? 'borrador';
