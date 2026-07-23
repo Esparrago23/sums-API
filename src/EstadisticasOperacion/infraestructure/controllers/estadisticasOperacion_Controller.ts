@@ -10,7 +10,9 @@ import {
   GetCedulasSerieUseCase,
   GetCedulasPorEstadoUseCase,
   GetCedulasPorUnidadUseCase,
-  GetCedulasPorLocalidadUseCase
+  GetCedulasPorLocalidadUseCase,
+  GetCedulasPorColoniaUseCase,
+  GetNucleosTamanoUseCase
 } from "../../application/operacion_UseCase";
 import { PeriodoAgrupacion } from "../../domain/repositories/IestadisticasOperacion";
 
@@ -32,7 +34,9 @@ export class EstadisticasOperacion_Controller {
     private getCedulasSerie: GetCedulasSerieUseCase,
     private getCedulasPorEstado: GetCedulasPorEstadoUseCase,
     private getCedulasPorUnidad: GetCedulasPorUnidadUseCase,
-    private getCedulasPorLocalidad: GetCedulasPorLocalidadUseCase
+    private getCedulasPorLocalidad: GetCedulasPorLocalidadUseCase,
+    private getCedulasPorColonia: GetCedulasPorColoniaUseCase,
+    private getNucleosTamano: GetNucleosTamanoUseCase
   ) {}
 
   // 1. GET /estadisticas/mis-cedulas/resumen
@@ -154,6 +158,28 @@ export class EstadisticasOperacion_Controller {
   async cedulasPorLocalidad(req: Request, res: Response, next: NextFunction) {
     try {
       const resultado = await this.getCedulasPorLocalidad.execute();
+      res.status(200).json(resultado);
+    } catch (error: any) {
+      (error as any).status = 500;
+      next(error);
+    }
+  }
+
+  // 10. GET /estadisticas/cedulas/por-colonia
+  async cedulasPorColonia(req: Request, res: Response, next: NextFunction) {
+    try {
+      const resultado = await this.getCedulasPorColonia.execute();
+      res.status(200).json(resultado);
+    } catch (error: any) {
+      (error as any).status = 500;
+      next(error);
+    }
+  }
+
+  // 11. GET /estadisticas/cedulas/nucleos-tamano
+  async nucleosTamano(req: Request, res: Response, next: NextFunction) {
+    try {
+      const resultado = await this.getNucleosTamano.execute();
       res.status(200).json(resultado);
     } catch (error: any) {
       (error as any).status = 500;

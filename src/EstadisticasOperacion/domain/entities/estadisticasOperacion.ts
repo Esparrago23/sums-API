@@ -76,8 +76,8 @@ export interface CedulasPorColoniaDTO {
 
 // 11. Histograma de tamaño de núcleos familiares
 export interface NucleosTamanoDTO {
-  integrantes: number;
-  total_nucleos: number;
+  tamano: number;
+  total: number;
 }
 
 // Filtros §C: parámetros opcionales y combinables para acotar las
