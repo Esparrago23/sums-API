@@ -162,8 +162,8 @@ router.post(
   syncCedulasController.run.bind(syncCedulasController)
 );
 router.get('/cedulas', authMiddleware(), readAllCedulaController.run.bind(readAllCedulaController));
-router.delete('/cedulas/:id', authMiddleware(), deleteCedulaController.run.bind(deleteCedulaController));
+router.delete('/cedulas/:id', authMiddleware(), roleMiddleware([1, 2]), deleteCedulaController.run.bind(deleteCedulaController));
 router.get('/cedulas/:id', authMiddleware(), readCedulaByIdController.run.bind(readCedulaByIdController));
-router.put('/cedulas/:id', authMiddleware(), validate(cedulaSchema), updateCedulaController.run.bind(updateCedulaController));
+router.put('/cedulas/:id', authMiddleware(), roleMiddleware([1, 2]), validate(cedulaSchema), updateCedulaController.run.bind(updateCedulaController));
 
 export default router;

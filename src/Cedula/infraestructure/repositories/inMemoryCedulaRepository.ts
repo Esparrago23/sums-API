@@ -70,6 +70,8 @@ export class InMemoryCedulaRepository implements ICedulaRepository {
   }
 
   async delete(id: number): Promise<void> {
+    await db.executePreparedQuery('DELETE FROM inmunizacion WHERE cedula_id = $1', [id]);
+    await db.executePreparedQuery('DELETE FROM levantamiento_nucleo WHERE cedula_id = $1', [id]);
     await db.executePreparedQuery('DELETE FROM cedula WHERE id_cedula = $1', [id]);
   }
 
