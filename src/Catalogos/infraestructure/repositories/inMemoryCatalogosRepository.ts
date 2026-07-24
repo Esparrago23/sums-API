@@ -17,8 +17,9 @@ const catalogos: CatalogoConfig[] = [
   { key: 'ocupacion', tableName: 'cat_ocupacion', idColumn: 'id_ocupacion', labelColumn: 'nombre' },
   { key: 'ingreso-salarial', tableName: 'cat_ingreso_salarial', idColumn: 'id_ingreso_salarial', labelColumn: 'rango', descriptionColumn: 'descripcion' },
   { key: 'ingreso', tableName: 'cat_ingreso_salarial', idColumn: 'id_ingreso_salarial', labelColumn: 'rango', descriptionColumn: 'descripcion' },
-  { key: 'material', tableName: 'cat_material', idColumn: 'id_material', labelColumn: 'nombre' },
-  { key: 'materiales_piso', tableName: 'cat_material', idColumn: 'id_material', labelColumn: 'nombre' },
+  { key: 'material', tableName: 'cat_material_piso', idColumn: 'id_material_piso', labelColumn: 'nombre' },
+  { key: 'material_piso', tableName: 'cat_material_piso', idColumn: 'id_material_piso', labelColumn: 'nombre' },
+  { key: 'material_muro_techo', tableName: 'cat_material_muro_techo', idColumn: 'id_material_muro_techo', labelColumn: 'nombre' },
   { key: 'manejo-excretas', tableName: 'cat_manejo_excretas', idColumn: 'id_manejo_excretas', labelColumn: 'nombre' },
   { key: 'manejo_excretas', tableName: 'cat_manejo_excretas', idColumn: 'id_manejo_excretas', labelColumn: 'nombre' },
   { key: 'animal', tableName: 'cat_animal', idColumn: 'id_animal', labelColumn: 'nombre' },
@@ -35,9 +36,10 @@ const catalogos: CatalogoConfig[] = [
   { key: 'vacunas', tableName: 'vacuna', idColumn: 'id_vacuna', labelColumn: 'nombre', descriptionColumn: 'descripcion' },
   { key: 'dosis', tableName: 'cat_dosis', idColumn: 'id_dosis', labelColumn: 'nombre' },
   { key: 'roles', tableName: 'cat_rol', idColumn: 'id_rol', labelColumn: 'nombre', descriptionColumn: 'descripcion' },
-  { key: 'ubicacion_cocina', staticData: [{ id: 'fuera_del_dormitorio', nombre: 'Fuera del dormitorio' }, { id: 'dentro_del_dormitorio', nombre: 'Dentro del dormitorio' }] },
-  { key: 'sexo', staticData: [{ id: 'masculino', nombre: 'Masculino' }, { id: 'femenino', nombre: 'Femenino' }] },
-  { key: 'tamizaje', staticData: [{ id: true, nombre: 'Sí' }, { id: false, nombre: 'No' }] }
+  { key: 'ubicacion_cocina', tableName: 'cat_ubicacion_cocina', idColumn: 'id_ubicacion_cocina', labelColumn: 'nombre' },
+  { key: 'sexo', tableName: 'cat_sexo', idColumn: 'id_sexo', labelColumn: 'nombre' },
+  { key: 'tamizaje', tableName: 'cat_tamizaje', idColumn: 'id_tamizaje', labelColumn: 'nombre' },
+  { key: 'discapacidad', tableName: 'cat_discapacidad', idColumn: 'id_discapacidad', labelColumn: 'nombre' }
 ];
 
 export class InMemoryCatalogosRepository implements ICatalogosRepository {
@@ -97,5 +99,48 @@ export class InMemoryCatalogosRepository implements ICatalogosRepository {
 
     const result = await db.executePreparedQuery(query, vals);
     return result.rows[0];
+  }
+
+  async updateCatalogItem(key: string, id: number, data: Partial<CatalogoItem>): Promise<CatalogoItem> {
+    const config = catalogos.find((catalogo) => catalogo.key === key);
+    if (!config) throw new Error(`Catalogo no soportado: ${key}`);
+    if (config.staticData) throw new Error(`No se pueden actualizar elementos en catalogos estáticos: ${key}`);
+
+    const updates: string[] = [];
+    const vals: any[] = [];
+    let idx = 1;
+
+    if (data.nombre) {
+      updates.push(`${config.labelColumn} = $${idx++}`);
+      vals.push(data.nombre);
+    }
+    if (config.descriptionColumn && data.descripcion !== undefined) {
+      updates.push(`${config.descriptionColumn} = $${idx++}`);
+      vals.push(data.descripcion);
+    }
+
+    if (updates.length === 0) throw new Error('No hay datos para actualizar');
+
+    vals.push(id);
+    const query = `
+      UPDATE ${config.tableName}
+      SET ${updates.join(', ')}
+      WHERE ${config.idColumn} = $${idx}
+      RETURNING ${config.idColumn} AS id, ${config.labelColumn} AS nombre
+      ${config.descriptionColumn ? `, ${config.descriptionColumn} AS descripcion` : ''};
+    `;
+
+    const result = await db.executePreparedQuery(query, vals);
+    if (result.rows.length === 0) throw new Error('Item no encontrado');
+    return result.rows[0];
+  }
+
+  async deleteCatalogItem(key: string, id: number): Promise<void> {
+    const config = catalogos.find((catalogo) => catalogo.key === key);
+    if (!config) throw new Error(`Catalogo no soportado: ${key}`);
+    if (config.staticData) throw new Error(`No se pueden eliminar elementos en catalogos estáticos: ${key}`);
+
+    const query = `DELETE FROM ${config.tableName} WHERE ${config.idColumn} = $1`;
+    await db.executePreparedQuery(query, [id]);
   }
 }

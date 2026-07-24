@@ -13,4 +13,6 @@ export interface ICatalogosRepository {
   listCatalogos(): CatalogoConfig[];
   readAll(key: string): Promise<CatalogoItem[]>;
   createCatalogItem(key: string, data: Partial<CatalogoItem>): Promise<CatalogoItem>;
+  updateCatalogItem(key: string, id: number, data: Partial<CatalogoItem>): Promise<CatalogoItem>;
+  deleteCatalogItem(key: string, id: number): Promise<void>;
 }

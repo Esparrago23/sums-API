@@ -45,8 +45,12 @@ export const router = express.Router();
  *       200:
  *         description: Elementos del catalogo
  */
+import { roleMiddleware } from '../../../shared/middleware/roleMiddleware';
+
 router.get('/catalogos', authMiddleware(), catalogosController.listCatalogos.bind(catalogosController));
 router.get('/catalogos/:catalogo', authMiddleware(), catalogosController.readAll.bind(catalogosController));
-router.post('/catalogos/:catalogo', authMiddleware(), validate(catalogoSchema), catalogosController.createCatalogItem.bind(catalogosController));
+router.post('/catalogos/:catalogo', authMiddleware(), roleMiddleware([1, 2]), validate(catalogoSchema), catalogosController.createCatalogItem.bind(catalogosController));
+router.put('/catalogos/:catalogo/:id', authMiddleware(), roleMiddleware([1, 2]), validate(catalogoSchema), catalogosController.updateCatalogItem.bind(catalogosController));
+router.delete('/catalogos/:catalogo/:id', authMiddleware(), roleMiddleware([1, 2]), catalogosController.deleteCatalogItem.bind(catalogosController));
 
 export default router;

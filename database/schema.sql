@@ -1,14 +1,24 @@
 -- SQL generated from sums-documentos/bd-nueva.txt
 -- Database: PostgreSQL
 
-CREATE TYPE "sexo_persona" AS ENUM (
-  'masculino',
-  'femenino'
+CREATE TABLE "cat_sexo" (
+  "id_sexo" SERIAL PRIMARY KEY,
+  "nombre" VARCHAR(50) UNIQUE NOT NULL
 );
 
-CREATE TYPE "ubicacion_cocina" AS ENUM (
-  'fuera_del_dormitorio',
-  'dentro_del_dormitorio'
+CREATE TABLE "cat_ubicacion_cocina" (
+  "id_ubicacion_cocina" SERIAL PRIMARY KEY,
+  "nombre" VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE "cat_tamizaje" (
+  "id_tamizaje" SERIAL PRIMARY KEY,
+  "nombre" VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE "cat_discapacidad" (
+  "id_discapacidad" SERIAL PRIMARY KEY,
+  "nombre" VARCHAR(150) UNIQUE NOT NULL
 );
 
 CREATE TYPE "estado_cedula" AS ENUM (
@@ -160,7 +170,7 @@ CREATE TABLE "persona" (
   "apellido_paterno" TEXT NOT NULL,
   "apellido_materno" TEXT,
   "fecha_nacimiento" DATE NOT NULL,
-  "sexo" sexo_persona NOT NULL,
+  "sexo_id" INT NOT NULL,
   "estado_civil_id" INT,
   "alfabetizacion" BOOLEAN,
   "fecha_registro" TIMESTAMP
@@ -207,7 +217,7 @@ CREATE TABLE "persona_discapacidad" (
   "id_persona_discapacidad" SERIAL PRIMARY KEY,
   "persona_id" INT NOT NULL,
   "presenta_discapacidad" BOOLEAN NOT NULL,
-  "tipo_discapacidad" VARCHAR(150)
+  "tipo_discapacidad_id" INT
 );
 
 CREATE TABLE "nucleo_familiar" (
@@ -257,8 +267,13 @@ CREATE TABLE "levantamiento_nucleo" (
   "comentarios" VARCHAR(250)
 );
 
-CREATE TABLE "cat_material" (
-  "id_material" SERIAL PRIMARY KEY,
+CREATE TABLE "cat_material_piso" (
+  "id_material_piso" SERIAL PRIMARY KEY,
+  "nombre" VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE "cat_material_muro_techo" (
+  "id_material_muro_techo" SERIAL PRIMARY KEY,
   "nombre" VARCHAR(100) UNIQUE NOT NULL
 );
 
@@ -275,7 +290,7 @@ CREATE TABLE "vivienda" (
   "numero_habitantes" INT,
   "agua_entubada" BOOLEAN,
   "energia_electrica" BOOLEAN,
-  "cocina_ubicacion" ubicacion_cocina,
+  "cocina_ubicacion_id" INT,
   "cocina_con_lena" BOOLEAN,
   "manejo_excretas_id" INT,
   "red_alcantarillado" BOOLEAN,
@@ -351,9 +366,9 @@ CREATE TABLE "persona_salud_preventiva" (
   "id_persona_salud_preventiva" SERIAL PRIMARY KEY,
   "persona_id" INT NOT NULL,
   "atencion_embarazo_id" INT,
-  "tamizaje_cervico_uterino" BOOLEAN,
+  "tamizaje_cervico_uterino_id" INT,
   "fecha_tamizaje_cervico_uterino" DATE,
-  "tamizaje_cancer_mama" BOOLEAN,
+  "tamizaje_cancer_mama_id" INT,
   "fecha_tamizaje_cancer_mama" DATE,
   "fecha_registro" DATE
 );
@@ -454,9 +469,10 @@ ALTER TABLE "levantamiento_nucleo" ADD FOREIGN KEY ("cedula_id") REFERENCES "ced
 ALTER TABLE "vivienda" ADD FOREIGN KEY ("nucleo_familiar_id") REFERENCES "nucleo_familiar" ("id_nucleo_familiar") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "vivienda" ADD FOREIGN KEY ("direccion_id") REFERENCES "direccion" ("id_direccion") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "vivienda" ADD FOREIGN KEY ("manejo_excretas_id") REFERENCES "cat_manejo_excretas" ("id_manejo_excretas") DEFERRABLE INITIALLY IMMEDIATE;
-ALTER TABLE "vivienda" ADD FOREIGN KEY ("material_techo_id") REFERENCES "cat_material" ("id_material") DEFERRABLE INITIALLY IMMEDIATE;
-ALTER TABLE "vivienda" ADD FOREIGN KEY ("material_paredes_id") REFERENCES "cat_material" ("id_material") DEFERRABLE INITIALLY IMMEDIATE;
-ALTER TABLE "vivienda" ADD FOREIGN KEY ("material_piso_id") REFERENCES "cat_material" ("id_material") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "vivienda" ADD FOREIGN KEY ("cocina_ubicacion_id") REFERENCES "cat_ubicacion_cocina" ("id_ubicacion_cocina") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "vivienda" ADD FOREIGN KEY ("material_techo_id") REFERENCES "cat_material_muro_techo" ("id_material_muro_techo") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "vivienda" ADD FOREIGN KEY ("material_paredes_id") REFERENCES "cat_material_muro_techo" ("id_material_muro_techo") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "vivienda" ADD FOREIGN KEY ("material_piso_id") REFERENCES "cat_material_piso" ("id_material_piso") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "familia_animal" ADD FOREIGN KEY ("nucleo_familiar_id") REFERENCES "nucleo_familiar" ("id_nucleo_familiar") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "familia_animal" ADD FOREIGN KEY ("animal_id") REFERENCES "cat_animal" ("id_animal") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "persona_alimentacion" ADD FOREIGN KEY ("persona_id") REFERENCES "persona" ("id_persona") DEFERRABLE INITIALLY IMMEDIATE;
@@ -467,6 +483,8 @@ ALTER TABLE "persona_enfermedad_cronica" ADD FOREIGN KEY ("persona_id") REFERENC
 ALTER TABLE "persona_enfermedad_cronica" ADD FOREIGN KEY ("enfermedad_cronica_id") REFERENCES "cat_enfermedad_cronica" ("id_enfermedad_cronica") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "persona_salud_preventiva" ADD FOREIGN KEY ("persona_id") REFERENCES "persona" ("id_persona") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "persona_salud_preventiva" ADD FOREIGN KEY ("atencion_embarazo_id") REFERENCES "cat_atencion_embarazo" ("id_atencion_embarazo") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "persona_salud_preventiva" ADD FOREIGN KEY ("tamizaje_cervico_uterino_id") REFERENCES "cat_tamizaje" ("id_tamizaje") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "persona_salud_preventiva" ADD FOREIGN KEY ("tamizaje_cancer_mama_id") REFERENCES "cat_tamizaje" ("id_tamizaje") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "persona_servicio_salud" ADD FOREIGN KEY ("persona_id") REFERENCES "persona" ("id_persona") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "persona_servicio_salud" ADD FOREIGN KEY ("frecuencia_servicio_salud_id") REFERENCES "cat_frecuencia_servicio_salud" ("id_frecuencia_servicio_salud") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "esquema_vacunacion" ADD FOREIGN KEY ("persona_id") REFERENCES "persona" ("id_persona") DEFERRABLE INITIALLY IMMEDIATE;
@@ -475,3 +493,6 @@ ALTER TABLE "inmunizacion" ADD FOREIGN KEY ("esquema_vacunacion_id") REFERENCES 
 ALTER TABLE "inmunizacion" ADD FOREIGN KEY ("cedula_id") REFERENCES "cedula" ("id_cedula") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "inmunizacion" ADD FOREIGN KEY ("vacuna_id") REFERENCES "vacuna" ("id_vacuna") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "inmunizacion" ADD FOREIGN KEY ("dosis_id") REFERENCES "cat_dosis" ("id_dosis") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "persona" ADD FOREIGN KEY ("sexo_id") REFERENCES "cat_sexo" ("id_sexo") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "persona_discapacidad" ADD FOREIGN KEY ("tipo_discapacidad_id") REFERENCES "cat_discapacidad" ("id_discapacidad") DEFERRABLE INITIALLY IMMEDIATE;
+
