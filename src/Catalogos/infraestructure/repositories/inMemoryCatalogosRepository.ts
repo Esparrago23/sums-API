@@ -16,10 +16,24 @@ const catalogos: CatalogoConfig[] = [
   { key: 'escolaridad', tableName: 'cat_escolaridad', idColumn: 'id_escolaridad', labelColumn: 'nombre' },
   { key: 'ocupacion', tableName: 'cat_ocupacion', idColumn: 'id_ocupacion', labelColumn: 'nombre' },
   { key: 'ingreso-salarial', tableName: 'cat_ingreso_salarial', idColumn: 'id_ingreso_salarial', labelColumn: 'rango', descriptionColumn: 'descripcion' },
-  { key: 'ingreso', tableName: 'cat_ingreso_salarial', idColumn: 'id_ingreso_salarial', labelColumn: 'rango', descriptionColumn: 'descripcion' },
-  { key: 'material', tableName: 'cat_material', idColumn: 'id_material', labelColumn: 'nombre' },
-  { key: 'material_piso', tableName: 'cat_material_piso', idColumn: 'id_material_piso', labelColumn: 'nombre' },
-  { key: 'material_muro_techo', tableName: 'cat_material_muro_techo', idColumn: 'id_material_muro_techo', labelColumn: 'nombre' },
+  { key: 'ingreso', tableName: 'cat_ingreso_salarial', idColumn: 'id_ingreso_salarial', labelColumn: 'rango', descriptionColumn: 'descripcion' 
+
+  },
+  { key: 'material', 
+    tableName: 'cat_material', 
+    idColumn: 'id_material', 
+    labelColumn: 'nombre' 
+  },
+  { key: 'material_piso', 
+    tableName: 'cat_material', //    tableName: 'cat_material_piso',
+    idColumn: 'id_material', //     idColumn: 'id_material_piso', 
+    labelColumn: 'nombre' 
+  },
+  { key: 'material_muro_techo', 
+    tableName: 'cat_material', //     tableName: 'cat_material_muro_techo', 
+    idColumn: 'id_material', //    idColumn: 'id_material_muro_techo',
+    labelColumn: 'nombre' 
+  },
   { key: 'manejo-excretas', tableName: 'cat_manejo_excretas', idColumn: 'id_manejo_excretas', labelColumn: 'nombre' },
   { key: 'manejo_excretas', tableName: 'cat_manejo_excretas', idColumn: 'id_manejo_excretas', labelColumn: 'nombre' },
   { key: 'animal', tableName: 'cat_animal', idColumn: 'id_animal', labelColumn: 'nombre' },
