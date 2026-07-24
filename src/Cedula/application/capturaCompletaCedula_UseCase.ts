@@ -126,20 +126,20 @@ export class CapturaCompletaCedulaUseCase {
   private async createVivienda(nucleoId: number, direccionId: number | null, vivienda: Dict): Promise<number | null> {
     const materialTechoId = this.intValue(vivienda.material_techo_id)
       ?? await this.findOrCreateCatalog(
-        'cat_material', // 'cat_material_muro_techo',
-        'id_material', // 'id_material_muro_techo'
+         'cat_material_muro_techo',
+       'id_material_muro_techo',
         'nombre', vivienda.techo
       );
     const materialParedesId = this.intValue(vivienda.material_paredes_id)
       ?? await this.findOrCreateCatalog(
-        'cat_material', //'cat_material_muro_techo',
-        'id_material', // 'id_material_muro_techo',
+       'cat_material_muro_techo',
+         'id_material_muro_techo',
         'nombre', vivienda.paredes
       );
     const materialPisoId = this.intValue(vivienda.material_piso_id)
       ?? await this.findOrCreateCatalog(
-        'cat_material', //      'cat_material_piso', 
-        'id_material', //  'id_material_piso', 
+             'cat_material_piso', 
+        'id_material_piso', 
         'nombre', vivienda.piso
       );
     const manejoExcretasId = this.intValue(vivienda.manejo_excretas_id)

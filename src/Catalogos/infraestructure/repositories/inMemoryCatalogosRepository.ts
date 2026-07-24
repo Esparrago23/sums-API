@@ -25,13 +25,13 @@ const catalogos: CatalogoConfig[] = [
     labelColumn: 'nombre' 
   },
   { key: 'material_piso', 
-    tableName: 'cat_material', //    tableName: 'cat_material_piso',
-    idColumn: 'id_material', //     idColumn: 'id_material_piso', 
+   tableName: 'cat_material_piso',
+    idColumn: 'id_material_piso', 
     labelColumn: 'nombre' 
   },
   { key: 'material_muro_techo', 
-    tableName: 'cat_material', //     tableName: 'cat_material_muro_techo', 
-    idColumn: 'id_material', //    idColumn: 'id_material_muro_techo',
+     tableName: 'cat_material_muro_techo', 
+    idColumn: 'id_material_muro_techo',
     labelColumn: 'nombre' 
   },
   { key: 'manejo-excretas', tableName: 'cat_manejo_excretas', idColumn: 'id_manejo_excretas', labelColumn: 'nombre' },
