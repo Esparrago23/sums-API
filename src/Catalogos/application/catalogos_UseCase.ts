@@ -15,4 +15,12 @@ export class CatalogosUseCase {
   createCatalogItem(key: string, data: Partial<CatalogoItem>): Promise<CatalogoItem> {
     return this.repository.createCatalogItem(key, data);
   }
+
+  updateCatalogItem(key: string, id: number, data: Partial<CatalogoItem>): Promise<CatalogoItem> {
+    return this.repository.updateCatalogItem(key, id, data);
+  }
+
+  deleteCatalogItem(key: string, id: number): Promise<void> {
+    return this.repository.deleteCatalogItem(key, id);
+  }
 }
