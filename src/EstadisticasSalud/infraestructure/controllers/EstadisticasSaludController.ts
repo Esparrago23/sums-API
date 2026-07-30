@@ -124,7 +124,8 @@ export class EstadisticasSaludController {
       const data = await this.getEnfermedadesCronicas.execute(parsed.filtros);
       res.status(200).json(data);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("🔥 ERROR REAL EN ESTADISTICAS SALUD:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -139,7 +140,8 @@ export class EstadisticasSaludController {
       const data = await this.getToxicomanias.execute(parsed.filtros);
       res.status(200).json(data);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("🔥 ERROR REAL EN ESTADISTICAS SALUD:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -154,7 +156,8 @@ export class EstadisticasSaludController {
       const data = await this.getDiscapacidad.execute(parsed.filtros);
       res.status(200).json(data);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("🔥 ERROR REAL EN ESTADISTICAS SALUD:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -169,7 +172,8 @@ export class EstadisticasSaludController {
       const data = await this.getSaludPreventiva.execute(parsed.filtros);
       res.status(200).json(data);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("🔥 ERROR REAL EN ESTADISTICAS SALUD:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -184,7 +188,8 @@ export class EstadisticasSaludController {
       const data = await this.getSeguridadSocial.execute(parsed.filtros);
       res.status(200).json(data);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("🔥 ERROR REAL EN ESTADISTICAS SALUD:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -199,7 +204,8 @@ export class EstadisticasSaludController {
       const data = await this.getAlimentacion.execute(parsed.filtros);
       res.status(200).json(data);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("🔥 ERROR REAL EN ESTADISTICAS SALUD:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -214,7 +220,8 @@ export class EstadisticasSaludController {
       const data = await this.getServiciosSalud.execute(parsed.filtros);
       res.status(200).json(data);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("🔥 ERROR REAL EN ESTADISTICAS SALUD:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -229,7 +236,8 @@ export class EstadisticasSaludController {
       const data = await this.getHigieneBucodental.execute(parsed.filtros);
       res.status(200).json(data);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("🔥 ERROR REAL EN ESTADISTICAS SALUD:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -244,7 +252,8 @@ export class EstadisticasSaludController {
       const data = await this.getPiramideVacuna.execute(parsed.filtros);
       res.status(200).json(data);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("🔥 ERROR REAL EN ESTADISTICAS SALUD:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 }

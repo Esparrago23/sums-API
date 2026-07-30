@@ -85,8 +85,9 @@ export class EstadisticasDemografia_Controller {
       }
       const resultado = await this.getPiramidePoblacional.execute(filtros);
       res.status(200).json(resultado);
-    } catch (error) {
-      next(error);
+    } catch (error: any) {
+      console.error("🔥 ERROR REAL EN ESTADISTICAS DEMOGRAFIA:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -100,8 +101,9 @@ export class EstadisticasDemografia_Controller {
       }
       const resultado = await this.getDistribucionGenero.execute(filtros);
       res.status(200).json(resultado);
-    } catch (error) {
-      next(error);
+    } catch (error: any) {
+      console.error("🔥 ERROR REAL EN ESTADISTICAS DEMOGRAFIA:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -115,8 +117,9 @@ export class EstadisticasDemografia_Controller {
       }
       const resultado = await this.getDistribucionEscolaridad.execute(filtros);
       res.status(200).json(resultado);
-    } catch (error) {
-      next(error);
+    } catch (error: any) {
+      console.error("🔥 ERROR REAL EN ESTADISTICAS DEMOGRAFIA:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -130,8 +133,9 @@ export class EstadisticasDemografia_Controller {
       }
       const resultado = await this.getAlfabetizacion.execute(filtros);
       res.status(200).json(resultado);
-    } catch (error) {
-      next(error);
+    } catch (error: any) {
+      console.error("🔥 ERROR REAL EN ESTADISTICAS DEMOGRAFIA:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -145,8 +149,9 @@ export class EstadisticasDemografia_Controller {
       }
       const resultado = await this.getDistribucionLengua.execute(filtros);
       res.status(200).json(resultado);
-    } catch (error) {
-      next(error);
+    } catch (error: any) {
+      console.error("🔥 ERROR REAL EN ESTADISTICAS DEMOGRAFIA:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -160,8 +165,9 @@ export class EstadisticasDemografia_Controller {
       }
       const resultado = await this.getDistribucionIngreso.execute(filtros);
       res.status(200).json(resultado);
-    } catch (error) {
-      next(error);
+    } catch (error: any) {
+      console.error("🔥 ERROR REAL EN ESTADISTICAS DEMOGRAFIA:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -175,8 +181,9 @@ export class EstadisticasDemografia_Controller {
       }
       const resultado = await this.getDistribucionOcupacion.execute(filtros);
       res.status(200).json(resultado);
-    } catch (error) {
-      next(error);
+    } catch (error: any) {
+      console.error("🔥 ERROR REAL EN ESTADISTICAS DEMOGRAFIA:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 
@@ -190,8 +197,9 @@ export class EstadisticasDemografia_Controller {
       }
       const resultado = await this.getDistribucionEstadoCivil.execute(filtros);
       res.status(200).json(resultado);
-    } catch (error) {
-      next(error);
+    } catch (error: any) {
+      console.error("🔥 ERROR REAL EN ESTADISTICAS DEMOGRAFIA:", error);
+      res.status(500).json({ error: error.message, detail: error.detail || 'Sin detalle' });
     }
   }
 }
