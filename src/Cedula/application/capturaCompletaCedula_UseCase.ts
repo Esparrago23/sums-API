@@ -125,18 +125,31 @@ export class CapturaCompletaCedulaUseCase {
 
   private async createVivienda(nucleoId: number, direccionId: number | null, vivienda: Dict): Promise<number | null> {
     const materialTechoId = this.intValue(vivienda.material_techo_id)
-      ?? await this.findOrCreateCatalog('cat_material', 'id_material', 'nombre', vivienda.techo);
+      ?? await this.findOrCreateCatalog(
+         'cat_material_muro_techo',
+       'id_material_muro_techo',
+        'nombre', vivienda.techo
+      );
     const materialParedesId = this.intValue(vivienda.material_paredes_id)
-      ?? await this.findOrCreateCatalog('cat_material', 'id_material', 'nombre', vivienda.paredes);
+      ?? await this.findOrCreateCatalog(
+       'cat_material_muro_techo',
+         'id_material_muro_techo',
+        'nombre', vivienda.paredes
+      );
     const materialPisoId = this.intValue(vivienda.material_piso_id)
-      ?? await this.findOrCreateCatalog('cat_material', 'id_material', 'nombre', vivienda.piso);
+      ?? await this.findOrCreateCatalog(
+             'cat_material_piso', 
+        'id_material_piso', 
+        'nombre', vivienda.piso
+      );
     const manejoExcretasId = this.intValue(vivienda.manejo_excretas_id)
       ?? await this.findOrCreateCatalog('cat_manejo_excretas', 'id_manejo_excretas', 'nombre', vivienda.excretas);
+    const cocinaUbicacionId = await this.findOrCreateCatalog('cat_ubicacion_cocina', 'id_ubicacion_cocina', 'nombre', vivienda.cocina_ubicacion ?? vivienda.cocina);
 
     const result = await db.executePreparedQuery(
       `INSERT INTO vivienda (
          nucleo_familiar_id, direccion_id, numero_cuartos, numero_habitantes,
-         agua_entubada, energia_electrica, cocina_ubicacion, cocina_con_lena,
+         agua_entubada, energia_electrica, cocina_ubicacion_id, cocina_con_lena,
          manejo_excretas_id, red_alcantarillado, fosa_septica, material_techo_id,
          material_paredes_id, material_piso_id, material_otro_especificar,
          perros_gatos_dentro, mascotas_vacunas_corrientes, mascotas_esterilizadas,
@@ -151,7 +164,7 @@ export class CapturaCompletaCedulaUseCase {
         this.intValue(vivienda.numero_habitantes ?? vivienda.habitantes),
         this.boolValue(vivienda.agua_entubada),
         this.boolValue(vivienda.energia_electrica),
-        this.cocinaValue(vivienda.cocina_ubicacion ?? vivienda.cocina),
+        cocinaUbicacionId,
         this.boolValue(vivienda.cocina_con_lena ?? vivienda.coccion_lena ?? vivienda.coccionLena),
         manejoExcretasId,
         this.boolValue(vivienda.red_alcantarillado ?? vivienda.alcantarillado),
@@ -214,9 +227,9 @@ export class CapturaCompletaCedulaUseCase {
       return null;
     }
 
-    const sexo = this.sexoValue(integrante.sexo);
-    if (!sexo) {
-      warnings.push(`Integrante omitido (${nombre}): falta sexo masculino/femenino`);
+    const sexoId = await this.findOrCreateCatalog('cat_sexo', 'id_sexo', 'nombre', integrante.sexo);
+    if (!sexoId) {
+      warnings.push(`Integrante omitido (${nombre}): falta sexo (catalog)`);
       return null;
     }
 
@@ -230,7 +243,7 @@ export class CapturaCompletaCedulaUseCase {
     const personaResult = await db.executePreparedQuery(
       `INSERT INTO persona (
          primer_nombre, segundo_nombre, apellido_paterno, apellido_materno,
-         fecha_nacimiento, sexo, estado_civil_id, alfabetizacion, fecha_registro
+         fecha_nacimiento, sexo_id, estado_civil_id, alfabetizacion, fecha_registro
        )
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
        RETURNING id_persona;`,
@@ -240,7 +253,7 @@ export class CapturaCompletaCedulaUseCase {
         encryptValue('persona', 'apellido_paterno', nameParts.apellido_paterno),
         encryptValue('persona', 'apellido_materno', nameParts.apellido_materno),
         fechaNacimiento,
-        sexo,
+        sexoId,
         estadoCivilId,
         this.boolValue(integrante.alfabetizacion)
       ]
@@ -326,13 +339,14 @@ export class CapturaCompletaCedulaUseCase {
       );
     }
     if (integrante.discapacidad !== undefined || integrante.presenta_discapacidad !== undefined || integrante.tipo_discapacidad) {
+      const tipoDiscapacidadId = await this.findOrCreateCatalog('cat_discapacidad', 'id_discapacidad', 'nombre', integrante.tipo_discapacidad ?? integrante.tipoDiscapacidad);
       await db.executePreparedQuery(
-        `INSERT INTO persona_discapacidad (persona_id, presenta_discapacidad, tipo_discapacidad)
+        `INSERT INTO persona_discapacidad (persona_id, presenta_discapacidad, tipo_discapacidad_id)
          VALUES ($1, $2, $3);`,
         [
           personaId,
-          this.boolValue(integrante.presenta_discapacidad ?? integrante.discapacidad) ?? Boolean(integrante.tipo_discapacidad),
-          this.textValue(integrante.tipo_discapacidad ?? integrante.tipoDiscapacidad)
+          this.boolValue(integrante.presenta_discapacidad ?? integrante.discapacidad) ?? Boolean(tipoDiscapacidadId),
+          tipoDiscapacidadId
         ]
       );
     }
@@ -378,20 +392,27 @@ export class CapturaCompletaCedulaUseCase {
       'nombre',
       integrante.atencion_embarazo ?? integrante.embarazo
     );
-    const cervico = this.boolOrNullFromTamizaje(integrante.tamizaje_cervico_uterino ?? integrante.tamizajeCervico);
-    const mama = this.boolOrNullFromTamizaje(integrante.tamizaje_cancer_mama ?? integrante.tamizajeMama);
+
+    let tamizajeCervicoVal = integrante.tamizaje_cervico_uterino ?? integrante.tamizajeCervico;
+    if (typeof tamizajeCervicoVal === 'boolean') tamizajeCervicoVal = tamizajeCervicoVal ? 'Sí' : 'No';
+    const cervicoId = await this.findOrCreateCatalog('cat_tamizaje', 'id_tamizaje', 'nombre', tamizajeCervicoVal);
+
+    let tamizajeMamaVal = integrante.tamizaje_cancer_mama ?? integrante.tamizajeMama;
+    if (typeof tamizajeMamaVal === 'boolean') tamizajeMamaVal = tamizajeMamaVal ? 'Sí' : 'No';
+    const mamaId = await this.findOrCreateCatalog('cat_tamizaje', 'id_tamizaje', 'nombre', tamizajeMamaVal);
+
     const fechaCervico = this.dateValue(integrante.fecha_tamizaje_cervico_uterino ?? integrante.fechaCervico);
     const fechaMama = this.dateValue(integrante.fecha_tamizaje_cancer_mama ?? integrante.fechaMama);
 
-    if (atencionEmbarazoId || cervico !== null || mama !== null || fechaCervico || fechaMama) {
+    if (atencionEmbarazoId || cervicoId !== null || mamaId !== null || fechaCervico || fechaMama) {
       await db.executePreparedQuery(
         `INSERT INTO persona_salud_preventiva (
-           persona_id, atencion_embarazo_id, tamizaje_cervico_uterino,
-           fecha_tamizaje_cervico_uterino, tamizaje_cancer_mama,
+           persona_id, atencion_embarazo_id, tamizaje_cervico_uterino_id,
+           fecha_tamizaje_cervico_uterino, tamizaje_cancer_mama_id,
            fecha_tamizaje_cancer_mama, fecha_registro
          )
          VALUES ($1, $2, $3, $4, $5, $6, CURRENT_DATE);`,
-        [personaId, atencionEmbarazoId, cervico, fechaCervico, mama, fechaMama]
+        [personaId, atencionEmbarazoId, cervicoId, fechaCervico, mamaId, fechaMama]
       );
     }
   }

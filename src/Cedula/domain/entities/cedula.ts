@@ -9,7 +9,8 @@ export class Cedula {
     public nucleo_familiar_id: number,
     public fecha_registro: Date,
     public estado: EstadoCedula,
-    public observaciones: string | null
+    public observaciones: string | null,
+    public informante_nombre?: string
   ) {}
 }
 
